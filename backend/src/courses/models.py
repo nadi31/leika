@@ -8,19 +8,15 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-
-    
-
-
 class Course(models.Model):
-    title = models.CharField(max_length=300)
-    content = models.TextField()
+    title = models.CharField(max_length=300, null=True, blank=True)
+    content = models.TextField(null=True, blank=True)
     # If a field has blank=True, form validation will allow entry of an empty value. null is purely database-related
-    date = models.DateTimeField(null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
     isVerified = models.BooleanField(default=False)
     price = models.FloatField(null=True, blank=True)
-    img = models.ImageField(upload_to="gallery",
-                            default='../media/sewing.png')
+    img = models.ImageField(null=True, blank=True,
+                            upload_to="gallery", default='../media/sewing.png')
     isDiscounted = models.BooleanField(default=False)
     discount = models.FloatField(null=True, blank=True)
     isRemote = models.BooleanField(default=False)
@@ -28,7 +24,7 @@ class Course(models.Model):
     seats = models.IntegerField(null=True, blank=True)
     needCertificate = models.BooleanField(default=False)
     dateFin = models.DateTimeField(null=True, blank=True)
-    imgName = models.URLField(max_length=200, blank=True, null=True)
+  #  imgName = models.URLField(max_length=200, blank=True, null=True)
     thumbnail = ThumbnailerImageField(
         upload_to='gallery', null=True, blank=True)
     isIntermediate = models.BooleanField(default=False)
@@ -52,10 +48,10 @@ class Course(models.Model):
 @receiver(post_save, sender=Course, dispatch_uid="makeThumbnail_update")
 def makeThumbnail(sender, instance, **kwargs):
 
-    #prev_name = instance.img.url
+    # prev_name = instance.img.url
     prev_name = str(instance.img.url).split('/media/gallery')
     name = '../media/gallery' + prev_name[1]
-    #name = '/Users/nadielmehdi/leika/backend/src'+prev_name
+    # name = '/Users/nadielmehdi/leika/backend/src'+prev_name
     print("ATTENTION")
     print(name)
     options = {'size': (200, 200), 'crop': True}
