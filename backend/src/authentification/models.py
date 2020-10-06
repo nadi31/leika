@@ -58,6 +58,7 @@ class ShoppingCart(models.Model):
     courses = models.ManyToManyField(course.Course, blank=True)
     cub = models.OneToOneField(Cub)
 
+
 class Giver(models.Model):
     phone = PhoneNumberField(null=False, blank=False, unique=True)
     adress = models.ForeignKey(Adress, on_delete=models.CASCADE)
