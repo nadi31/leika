@@ -13,6 +13,7 @@ class Course(models.Model):
     content = models.TextField(null=True, blank=True)
     # If a field has blank=True, form validation will allow entry of an empty value. null is purely database-related
     date = models.DateField(null=True, blank=True)
+    hour = models.TimeField(null=True, blank=True)
     isVerified = models.BooleanField(default=False)
     price = models.FloatField(null=True, blank=True)
     img = models.ImageField(null=True, blank=True,
@@ -23,7 +24,8 @@ class Course(models.Model):
     points = models.IntegerField(null=True, blank=True)
     seats = models.IntegerField(null=True, blank=True)
     needCertificate = models.BooleanField(default=False)
-    dateFin = models.DateTimeField(null=True, blank=True)
+    dateFin = models.DateField(null=True, blank=True)
+    hourFin = models.TimeField(null=True, blank=True)
   #  imgName = models.URLField(max_length=200, blank=True, null=True)
     thumbnail = ThumbnailerImageField(
         upload_to='gallery', null=True, blank=True)
