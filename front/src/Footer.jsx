@@ -1,0 +1,161 @@
+import React from "react";
+import { Image, Button, Modal, InputNumber, Input } from "antd";
+import "antd/dist/antd.css";
+import "./style/footer.css";
+import ParticleComponent from "./particules";
+import {
+  MailOutlined,
+  HeartOutlined,
+  PhoneOutlined,
+  RocketOutlined,
+} from "@ant-design/icons";
+import { Table, Typography } from "antd";
+
+//Panier shopping
+
+const Footer = (props) => {
+  return (
+    <div
+      className="container"
+      style={{
+        position: "relative",
+        width: "100%",
+        borderTop: '1px solid black',
+       display: "flex",
+        margin: "30%",
+       
+        background: "",
+        margin: props.width <= 900 ? "auto" : "",
+        opacity: "0.9",
+      }}
+    >
+       
+      <div
+        className="content_footer"
+        style={{
+position: "relative",
+         display: "block",
+          alignSelf: props.width <= 900 ? "" : "flex-end",
+          justifyContent: props.width <= 900 ? "" : "center",
+        zIndex: "-1",
+        
+          margin: "auto",
+          width: "100%",
+          height: "20%",
+          paddingBottom: "0px",
+      
+        
+        }}
+      >
+  
+        <div className="content"style={{display: props.width<=1200?"block":"flex", justifyContent: "center", zIndex:"1", width: "80%", margin: "auto"}}>
+       
+          <div
+            className="about"
+            style={{
+              zIndex: "1",
+              margin: "auto",
+              justifyContent: "center",
+              width: "20%",
+              height: "10%",
+            }}
+          >
+            <div>
+              <h1>
+                {" "}
+                <HeartOutlined /> A PROPOS
+              </h1>
+              <br />
+
+              <a href="" style={{}}>
+                {" "}
+                Fonctionnement{" "}
+              </a>
+              <br />
+              <br />
+              <a href="">Fondatrices</a>
+              <br />
+              <br />
+              <a href="">Mention Légales</a>
+            </div>
+          </div>
+
+          <div
+            className="assistance"
+            style={{
+              zIndex: "1",
+              margin: "5% auto ",
+              justifyContent: "center",
+              width: "20%",
+              height: "10%",
+            }}
+          >
+            <div>
+              <h1>
+                {" "}
+                <PhoneOutlined />
+                ASSISTANCE
+              </h1>
+              <br />
+              <a href="">FAQ</a>
+              <br />
+              <br />
+              <a href="">Contact</a> <br />
+              <br />
+              <a href="">Face à la covid</a>
+            </div>
+          </div>
+
+          <div
+            className="giver"
+            style={{
+              zIndex: "1",
+              margin: "5% auto ",
+              justifyContent: "center",
+              width: "20%",
+              height: "10%",
+            }}
+          >
+            <div>
+              <h1>
+                {" "}
+                <RocketOutlined />
+                DEVENIR UN GIVER
+              </h1>
+              <br />
+              <a href="">Conditions</a>
+              <br />
+              <br />
+              <a href="">Notre process de sélection</a>
+              <br />
+              <br />
+              <a href="">Formulaire de contact</a>
+            </div>
+          </div>
+        </div>
+        <div
+          className="news_letter"
+          style={{
+            zIndex: "1",
+            margin: "5% auto ",
+            justifyContent: "center",
+            width: "30%",
+            height: "10%",
+            opacity: "1",
+          }}
+        >
+          <h1>Restez au courant de notre actualité !</h1>
+          <br />
+          <Input
+            style={{ height: "30%" }}
+            placeholder="e-mail"
+            prefix={<MailOutlined />}
+          />
+        </div>
+      </div>
+     
+    </div>
+  );
+};
+
+export default Footer;

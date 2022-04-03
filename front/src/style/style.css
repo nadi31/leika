@@ -1,0 +1,127 @@
+@import "~antd/dist/antd.css";
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Annie+Use+Your+Telescope&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Dosis:wght@300&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap');
+
+.ant-table-thead > tr > th {
+  color: #616055;
+  background: white !important;
+}
+.ant-table {
+  font-family: "Roboto", sans-serif;
+}
+#payer {
+  font-family: "Roboto", sans-serif;
+}
+
+#kids{font-family: 'Annie Use Your Telescope', cursive;
+font-size: 35px;
+}
+
+.research_bar {
+  font-family: "Dosis", sans-serif;
+  position: flex;
+  display: flex;
+  justify-content: space-evenly;
+}
+#titreCart {
+  font-weight: 300;
+  color: #616055;
+}
+.border {
+  height: 3px;
+}
+
+.cropLogo img {
+  height: 90px;
+  width: 175px;
+  /*display: block;*/
+}
+.crop {
+  height: 10%;
+}
+.menu {
+  font-family: "Dosis", sans-serif;
+
+
+}
+.menu_abt {
+  font-weight: 400;
+  font-family: "Roboto", sans-serif;
+}
+
+#img_logo_desktop {
+  max-width: 250px;
+  
+  max-height: 150px;
+}
+#img {
+  position: "absolute";
+  height: 70px;
+  width: 120px;
+}
+
+.dashboardSearch {
+  font-family: "Dosis", sans-serif;
+}
+
+.top {
+  font-family: 'Noto Sans JP', sans-serif;
+  padding-bottom: 0.5%;
+  padding-top: 2%;
+  
+  margin-left: 3.5%;
+  width: 100%;
+  
+}
+
+#button_giver {
+  font-family: "Dosis", sans-serif;
+}
+
+
+
+
+.div_video {
+  justify-content: center;
+  margin: 0 auto;
+  width: 60%;
+}
+
+.crop {
+  width: 60%;
+}
+
+.ant-menu > .ant-menu-item{ border: none !important;}
+
+
+    
+  .ant-table-tbody > tr > td {
+    border-bottom: 0px ;
+    border-right: 0px;
+    border-top: 0px;
+    border-left: 0px;
+    }
+
+.ant-select-selector {
+border-radius: 25px;
+    }
+
+.ant-select-auto-complete {
+  border-radius: 25px;
+      }
+ #autoc >.dashboardSearch >.ant-select-selector {
+          border-radius: 25px;
+          height: 50px;
+        }
+      
+
+
+#color{
+
+border: 1px solid #b1afaf;
+
+}

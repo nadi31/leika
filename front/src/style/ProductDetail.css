@@ -1,0 +1,124 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Dosis:wght@500&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@900&display=swap');
+.product_card>.ant-card-body {
+    display: none;
+  
+  }
+  .product_card>.ant-card-extra {
+    display: none;
+  
+  }
+  
+  .product_card>.ant-card-head{
+
+    display: none;
+
+  }
+  .product_card>.ant-card ant-card-bordered {
+    display: none;
+  }
+  .product_card>.ant-card-cover{
+    line-height: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+.title_activity{font-family: "Roboto", sans-serif;
+font-size: 35px;
+
+}
+
+.accroche{
+
+    font-family: "Roboto", sans-serif;
+    font-size: 20px;
+
+}
+
+#button{font-family: 'Raleway', sans-serif;}
+
+
+
+
+.ant-steps-icon{
+
+  
+    color: #ff7a45 !important;
+}
+
+
+
+
+.ant-steps-item-finish .ant-steps-item-icon {border-color:  #ffc069 !important;
+}
+
+.ant-steps-item-finish .ant-steps-item-icon {border-color:  #ffc069 !important;
+}
+
+
+.ant-tabs-nav-list {
+  padding: 20px;
+  width: 100% !important;
+  justify-content: center !important;
+}
+
+ .anticon anticon-check ant-steps-finish-icon{
+
+color: #ffc069 !important;
+
+ }
+
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #ffc069 !important; 
+  font-weight: 500;
+  cursor: not-allowed;
+
+
+}
+.ant-tabs-ink-bar {
+  position: absolute;
+  background: #ffc069;
+
+}
+
+.ant-steps-item-active > .ant-steps-item-container > .ant-steps-item-icon {
+  border-color: #ffc069 !important; 
+  background-color: #fff7e6;
+  font-weight: 500;
+  color: #fff7e6;
+}
+.ant-steps-item ant-steps-item-wait{
+
+  border-color:  #ffc069 !important;
+}
+
+.ant-timeline-item-head-blue{
+  background: #ffc069 !important;
+  color: #ffc069 !important; 
+
+}
+.ant-timeline-item-head-blue {background: #ffc069 !important;
+  border-color: #ffc069 !important; 
+}
+
+
+
+#giver{font-family: 'Nunito', sans-serif;}
+
+#nav{font-family: 'Nunito', sans-serif;}
+
+
+
+.ant-steps-item-container{border-color: #fff !important; }
+
+.ant-steps-item-finish
+  > .ant-steps-item-container
+  > .ant-steps-item-content
+  > .ant-steps-item-title::after {
+  background-color: #ffc069;
+}
+
+.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after{  background-color: #ffc069;}
