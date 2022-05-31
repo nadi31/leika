@@ -1,10 +1,12 @@
 import os
+import json
+from rest_framework.parsers import JSONParser
 from django.db.models import Max, Min
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, ListCreateAPIView
-from courses.models import Course, CourseHour
+from courses.models import Course, CourseHour, Booking, SingleBooking
 from authentification.models import Giver, Adress
 #from .filters import DynamicSearchFilter
-from .serializers import CourseSerializer, CourseHoursSerializer, CourseUpdateSerializer, researchSerializer, CourseCompleteSerializer
+from .serializers import *
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status, filters
@@ -21,111 +23,118 @@ from authentification.serializers import GiverSerializer, AdressSerializer
 class researchCourseList(ListCreateAPIView):
     permission_classes = (permissions.AllowAny,)
     model = Course
-    model= Giver
-    model= Adress
+    model = Giver
+    model = Adress
     queryset = Course.objects.all()
-    queryset2= Adress.objects.all()
-    queryset3= Giver.objects.all()
-    serializer_class= CourseSerializer
+    queryset2 = Adress.objects.all()
+    queryset3 = Giver.objects.all()
+    serializer_class = CourseSerializer
+
     def get_queryset(self):  # new
         #query = self.request.GET.get('q')
-        course_list= Course.objects.all()
+        course_list = Course.objects.all()
         # SI la categorie est précisée:
         #course_list_sub_cat = []
         if self.request.query_params.get('sub_category'):
             sub_category = self.request.query_params.get('sub_category')
-            print ("**********"+"sub_category "+ sub_category)
-            course_list_sub_cat = Course.objects.filter(Q(sub_category__icontains= sub_category))  # | Q(state__icontains=query)
+            print("**********"+"sub_category " + sub_category)
+            course_list_sub_cat = Course.objects.filter(
+                Q(sub_category__icontains=sub_category))  # | Q(state__icontains=query)
             for course in course_list_sub_cat:
-                 print(course.id)
-        else: 
+                print(course.id)
+        else:
             course_list_sub_cat = course_list
         if self.request.query_params.get('category'):
-           
+
             category = self.request.query_params.get('category')
-            print ("**********"+"category "+ category)
-            course_list_cat = Course.objects.filter(category=category)  # | Q(state__icontains=query)
+            print("**********"+"category " + category)
+            course_list_cat = Course.objects.filter(
+                category=category)  # | Q(state__icontains=query)
             for course in course_list_cat:
-                 print(course.id)
-        else: 
+                print(course.id)
+        else:
             course_list_cat = course_list
-        # SI la ville est précisée: 
+        # SI la ville est précisée:
         if self.request.query_params.get('city'):
 
             city = self.request.query_params.get('city')
-            print ("**********"+"ville "+ city)
-            
-            adress_list = Adress.objects.filter(Q(city__icontains= city)).values_list('id')
-            if adress_list: 
+            print("**********"+"ville " + city)
+
+            adress_list = Adress.objects.filter(
+                Q(city__icontains=city)).values_list('id')
+            if adress_list:
                 for adress in adress_list:
-            
+
                     print("**"+str(adress))
-                    giver_list = Giver.objects.filter(adress_id= adress).values_list('id')
+                    giver_list = Giver.objects.filter(
+                        adress_id=adress).values_list('id')
                     #print("GIVER"+ giver_list)
                     for giver in giver_list:
                         course_list_city = Course.objects.filter(owner=giver)
                         for course in course_list_city:
                             print(course.id)
-            else: 
+            else:
                 course_list_city = Course.objects.none()
-        else: 
+        else:
             course_list_city = course_list
-        
-        #SI le prix min est précisé
+
+        # SI le prix min est précisé
         if self.request.query_params.get('prix_min') and not(self.request.query_params.get('prix_max')):
             prix_min = int(self.request.query_params.get('prix_min'))
-            course_list_pmin= course_list.filter( Q(price__gte=prix_min))
-            print ("**********"+"prix "+ str(prix_min))
-        #SI le prix max est précisé
+            course_list_pmin = course_list.filter(Q(price__gte=prix_min))
+            print("**********"+"prix " + str(prix_min))
+        # SI le prix max est précisé
         else:
             course_list_pmin = course_list
 
         if self.request.query_params.get('prix_max') and not (self.request.query_params.get('prix_min')):
             prix_max = int(self.request.query_params.get('prix_max'))
-            course_list_pmax= course_list.filter( Q(price__lt=prix_max))
-            print ("**********"+"prix_max "+ str(prix_max))
+            course_list_pmax = course_list.filter(Q(price__lt=prix_max))
+            print("**********"+"prix_max " + str(prix_max))
         else:
             course_list_pmax = course_list
-        #SI les prix min et max sont précisés
+        # SI les prix min et max sont précisés
         if self.request.query_params.get('prix_max') and self.request.query_params.get('prix_min'):
             prix_max = int(self.request.query_params.get('prix_max'))
             prix_min = int(self.request.query_params.get('prix_min'))
-            course_list_p= course_list.filter(Q( price__lt=prix_max, price__gte=prix_min))
+            course_list_p = course_list.filter(
+                Q(price__lt=prix_max, price__gte=prix_min))
         else:
             course_list_p = course_list
-        
-        #SI les dates sont précisés
+
+        # SI les dates sont précisés
         if self.request.query_params.get('date_max') and not (self.request.query_params.get('date_min')):
-            date_max=  self.request.query_params.get('date_max')
-            print ("**********"+"date_max "+ str(date_max))
-            course_list_dmax= course_list.filter( Q(date__lt=date_max))
+            date_max = self.request.query_params.get('date_max')
+            print("**********"+"date_max " + str(date_max))
+            course_list_dmax = course_list.filter(Q(date__lt=date_max))
         else:
             course_list_dmax = course_list
         if self.request.query_params.get('date_min') and not (self.request.query_params.get('date_max')):
-            date_min=  self.request.query_params.get('date_min')
-            print ("**********"+"date_min "+ str(date_min))
-            course_list_dmin= course_list.filter( Q(date__gte=date_min))
+            date_min = self.request.query_params.get('date_min')
+            print("**********"+"date_min " + str(date_min))
+            course_list_dmin = course_list.filter(Q(date__gte=date_min))
         else:
             course_list_dmin = course_list
         if self.request.query_params.get('date_min') and (self.request.query_params.get('date_max')):
-           
-            date_max=  self.request.query_params.get('date_min')
-            date_min=  self.request.query_params.get('date_max')
-            print ("**********"+"date_min "+ str(date_min))
-            print ("**********"+"date_max "+ str(date_max))
-            course_list_d= course_list.filter( Q(date__lt=date_min, date__gte= date_max))
+
+            date_max = self.request.query_params.get('date_min')
+            date_min = self.request.query_params.get('date_max')
+            print("**********"+"date_min " + str(date_min))
+            print("**********"+"date_max " + str(date_max))
+            course_list_d = course_list.filter(
+                Q(date__lt=date_min, date__gte=date_max))
         else:
             course_list_d = course_list
-        #SI seats est précisé
+        # SI seats est précisé
 
-        if self.request.query_params.get('seats') :
+        if self.request.query_params.get('seats'):
             seats = int(self.request.query_params.get('seats'))
-            course_list_seats= course_list.filter( Q(seats__gte=seats))
-            print ("**********"+"seats "+ str(seats))
+            course_list_seats = course_list.filter(Q(seats__gte=seats))
+            print("**********"+"seats " + str(seats))
         else:
             course_list_seats = course_list
-        intersection = course_list_cat & course_list_city &  course_list_d & course_list_dmax & course_list_dmin & course_list_pmax & course_list_pmin & course_list_p & course_list_seats & course_list_sub_cat
-        serializer = CourseSerializer( intersection, many=True)
+        intersection = course_list_cat & course_list_city & course_list_d & course_list_dmax & course_list_dmin & course_list_pmax & course_list_pmin & course_list_p & course_list_seats & course_list_sub_cat
+        serializer = CourseSerializer(intersection, many=True)
         for inter in intersection:
             print("**"+str(inter.id))
         if serializer:
@@ -133,7 +142,6 @@ class researchCourseList(ListCreateAPIView):
         else:
             print('error', serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 """search_fields = ['category']
@@ -362,15 +370,14 @@ class CourseUpdateView(APIView):
 
 class CourseDetailView(RetrieveAPIView):
     permission_classes = (permissions.AllowAny,)
-    
-    queryset= Course.objects.all() 
+
+    queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
-    
 
 # class CourseComplete(RetrieveAPIView):
 #     permission_classes = (permissions.AllowAny,)
-    
+
 #     queryset = Course.objects.all()
 #     queryset = CourseHour.objects.all()
 #     queryset = Giver.objects.all()
@@ -387,14 +394,121 @@ class CourseDetailView(RetrieveAPIView):
 #         context = {
 #             "request": request,
 #         }
-        
-        
-        
+
+
 #         #response = course + giver + adress+ courseHour
 #         serializer = CourseCompleteSerializer(course, giver,  adress,courseHour, many=True)
 #         return Response(serializer.data)
 
+class SingleBookingView(ListAPIView):
 
+    permission_classes = (permissions.AllowAny,)
+    queryset = SingleBooking.objects.all()
+    serializer_class = SingleBookingSerializer
+
+    def get(self, request, *args, **kwargs):
+        singlebookings = SingleBooking.objects.all()
+        serializer = SingleBookingSerializer(singlebookings, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        single_serializer = SingleBookingSerializer(data=request.data)
+        print("REQ", request.data)
+        if single_serializer.is_valid():
+           # if request.POST['creation_front'] != True:
+            single_serializer.save()
+            #course = Course.objects.filter(id=request.data.get("coursesID"))
+            # createCourseHour(course_serializer.data)
+            return Response(single_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print('error', single_serializer.errors)
+            return Response(single_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BookingView(APIView):
+    permission_classes = (permissions.AllowAny,)
+   # serializer_class = CourseHoursSerializer
+
+    def get(self, request, *args, **kwargs):
+        bookings = Booking.objects.all()
+        serializer = BookingSerializer(bookings, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+
+        print(request.data.get('cub'))
+        req_cub = request.data.copy()
+        del req_cub["single"]
+        booking_serializer = BookingSerializer(
+            data=req_cub)
+        print("REQ", request.data)
+        if booking_serializer.is_valid():
+
+            obj = booking_serializer.save()
+
+            print("ID" + str(obj.id))
+            singleBookings = request.data.get('single')
+            print(singleBookings)
+            for single in singleBookings:
+                print(single)
+                print("REQUEST ***" + str(single["courses"]))
+                print("REQUEST ***" + str(single["courseHour"]))
+                single["booking"] = obj.id
+                # course = list(Course.objects.filter(
+                #   id=single["courses"]).values())
+                # courseHour = list(CourseHour.objects.filter(
+                #    id=single["courseHour"]).values())
+                # print(course)
+
+        # createCourseHour(course_serializer.data)
+
+                print(single)
+
+                single_serializer = SingleBookingSerializer(
+                    data=single)
+
+                if single_serializer.is_valid():
+
+                    single_serializer.save()
+                else:
+                    print('error', single_serializer.errors)
+
+                Response(single_serializer.data,
+                         status=status.HTTP_201_CREATED)
+
+        else:
+            print('error', booking_serializer.errors)
+
+        return Response(booking_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class BookingCubView(APIView):
+    model = Booking
+    permission_classes = (permissions.AllowAny,)
+   # serializer_class = CourseHoursSerializer
+
+    def get(self, request, *args, **kwargs):
+        # user = Giver.objects.filter(id=self.kwargs['pk'])
+        cub_id = Cub.objects.get(user=self.kwargs['pk'])
+        print(cub_id.id)
+        bookings = Booking.objects.filter(cub=cub_id.id)
+
+        serializer = BookingSerializer(bookings, many=True)
+
+        return Response(serializer.data)
+
+
+class SingleBookingCubView(APIView):
+    model = SingleBooking
+    permission_classes = (permissions.AllowAny,)
+   # serializer_class = CourseHoursSerializer
+
+    def get(self, request, *args, **kwargs):
+        # user = Giver.objects.filter(id=self.kwargs['pk'])
+        singles = SingleBooking.objects.filter(booking=self.kwargs['pk'])
+
+        serializer = SingleBookingSerializer(singles, many=True)
+        return Response(serializer.data)
 
 
 class CourseHoursDetailView(RetrieveAPIView):
@@ -411,11 +525,9 @@ class CustomHours(APIView):
     def get(self, request, *args, **kwargs):
         # user = Giver.objects.filter(id=self.kwargs['pk'])
         courses = CourseHour.objects.filter(course=self.kwargs['pk'])
-        if courses.exists():
-            serializer = CourseHoursSerializer(courses, many=True)
-            return Response(serializer.data)
-        else:
-            print('error', serializer.errors)
+
+        serializer = CourseHoursSerializer(courses, many=True)
+        return Response(serializer.data)
 
 
 class CourseHoursCreateView(APIView):
@@ -443,3 +555,72 @@ class CourseHoursCreateView(APIView):
         else:
             print('error', courseHour_serializer.errors)
             return Response(courseHour_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReviewListViewAll(APIView):
+
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = [JSONParser]
+
+    def get(self, request, *args, **kwargs):
+        # user = Giver.objects.filter(id=self.kwargs['pk'])
+        reviews = Review.objects.all()
+
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        reviewSerializer = ReviewSerializer(data=request.data)
+        singleBooking = SingleBooking.objects.filter(
+            id=request.data.get("booking"))
+        singleBooking.update(isCommented=True,)
+
+        if reviewSerializer.is_valid():
+            reviewSerializer.save()
+            return Response(reviewSerializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print('error', reviewSerializer.errors)
+            return Response(reviewSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReviewListViewGiver(ListAPIView):
+
+    permission_classes = (permissions.AllowAny,)
+    queryset = Review.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        # user = Giver.objects.filter(id=self.kwargs['pk'])
+        giver = Giver.objects.get(id=self.kwargs['pk'])
+
+        reviewPerGiver = Review.objects.filter(course__owner=giver.id)
+
+        serializer = ReviewSerializer(reviewPerGiver, many=True)
+        return Response(serializer.data)
+
+
+class ReviewListViewCourse(ListAPIView):
+
+    permission_classes = (permissions.AllowAny,)
+    queryset = Review.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        # user = Giver.objects.filter(id=self.kwargs['pk'])
+        reviewPerCourse = Review.objects.filter(course=self.kwargs['pk'])
+
+        serializer = ReviewSerializer(reviewPerCourse, many=True)
+        return Response(serializer.data)
+
+
+class ReviewListViewCub(ListAPIView):
+
+    permission_classes = (permissions.AllowAny,)
+    queryset = Review.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        # user = Giver.objects.filter(id=self.kwargs['pk'])
+        cub_id = Cub.objects.get(user=self.kwargs['pk'])
+        print(cub_id.id)
+        reviewPerCourse = Review.objects.filter(cub=cub_id.id)
+
+        serializer = ReviewSerializer(reviewPerCourse, many=True)
+        return Response(serializer.data)

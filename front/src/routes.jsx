@@ -6,7 +6,7 @@ import ProductDetail from "./ProductDetail";
 
 import CourseFormGiver from "./CourseFormGiver"
 import Results from "./Results";
-
+import ProfilCub from "./ProfilCub";
 
 const BaseRouter = () => (
   <div>
@@ -16,6 +16,7 @@ const BaseRouter = () => (
    
     <Route exact path="/create" component={CourseFormGiver} />
     <Route exact path="/search:request" component={Results} />
+    <Route exact path="/profil/:pk" component={ProfilCub} />
   </div>
 );
 export default BaseRouter;

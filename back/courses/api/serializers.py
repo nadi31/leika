@@ -1,13 +1,14 @@
 from rest_framework import serializers
-from courses.models import Course, CourseHour
-from authentification.models import Giver, Adress, MyUser
+from courses.models import Course, CourseHour, Booking, Wishlist, SingleBooking, Review
+from authentification.models import Giver, Adress, MyUser, Cub
+
 
 class CourseSerializer(serializers.ModelSerializer):
   #  courseHour = CourseHoursSerializer(many=True, read_only=True)
 
     class Meta:
         model = Course
-       
+
         fields = '__all__'
     #    extra_fields = ['courseHour']
 
@@ -35,7 +36,6 @@ class researchSerializer(serializers.ModelSerializer):
   #  json = strToJson()
     # json=serializers.JSONField(binary=True)
 
-    
     class Meta:
         model = Course
         fields = ["title", "content", "date", "hour", "isVerified", "price", "isDiscounted", "discount", "isRemote", "seats", "dateFin",
@@ -55,6 +55,32 @@ class CourseUpdateSerializer(serializers.ModelSerializer):
 class CourseHoursSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseHour
+        fields = '__all__'
+
+
+class BookingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Booking
+        fields = '__all__'
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+
+class SingleBookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SingleBooking
+        fields = '__all__'
+
+
+class WishlistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Wishlist
         fields = '__all__'
 
 

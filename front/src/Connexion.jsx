@@ -19,16 +19,16 @@ const Connexion = (props) => {
     if (props.connected == false) console.log("LOG OUT");
   }, [props.connected]);
 
- 
   const authLogOut = () => {
     localStorage.setItem("token", null);
-        localStorage.setItem("expirationDate", null);
-        localStorage.setItem("user_type",null);
-        localStorage.setItem("ID_user", null);
-        localStorage.setItem("ID", null);
-        localStorage.setItem("first_name", null);
-        localStorage.setItem("connected", false);
-        //window.dispatchEvent(new Event("message"));
+    localStorage.setItem("expirationDate", null);
+    localStorage.setItem("user_type", null);
+    localStorage.setItem("ID_user", null);
+    localStorage.setItem("ID", null);
+    localStorage.setItem("first_name", null);
+    localStorage.setItem("connected", false);
+    localStorage.setItem("email", false);
+    //window.dispatchEvent(new Event("message"));
   };
   const authLogin = (email, password) => {
     props.setConnexion(false);
@@ -64,6 +64,7 @@ const Connexion = (props) => {
         localStorage.setItem("token", res.data.access);
         localStorage.setItem("expirationDate", expirationDate);
         localStorage.setItem("user_type", user_type);
+        localStorage.setItem("email", email);
         localStorage.setItem("ID_user", ID_user);
         localStorage.setItem("ID", ID);
         localStorage.setItem("first_name", first_name);
@@ -75,7 +76,6 @@ const Connexion = (props) => {
         message.success("Connexion réussie");
 
         setTimeout(() => {
-         
           authLogOut();
         }, 60 * 60 * 1000);
       })
@@ -89,7 +89,7 @@ const Connexion = (props) => {
     console.log(email, password);
 
     axios
-      .post("api/user/create/", {
+      .post("http://localhost:8000/api/user/create/", {
         email: email,
         username: email,
         password: password,

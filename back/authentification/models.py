@@ -1,5 +1,6 @@
 from django.db import models
-import inspect, os
+import inspect
+import os
 # djsr/authentication/models.py
 from django.contrib.auth.models import AbstractUser
 
@@ -27,27 +28,24 @@ class MyUser(AbstractUser):
     user_type1 = models.PositiveSmallIntegerField(
         choices=USER_TYPE_CHOICES, blank=True, null=True)
     user_id = models.AutoField(primary_key=True)
-    
+
     class Meta:
         db_table = 'MyUser'
 
-  
-
-    #def save(self, *args, **kwargs):
+   
+      #  self.password = self.set_password(password)
+        # self.save()
+    # def save(self, *args, **kwargs):
      #   print ("**PRINT**"+ " psw: "+str(self.csrfmiddlewaretoken))
-        
 
+        # MyUser.save(str(self.query))
 
-        #MyUser.save(str(self.query))
-
-       
         # receive_user=receive_user,
-        
+
     # message.save() - no needs in save() when you use create() method
-        #MyUser.receive_user.add(receive_user)
-        
-       
-        #if self.user_type1:
+        # MyUser.receive_user.add(receive_user)
+
+        # if self.user_type1:
         #key = '9d00kz_e*tk8@f+(1(igmaw&qo@&sc@5kss0mh6a-c$+jhw+bz'
         #container_passw = Password(self.password)
         #json_data = json.dumps(container_passw.__dict__)
@@ -132,12 +130,9 @@ class Giver(models.Model):
         return self.user.email
 
 
+# @ receiver(pre_save, sender=MyUser)
 
-
-
-#@ receiver(pre_save, sender=MyUser)
-
-#def create_password(sender,  instance, created, **kwargs):
+# def create_password(sender,  instance, created, **kwargs):
     #print ("Je suis l'instance"+ str(csrfmiddlewaretoken))
 
      #key = '9d00kz_e*tk8@f+(1(igmaw&qo@&sc@5kss0mh6a-c$+jhw+bz'
@@ -149,16 +144,18 @@ class Giver(models.Model):
 @ receiver(post_save, sender=MyUser)
 def create_user_profile(sender, instance, created, **kwargs):
     print("IDDDDD " + str(instance.user_id))
+    print("PAss " + str(instance.password))
     print("JE SUIS: " + str(instance.user_type1))
     if instance.user_type1 == 1:
         Administrator.objects.create(user=instance)
-    elif instance.user_type1 == 2:
+    elif instance.user_type1 == 2 :
         print("ENREGISTREMENT CUBBBBBBBBB*****")
         Cub.objects.create(user=instance)
+        print("ENREGISTREMENT CUBBBBB*" + instance.password)
     elif instance.user_type1 == 3:
         Giver.objects.create(user=instance)
 
-#send 
-#end 
-#send 
-#send 
+# send
+# end
+# send
+# send
