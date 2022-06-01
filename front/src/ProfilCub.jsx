@@ -8,8 +8,10 @@ import {
   Space,
   Input,
   Form,
+  Modal,
   Button,
   Tooltip,
+  Rate,
   message,
   Dropdown,
   AutoComplete,
@@ -41,6 +43,7 @@ const ProfilCub = (props) => {
   const [phone, setPhone] = useState(null);
   const [pk, setPk] = useState(null);
   const [review, setReview] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [singleBookings, setSingleBookings] = useState([]);
   const [singleDetails, setSingleDetails] = useState([]);
   const [width, setWidth] = useState(window.innerWidth);
@@ -49,11 +52,52 @@ const ProfilCub = (props) => {
   const [changeEmail, setChangeEmail] = useState(true);
   const [changePhone, setChangePhone] = useState(true);
   const [menuKey, setMenuKey] = useState(null);
-
+  const [rating, setRating] = useState(null);
+  const [bookingRating, setBookingRating] = useState(null);
+  const [courseRating, setCourseRating] = useState(null);
   const [single, setSingle] = useState(null);
   const updateSize = () => {
     setWidth(window.innerWidth);
   };
+  const showModal = (e) => {
+    // console.log("TARGET " + e.target.value);
+    setIsModalVisible(true);
+    setBookingRating(singleDetails[e].booking);
+    setCourseRating(singleDetails[e].booking.course.id);
+    console.log("BOOKING ID " + bookingRating + "COURSE ID" + courseRating);
+  };
+  const onFinishReview = (values) => {
+    console.log(values.commentaire);
+    console.log(rating);
+
+    axios
+      .post("http://localhost:8000/api-course/review/", {
+        note: rating,
+        commentOn: true,
+        comment_cub: values.commentaire,
+        cub: pk,
+        booking: bookingRating,
+        course: courseRating,
+        titre: values.titre,
+      })
+      .then((res) => {
+        console.log("REGISTRATION LOG: " + JSON.stringify(res.data));
+        setIsModalVisible(false);
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.log("ERROR" + err);
+      });
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+  const modalReview = () => {};
   const onFinishMpd = (values) => {
     const axiosInstance = axios.create({
       baseURL: "http://127.0.0.1:8000/api/",
@@ -165,11 +209,11 @@ const ProfilCub = (props) => {
       );
 
       await Promise.all(
-        firstResponse.data.map(async (book, idx) => {
+        firstResponse.data.map(async (book) => {
           const booking = JSON.stringify(book.id);
           const ref = JSON.stringify(book.ref);
           const dateHour = JSON.stringify(book.dateHour);
-
+          console.log("REF" + JSON.stringify(book));
           const secondResponse = await axios.get(
             `http://localhost:8000/api-course/cubSingleBookings/${booking}`
           );
@@ -323,6 +367,47 @@ const ProfilCub = (props) => {
           <img src={imgCub}></img>
         </div>
         <br />
+        <Modal
+          title="Votre avis"
+          visible={isModalVisible}
+          onOk={handleOk}
+          footer={null}
+          onCancel={handleCancel}
+        >
+          <Form name="rating" onFinish={onFinishReview}>
+            <Form.Item
+              name={["titre"]}
+              label="Titre"
+              rules={[{ required: false }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item name={["rating"]} label="Note">
+              {" "}
+              <Rate
+                onChange={(value) => {
+                  setRating(value);
+                }}
+                allowHalf
+                defaultValue={0}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name={["commentaire"]}
+              label="Commentaire"
+              rules={[{ required: false }]}
+            >
+              <Input.TextArea />
+            </Form.Item>
+
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Submit
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
         <div style={{ width: "100%", display: "flex" }}>
           <Menu
             onClick={handleClick}
@@ -362,24 +447,44 @@ const ProfilCub = (props) => {
                       <tr key={bookingRef}>
                         <tr>
                           <td>
-                            <b>
-                              Réservation référence :{" "}
-                              {bookingRef.replace(/['"]+/g, "")}
-                            </b>
+                            <b>Réservation référence : {bookingRef}</b>
                           </td>
                         </tr>
                         {singleDetails.map(function (bookingComplete, idx) {
                           if (bookingRef == bookingComplete.ref) {
                             return (
-                              <tr key={bookingComplete.course.id + idx}>
-                                <td>{bookingComplete.course.title}</td>
-                                {bookingComplete.single.isCommented ? (
-                                  <></>
-                                ) : (
-                                  <td>
-                                    <a>Donner votre avis</a>
-                                  </td>
-                                )}
+                              <tr key={idx}>
+                                <td>
+                                  {bookingComplete.course.id}
+                                  {bookingComplete.course.title}
+                                  {bookingComplete.single.isCommented ? (
+                                    <></>
+                                  ) : (
+                                    <Button
+                                      value={idx}
+                                      onClick={() => {
+                                        console.log(
+                                          "BOOKING " +
+                                            bookingComplete.ref +
+                                            "COURSE " +
+                                            bookingComplete.course.id +
+                                            "booking " +
+                                            bookingComplete.single.id
+                                        );
+                                        setBookingRating(
+                                          bookingComplete.single.id
+                                        );
+                                        setCourseRating(
+                                          bookingComplete.course.id
+                                        );
+                                        setIsModalVisible(true);
+                                      }}
+                                      style={{ border: "none" }}
+                                    >
+                                      Donner votre avis
+                                    </Button>
+                                  )}
+                                </td>
                               </tr>
                             );
                           }

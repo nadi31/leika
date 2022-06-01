@@ -570,12 +570,23 @@ class ReviewListViewAll(APIView):
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        reviewSerializer = ReviewSerializer(data=request.data)
-        singleBooking = SingleBooking.objects.filter(
+        ratingComplete = request.data
+        singleBooking = SingleBooking.objects.get(
             id=request.data.get("booking"))
-        singleBooking.update(isCommented=True,)
+        #print('single' + str(singleBooking[0].id))
 
+        cub = MyUser.objects.get(
+            user_id=request.data.get("cub"))
+        ratingComplete["cub"] = Cub.objects.get(
+            user_id=request.data.get("cub")).id
+
+        print(ratingComplete["cub"])
+        ratingComplete["prenom"] = cub.first_name
+        ratingComplete["initiale"] = cub.last_name[0]
+        reviewSerializer = ReviewSerializer(data=ratingComplete)
         if reviewSerializer.is_valid():
+            singleBooking.isCommented = True
+            singleBooking.save()
             reviewSerializer.save()
             return Response(reviewSerializer.data, status=status.HTTP_201_CREATED)
         else:

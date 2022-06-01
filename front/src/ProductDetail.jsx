@@ -16,7 +16,7 @@ import {
   Avatar,
   List,
   Breadcrumb,
-  message
+  message,
 } from "antd";
 import kart from "./kart.jpg";
 import para from "./para.jpg";
@@ -51,6 +51,9 @@ const ProductDetail = (props) => {
   const [maxSeats, setMaxSeats] = useState(null);
   const [hourSelected, setHourSelected] = useState({});
   const [valueInput, setValueInput] = useState(1);
+  const [ratings, setRatings] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [nombreRating, setNombreRating] = useState(null);
   const [a, setA] = useState([]);
   const timeMenu = (date, hour, seats) => {
     return (
@@ -204,7 +207,7 @@ const ProductDetail = (props) => {
               marginLeft: "5%",
             }}
             onClick={() => {
-              let init_cart=  JSON.parse(localStorage.getItem("cart") || "[]");
+              let init_cart = JSON.parse(localStorage.getItem("cart") || "[]");
               let items = JSON.parse(localStorage.getItem("cart") || "[]");
 
               items.push({
@@ -283,9 +286,9 @@ const ProductDetail = (props) => {
           dataForBasket[i].hourSelected.date ==
             dataForBasket[y].hourSelected.date
         ) {
-          if (dataForBasket[y].maxSeats>=
-            dataForBasket[y].seats + dataForBasket[i].seats 
-             
+          if (
+            dataForBasket[y].maxSeats >=
+            dataForBasket[y].seats + dataForBasket[i].seats
           ) {
             dataForBasket[y].seats += dataForBasket[i].seats;
 
@@ -293,12 +296,14 @@ const ProductDetail = (props) => {
             dataForBasket.splice(y, 1);
             dataForBasket.splice(i, 1);
           } else {
-            message.info('Il n\'y a plus de place pour la date et l\'heure sélectionnées');
+            message.info(
+              "Il n'y a plus de place pour la date et l'heure sélectionnées"
+            );
             //result.push(dataForBasket[y]);
             dataForBasket.splice(i, 1);
             dataForBasket.splice(y, 1);
             result = initBasket;
-            dataForBasket = []
+            dataForBasket = [];
           }
 
           //console.log(dataForBasket[i].name)
@@ -334,51 +339,66 @@ const ProductDetail = (props) => {
     myRef.current.scrollIntoView({ block: "end", behavior: "smooth" });
   };
 
-  /*  useEffect(() => {
-    
-    if(course === null)
-     {
-      renderCourse();
+  const requests = async () => {
+    const courseID = props.match.params.courseID;
+    try {
+      const res4 = await axios.get(
+        `http://localhost:8000/api-course/review/course/${courseID}`
+      );
+
+      console.log(res4.data.length);
+      await setNombreRating(res4.data.length);
+      let sumRatings = 0;
+      async function first_function() {
+        res4.data.map((single) => {
+          sumRatings += single.note;
+          if (single.commentOn) {
+            comments.push(single);
+          }
+        });
+        let division = sumRatings / nombreRating;
+        setRatings(division);
+        console.log(
+          "SUM " + sumRatings + "nombre " + nombreRating + " == " + division
+        );
+      }
+      await first_function().then(
+        console.log("COMMENTS" + JSON.stringify(comments))
+      );
+
+      const res3 = await axios.get(
+        `http://localhost:8000/api-course/hours/${courseID}`
+      );
+
+      setHours(res3.data);
+      console.log("HOURS " + hours);
+      if (hours != null) {
+        hours.map((n) => console.log(n));
+      }
+      const res = await axios.get(
+        `http://localhost:8000/api-course/${courseID}`
+      );
+      setCourse(res.data);
+      const res2 = await axios.get(
+        `http://localhost:8000/api/giver/${res.data.owner}`
+      );
+
+      setGiver(res2.data);
+
+      console.log("RES" + course);
+
+      //setRatings(ratings );
+    } catch (error) {
+      console.log(error);
     }
-    if (!(myRef.current === null)){executeScroll();update_sens();
-  }}, [course, giver, myRef.current])
-  
-  
-  if(course===null) {
-  
-    return null
-  }
-*/
+  };
 
   useEffect(() => {
     if (!myRef.current === null) {
       executeScroll();
       update_sens();
     }
-    {
-      const courseID = props.match.params.courseID;
-      axios
-        .get(`http://localhost:8000/api-course/${courseID}`)
-        .then((res) => {
-          axios
-            .get(`http://localhost:8000/api/giver/${res.data.owner}`)
-            .then((res2) => {
-              setGiver(res2.data);
-            })
-            .catch((err) => console.log(err));
-          axios
-            .get(`http://localhost:8000/api-course/hours/${courseID}`)
-            .then((res3) => {
-              setHours(res3.data);
-              console.log("HOURS " + hours);
-              hours.map((n) => console.log(n));
-            })
-            .catch((err) => console.log(err));
-          setCourse(res.data);
-          console.log("RES" + course);
-        })
-        .catch((err) => console.log(err));
-    }
+    requests();
   }, []);
 
   const update_sens = () => {
@@ -406,7 +426,7 @@ const ProductDetail = (props) => {
         </MobileView>
 
         <BrowserView>
-          <MenuBrowser width={width}/>
+          <MenuBrowser width={width} />
         </BrowserView>
 
         <div style={{ width: "100%" }}>
@@ -522,7 +542,7 @@ const ProductDetail = (props) => {
                   color: "#ffc069",
                 }}
                 allowHalf
-                defaultValue={4.75}
+                value={ratings}
               />{" "}
               <a
                 style={{
@@ -531,7 +551,7 @@ const ProductDetail = (props) => {
                   textDecoration: "underline",
                 }}
               >
-                300 avis
+                {nombreRating} avis
               </a>
               <br />
               <span className="accroche" style={{ marginRight: "70px" }}>
@@ -688,45 +708,21 @@ const ProductDetail = (props) => {
           content={
             <div style={{ display: "block", width: "100%" }}>
               <List style={{ width: "60%", margin: "auto" }}>
-                <List.Item>
-                  <Review
-                    iniale={"E"}
-                    prenom={"Nadia"}
-                    titre={"Bof..."}
-                    content={
-                      "Pourrairt mieux faire mais dans l'ensemble assez bien. Nourriture incluse. Big Bonnus."
-                    }
-                    date={"12-03-2021"}
-                    rating={"3"}
-                    statut={"GOLD"}
-                  />
-                </List.Item>
-                <List.Item>
-                  <Review
-                    iniale={"E"}
-                    prenom={"Nadia"}
-                    titre={"Bof..."}
-                    date={"12-03-2021"}
-                    content={
-                      "Pourrairt mieux faire mais dans l'ensemble assez bien. Nourriture incluse. Big Bonnus."
-                    }
-                    rating={"3"}
-                    statut={"GOLD"}
-                  />
-                </List.Item>
-                <List.Item>
-                  <Review
-                    iniale={"E"}
-                    prenom={"Nadia"}
-                    titre={"Bof..."}
-                    date={"12-03-2021"}
-                    content={
-                      "Pourrairt mieux faire mais dans l'ensemble assez bien. Nourriture incluse. Big Bonnus."
-                    }
-                    rating={"3"}
-                    statut={"GOLD"}
-                  />
-                </List.Item>
+                {comments.map((comment) => {
+                  return (
+                    <List.Item>
+                      <Review
+                        iniale={comment.initiale}
+                        prenom={comment.prenom}
+                        titre={comment.titre}
+                        content={comment.comment_cub}
+                        date={moment(comment.dateHour).format("d MMM")}
+                        rating={comment.note}
+                        statut={"GOLD"}
+                      />
+                    </List.Item>
+                  );
+                })}
               </List>
             </div>
           }

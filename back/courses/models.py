@@ -227,10 +227,13 @@ class Wishlist(models.Model):
 class Review(models.Model):
     cub = models.ForeignKey(Cub, on_delete=models.CASCADE)
     booking = models.ForeignKey(
-        SingleBooking, unique=True, on_delete=models.CASCADE)
+        SingleBooking, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    note = models.IntegerField(null=True, blank=True)
+    note = models.FloatField(null=True, blank=True)
     commentOn = models.BooleanField(null=True, blank=True)
     comment_cub = models.TextField(
         max_length=1000, null=True, blank=True)
     dateHour = models.DateTimeField(default=timezone.now)
+    initiale = models.CharField(max_length=2, null=True, blank=True)
+    titre = models.CharField(max_length=50, null=True, blank=True)
+    prenom = models.CharField(max_length=20, null=True, blank=True)
