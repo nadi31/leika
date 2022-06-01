@@ -635,3 +635,34 @@ class ReviewListViewCub(ListAPIView):
 
         serializer = ReviewSerializer(reviewPerCourse, many=True)
         return Response(serializer.data)
+
+
+class WishlistView(APIView):
+    permission_classes = (permissions.AllowAny,)
+   # queryset = Course.objects.all()
+  #  serializer_class = CourseSerializer
+    parser_classes = [JSONParser]
+
+  #  def get(self, request, *args, **kwargs):
+   #     courseHour = Course.objects.all()
+    #    serializer = CourseSerializer(courses, many=True)
+    #    return Response(serializer.data)
+
+    def get(self, request, *args, **kwargs):
+        cub_id = Cub.objects.get(user=self.kwargs['pk'])
+        print(cub_id.id)
+        wishlistPerCub = Wishlist.objects.filter(cub=cub_id.id)
+        serializer = WishlistSerializer(wishlistPerCub, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = WishlistSerializer(data=request.data)
+
+        if serializer.is_valid() and Wishlist.objects.filter(
+                cub=request.data["cub"], course=request.data["course"]).all().count() == 0:
+            print()
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print('error', serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

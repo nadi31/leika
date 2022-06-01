@@ -215,7 +215,7 @@ class SingleBooking(models.Model):
 
 
 class Wishlist(models.Model):
-    courses = models.ManyToManyField(Course)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     cub = models.ForeignKey(Cub, on_delete=models.CASCADE)
 
 

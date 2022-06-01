@@ -33,6 +33,7 @@ import {
 } from "@ant-design/icons";
 import MenuMobile from "./MenuMobile";
 import axios from "axios";
+import Wishlist from "./Wishlist";
 import Footer from "./Footer";
 import imgCub from "./cub_menu3.gif";
 import MenuItem from "antd/lib/menu/MenuItem";
@@ -53,6 +54,7 @@ const ProfilCub = (props) => {
   const [changePhone, setChangePhone] = useState(true);
   const [menuKey, setMenuKey] = useState(null);
   const [rating, setRating] = useState(null);
+  const [id, setId] = useState(null);
   const [bookingRating, setBookingRating] = useState(null);
   const [courseRating, setCourseRating] = useState(null);
   const [single, setSingle] = useState(null);
@@ -123,7 +125,9 @@ const ProfilCub = (props) => {
               password: values.new_password,
             }
           )
-          .then((res) => {});
+          .then((res) => {
+            setId(localStorage.getItem("ID"));
+          });
       })
       .catch((err) => {
         message.error("Le mot de passe est erroné");
@@ -438,6 +442,14 @@ const ProfilCub = (props) => {
               Mes Avis
             </Menu.Item>
           </Menu>
+          {menuKey == "3" && localStorage.getItem("ID") != null ? (
+            <>
+              <Wishlist cubId={localStorage.getItem("ID")} />
+            </>
+          ) : (
+            <></>
+          )}
+
           {menuKey == "2" ? (
             <div>
               <table className="table">

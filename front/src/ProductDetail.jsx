@@ -53,8 +53,33 @@ const ProductDetail = (props) => {
   const [valueInput, setValueInput] = useState(1);
   const [ratings, setRatings] = useState(null);
   const [comments, setComments] = useState([]);
+
+  const [disabled, setDisabled] = useState(false);
   const [nombreRating, setNombreRating] = useState(null);
   const [a, setA] = useState([]);
+  const addedToWishlist = () => {
+    if (localStorage.getItem("ID") != null) {
+      axios
+        .post(
+          `http://localhost:8000/api-course/wishlist/${localStorage.getItem(
+            "ID"
+          )}`,
+          {
+            cub: localStorage.getItem("ID_user"),
+            course: props.match.params.courseID,
+          }
+        )
+        .then((res) => {
+          message.success("Ajouté Aux Favoris");
+          setDisabled(true);
+        })
+        .catch((err) => {
+          message.error("Déjà ajouté aux favoris");
+        });
+    } else {
+      message.error("Veuillez vous connecter");
+    }
+  };
   const timeMenu = (date, hour, seats) => {
     return (
       <Timeline.Item>
@@ -74,7 +99,7 @@ const ProductDetail = (props) => {
   /*
   const renderCourse = () => {
     axios
-      .get(`http://localhost:8000/api-course/${coursesID}`)
+      .get()
       .then((res) => {
         setCourse(res.data);
         console.log("RES" + course);
@@ -552,7 +577,10 @@ const ProductDetail = (props) => {
                 }}
               >
                 {nombreRating} avis
-              </a>
+              </a>{" "}
+              <Button disabled={disabled} onClick={addedToWishlist}>
+                Ajouter aux favoris
+              </Button>
               <br />
               <span className="accroche" style={{ marginRight: "70px" }}>
                 {course.price}€
