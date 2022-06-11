@@ -106,7 +106,7 @@ class researchCourseList(ListCreateAPIView):
         if self.request.query_params.get('date_max') and not (self.request.query_params.get('date_min')):
             date_max = self.request.query_params.get('date_max')
             print("**********"+"date_max " + str(date_max))
-            course_list_dmax = course_list.filter(Q(date__lt=date_max))
+            course_list_dmax = course_list.filter(date=date_max)
         else:
             course_list_dmax = course_list
         if self.request.query_params.get('date_min') and not (self.request.query_params.get('date_max')):

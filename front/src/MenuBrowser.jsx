@@ -5,7 +5,12 @@ import React, {
   useEffect,
 } from "react";
 import axios from "axios";
-import { useHistory, withRouter } from "react-router-dom";
+import moment from "moment";
+import locale from "antd/es/date-picker/locale/fr_FR";
+import { ConfigProvider } from "antd";
+import frFR from "antd/lib/locale-provider/fr_FR";
+import "moment/locale/fr";
+import { useNavigate, withRouter, useSearchParams } from "react-router-dom";
 import { browserHistory } from "react-router";
 //import MediaQuery from 'react-responsive';
 import { BrowserView, MobileView } from "react-device-detect";
@@ -16,6 +21,7 @@ import {
   Input,
   AutoComplete,
   Carousel,
+  DatePicker,
   Image,
   Dropdown,
 } from "antd";
@@ -37,6 +43,8 @@ import loop from "./loop.mp4";
 import kids from "./kids.png";
 import Form from "antd/lib/form/Form";
 import Results from "./Results";
+import { typeOf } from "react-responsive";
+import { isBreakOrContinueStatement } from "typescript";
 //Panier shopping
 
 const MenuBrowser = (props) => {
@@ -45,30 +53,33 @@ const MenuBrowser = (props) => {
   const [cubConnect, setCubConnect] = useState(false);
   const [giverConnect, setGiverConnect] = useState(false);
   const [connected, setConnected] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams({});
+  const [datemax, setDatemax] = useState(null);
   const [menuConnected, setMenuConnected] = useState(null);
   useEffect(() => {
-    //setConnected(localStorage.getItem("connected") || false );
-    
-  }, []);
+    console.log("Activité " + moment(props.datemax).format("DD-MM-YYYY"));
+    setActivity(props.activity);
+    setCity(props.city);
+    setDatemax(props.datemax);
+  }, [props]);
   const menuConnexion = () => {
-    console.log("ID USERRRR "+localStorage.getItem("user_type") )
+    console.log("ID USERRRR " + localStorage.getItem("user_type"));
     if (JSON.parse(localStorage.getItem("connected"))) {
-      if (localStorage.getItem("user_type") == 2) {
+      if (localStorage.getItem("user_type") === 2) {
         return menuConnectedCub;
-      } else if (localStorage.getItem("user_type") == 3) {
+      } else if (localStorage.getItem("user_type") === 3) {
         return menuConnectedGiver;
       }
     }
   };
+
   const [city, setCity] = useState("");
 
-  let history = useHistory();
+  let history = useNavigate();
 
   let query = "";
-  const sendToPage = useCallback(
-    (query) => history.push(`/search${query}`),
-    [history]
-  );
+
+  const navigate = useNavigate();
 
   const authLogOut = () => {
     localStorage.setItem("token", null);
@@ -82,6 +93,7 @@ const MenuBrowser = (props) => {
   };
   const handleSubmit = () => {
     console.log("Received values of form: " + activity + city);
+
     //Faire en sorte, pour que ça marche, que les sub_category ne contiennent pas de mots clés similaires à category
     /*if (
       activity.includes(
@@ -101,45 +113,118 @@ const MenuBrowser = (props) => {
       ))*/
     switch (activity) {
       case "Art":
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("category", 1);
+        searchParams.delete(["sub_category"]);
         query = query + "&category=" + "1";
         break;
       case "Arts de scene":
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("category", 2);
+        searchParams.delete(["sub_category"]);
         query = query + "&category=" + "2";
         break;
       case "Loisirs creatifs":
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("category", 3);
+        searchParams.delete(["sub_category"]);
         query = query + "&category=" + "3";
         break;
       case "Culinaire":
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("category", 5);
+        searchParams.delete(["sub_category"]);
         query = query + "&category=" + "5";
         break;
       case "Culture":
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("category", 6);
+        searchParams.delete(["sub_category"]);
         query = query + "&category=" + "6";
         break;
       case "Jeux":
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("category", 9);
+        searchParams.delete(["sub_category"]);
         query = query + "&category=" + "9";
         break;
       case "Langues":
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("category", 7);
+        searchParams.delete(["sub_category"]);
         query = query + "&category=" + "7";
         break;
       case "Tours, Circuits, Expériences":
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("category", 11);
+        searchParams.delete(["sub_category"]);
         query = query + "&category=" + "11";
         break;
       case "Pro":
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("category", 4);
+        searchParams.delete(["sub_category"]);
         query = query + "&category=" + "4";
         break;
       case "Sport":
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("category", 8);
+        searchParams.delete(["sub_category"]);
         query = query + "&category=" + "8";
         break;
+      case "":
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("sub_category", "");
+        searchParams.delete(["category"]);
+        delete searchParams["category"];
+        break;
+      case undefined:
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        query = query + "&sub_category=";
+        searchParams.set("sub_category", "");
+        searchParams.delete(["category"]);
+        delete searchParams["category"];
+        break;
       default:
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("sub_category", activity);
+        searchParams.delete(["category"]);
         query = query + "&sub_category=" + activity;
+
         break;
     }
 
-    if (city !== null) {
-      query = query + "&city=" + city;
+    if (city !== null && typeof city !== "undefined") {
+      searchParams.set("city", city);
     }
-    sendToPage(query);
+    if (datemax !== null && typeof datemax !== "undefined") {
+      searchParams.set("date_max", datemax);
+    }
+    console.log("SEARCH " + searchParams);
+    //setSearchParams(searchParams);
+
+    const goToPosts = () =>
+      navigate({
+        pathname: "/search/",
+        search: `?${searchParams}`,
+      });
+    goToPosts();
+
     window.location.reload();
+
     //setValue(value);
     //console.log("query****", fieldsValue.activity);
     // let query = "";
@@ -157,10 +242,9 @@ const MenuBrowser = (props) => {
     //isVerified;
   };
   const handleMenuConnexion = (value) => {
-    if (value.key == 3) {
+    if (value.key === 3) {
       authLogOut();
       setConnected(false);
-      
     } else {
       console.log(value.key);
     }
@@ -508,7 +592,7 @@ const MenuBrowser = (props) => {
         >
           {JSON.parse(localStorage.getItem("connected")) == true ? (
             <>
-              <Dropdown overlay={()=>menuConnexion()}>
+              <Dropdown overlay={() => menuConnexion()}>
                 <Menu.Item
                   style={{ fontSize: "25px" }}
                   //onClick={() => handleClick()}
@@ -560,7 +644,11 @@ const MenuBrowser = (props) => {
 
       <div
         id="autoc"
-        style={{ position: "flex", display: "flex", justifyContent: "center" }}
+        style={{
+          position: "flex",
+          display: "flex",
+          justifyContent: "center",
+        }}
       >
         <div
           id="color"
@@ -581,8 +669,9 @@ const MenuBrowser = (props) => {
               console.log("ACTIVITYYYY2...: " + activity);
               //  handleSubmit();
             }}
+            defaultValue={props.activity}
             //prefix={props.width >= 650 ? "Quelle Expérience ?" : ""}
-            style={{ width: "40%", borderRadius: "25px", border: 0 }}
+            style={{ width: "30%", borderRadius: "25px", border: 0 }}
             options={options}
             //defaultValue={"Risotto"}
             filterOption={(inputValue, option) =>
@@ -592,7 +681,7 @@ const MenuBrowser = (props) => {
                     .indexOf(inputValue.toUpperCase()) !== -1
                 : null
             }
-            // value={value}
+
             // onChange={handleSubmit}
           >
             <Input
@@ -603,18 +692,19 @@ const MenuBrowser = (props) => {
                 border: 0,
               }}
               size="large"
+              // defaultValue={activity}
               prefix={props.width >= 650 ? "Quelle Expérience ?" : ""}
               placeholder="Parachutisme, tricot..."
             />
           </AutoComplete>
-
           <AutoComplete
             className="dashboardSearch"
             onChange={(e) => {
               setCity(e);
               console.log("City...: " + e);
             }}
-            style={{ width: "40%", border: 0 }}
+            defaultValue={props.city}
+            style={{ width: "30%", border: 0 }}
             options={options2}
             filterOption={(inputValue, option) =>
               option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
@@ -633,6 +723,36 @@ const MenuBrowser = (props) => {
               placeholder="Toulouse, Paris, Genève..."
             />
           </AutoComplete>
+          <div
+            style={{ width: "10%", paddingTop: "0.5%", fontSize: "16px" }}
+            className="dashboardSearch"
+          >
+            Quel jour?{" "}
+          </div>
+
+          <DatePicker
+            locale={locale}
+            style={{ width: "30%", paddingTop: "" }}
+            // defaultValue={}
+            placeholder={["Sélectionner le jour"]}
+            // showTime
+
+            defaultValue={props.datemax ? moment(props.datemax) : undefined}
+            format="DD-MM-YYYY"
+            onChange={(newDate) => {
+              if (newDate) {
+                console.log(
+                  moment(newDate._d, "DD-MM-YYYY").format("YYYY-MM-DD")
+                );
+                setDatemax(
+                  moment(newDate._d, "DD-MM-YYYY").format("YYYY-MM-DD")
+                );
+              } else setDatemax(undefined);
+            }}
+            //HH:mm
+            // onChange={(newDate) => setRange(newDate)}
+            //disabledDate={(d) => !d || d.isBefore(moment().add(-1, "days"))}
+          ></DatePicker>
 
           <Button
             onClick={handleSubmit}

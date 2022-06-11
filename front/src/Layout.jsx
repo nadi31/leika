@@ -1,6 +1,5 @@
 import React from "react";
 
-
 import "./style/style.css";
 import { BrowserRouter as Router } from "react-router-dom";
 import BaseRouter from "./routes";
@@ -10,18 +9,10 @@ import BaseRouter from "./routes";
 //</DeviceEmulator>
 
 function Layout() {
-
-
-  
   return (
-
-
     <Router>
-          
-            <BaseRouter />
-     
-        </Router>
-    
+      <BaseRouter />
+    </Router>
   );
 }
 

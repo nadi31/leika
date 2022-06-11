@@ -398,7 +398,7 @@ class CourseForm extends React.Component {
   ];
   category_selector = (e) => {
     console.log("valeurs de eeeeee : " + e[0]);
-    this.setState({category: e[0]});
+    this.setState({ category: e[0] });
     switch (e[0]) {
       case "arts_plastiques":
         return (
@@ -624,13 +624,13 @@ class CourseForm extends React.Component {
   //const tasks = Object.values(data.tasks);
 
   handleSubmit(fieldsValue) {
-
     const convert = (input) => {
       if (input) {
         return "True";
       } else {
         return "False";
-      }}
+      }
+    };
     console.log("FOOL");
     let date = null;
     let dateFin = null;
@@ -726,8 +726,7 @@ class CourseForm extends React.Component {
         list2: [this.state.liste_finale[0], this.state.liste_finale[1], list],
       });
     }
-   
-    
+
     // this.finale_bis(this.state.list2);
     /* ;*/
     // this.state.list2[0].map((seats, index) =>
@@ -793,7 +792,7 @@ class CourseForm extends React.Component {
     form_data.append("date", date1);
     form_data.append("hour", time1);
     form_data.append("courseHourIsCreated", convert(true));
-    form_data.append("isVerified",convert(false));
+    form_data.append("isVerified", convert(false));
     form_data.append("isDiscounted", convert(!this.state.disabled));
     form_data.append("dateFin", date2);
     form_data.append("hourFin", time2);
@@ -826,7 +825,7 @@ class CourseForm extends React.Component {
     form_data.append("age", fieldsValue.cascader_age);
     form_data.append("category", category);
     form_data.append("sub_category", fieldsValue.autocomplete);
-    form_data.append("owner",  localStorage.getItem("ID_user")); 
+    form_data.append("owner", localStorage.getItem("ID_user"));
 
     form_data.append(" courseHourIsCreated", convert(true));
     // console.log("***isIntermediate", convert(isIntermediate));

@@ -1,10 +1,10 @@
 @import "~antd/dist/antd.css";
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200;400&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Annie+Use+Your+Telescope&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Dosis:wght@200;400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Annie+Use+Your+Telescope&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Dosis:wght@300&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap");
 
 .ant-table-thead > tr > th {
   color: #616055;
@@ -17,8 +17,9 @@
   font-family: "Roboto", sans-serif;
 }
 
-#kids{font-family: 'Annie Use Your Telescope', cursive;
-font-size: 35px;
+#kids {
+  font-family: "Annie Use Your Telescope", cursive;
+  font-size: 35px;
 }
 
 .research_bar {
@@ -45,8 +46,6 @@ font-size: 35px;
 }
 .menu {
   font-family: "Dosis", sans-serif;
-
-
 }
 .menu_abt {
   font-weight: 400;
@@ -55,7 +54,7 @@ font-size: 35px;
 
 #img_logo_desktop {
   max-width: 250px;
-  
+
   max-height: 150px;
 }
 #img {
@@ -69,21 +68,17 @@ font-size: 35px;
 }
 
 .top {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
   padding-bottom: 0.5%;
   padding-top: 2%;
-  
+
   margin-left: 3.5%;
   width: 100%;
-  
 }
 
 #button_giver {
   font-family: "Dosis", sans-serif;
 }
-
-
-
 
 .div_video {
   justify-content: center;
@@ -95,33 +90,56 @@ font-size: 35px;
   width: 60%;
 }
 
-.ant-menu > .ant-menu-item{ border: none !important;}
+.ant-menu > .ant-menu-item {
+  border: none !important;
+}
 
-
-    
-  .ant-table-tbody > tr > td {
-    border-bottom: 0px ;
-    border-right: 0px;
-    border-top: 0px;
-    border-left: 0px;
-    }
+.ant-table-tbody > tr > td {
+  border-bottom: 0px;
+  border-right: 0px;
+  border-top: 0px;
+  border-left: 0px;
+}
 
 .ant-select-selector {
-border-radius: 25px;
-    }
+  border-radius: 25px;
+}
 
 .ant-select-auto-complete {
   border-radius: 25px;
-      }
- #autoc >.dashboardSearch >.ant-select-selector {
-          border-radius: 25px;
-          height: 50px;
-        }
-      
+}
+#autoc > .dashboardSearch > .ant-select-selector {
+  border-radius: 25px;
+  height: 50px;
+}
 
+#color {
+  border: 1px solid #b1afaf;
+}
 
-#color{
-
-border: 1px solid #b1afaf;
-
+.ant-card-meta-description {
+  top: "10%";
+  right: 70%;
+  /* margin-left: 90%; */
+  font-weight: 1000;
+  color: black;
+  width: 10%;
+}
+.ant-card-meta-title {
+  overflow: hidden;
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 500;
+  font-size: 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 90%;
+  margin: 0;
+  /* display: flex; */
+}
+.ant-card-meta-detail {
+  overflow: hidden;
+  display: inline-block;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 }

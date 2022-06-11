@@ -40,6 +40,7 @@ import MenuItem from "antd/lib/menu/MenuItem";
 
 const ProfilCub = (props) => {
   const [unique, setUnique] = useState([]);
+  const [resFavoris, setResFavoris] = useState([]);
   const [results, setResults] = useState(null);
   const [phone, setPhone] = useState(null);
   const [pk, setPk] = useState(null);
@@ -136,17 +137,6 @@ const ProfilCub = (props) => {
     console.log(
       "CRETA:" + localStorage.getItem("email") + " " + values.new_password
     );
-  };
-
-  const menu2 = () => {
-    if (singleDetails != []) {
-      {
-        console.log("tell me where you ve been");
-        singleDetails.map((booking) => {
-          console.log("BOOK" + JSON.stringify(booking.booking));
-        });
-      }
-    } else <p>"Pas d'achats"</p>;
   };
 
   const onFinish = (values) => {
@@ -262,6 +252,26 @@ const ProfilCub = (props) => {
       setReview(reviews.data);
 
       console.log("REVIEWS " + JSON.stringify(reviews.data));
+      const res = await axios.get(
+        `http://localhost:8000/api-course/wishlist/${pk_key}`
+      );
+
+      console.log("RESULTS REQUEST" + JSON.stringify(res.data));
+
+      await Promise.all(
+        res.data.map(async (course) => {
+          console.log("COURSE" + JSON.stringify(course.course));
+          const courseId = JSON.stringify(course.course);
+
+          const courseDetails = await axios.get(
+            `http://localhost:8000/api-course/${courseId}`
+          );
+          console.log(courseDetails.data);
+          resFavoris.push(courseDetails.data);
+
+          console.log("RESULTS " + JSON.stringify(resFavoris));
+        })
+      );
     } catch (error) {
       console.log(error);
     }
@@ -285,6 +295,7 @@ const ProfilCub = (props) => {
     console.log("PK" + pk);
     request(pk_key);
     console.log("ARRAY FINAL" + JSON.stringify(singleDetails));
+
     /*
     axios
       .get(`http://localhost:8000/api-course/cubBookings/${pk_key}`)
@@ -444,7 +455,7 @@ const ProfilCub = (props) => {
           </Menu>
           {menuKey == "3" && localStorage.getItem("ID") != null ? (
             <>
-              <Wishlist cubId={localStorage.getItem("ID")} />
+              <Wishlist results={resFavoris} />
             </>
           ) : (
             <></>

@@ -9,38 +9,11 @@ import queryString from "query-string";
 const Wishlist = (props) => {
   const [results, setResults] = useState([]);
   const [cubId, setCubId] = useState(null);
-  const [resultForm, setResultForm] = useState([]);
-  const [width, setWidth] = useState(window.innerWidth);
-  const [display, setDisplay] = useState(false);
-  function updateSize() {
-    setWidth(window.innerWidth);
-    console.log(window.innerWidth);
-  }
 
   const { Meta } = Card;
-  const request = async () => {
-    const res = await axios.get(
-      `http://localhost:8000/api-course/wishlist/${props.cubId}`
-    );
-
-    console.log("RESULTS REQUEST" + JSON.stringify(res.data));
-
-    await res.data.map(async (course) => {
-      console.log("COURSE" + JSON.stringify(course.course));
-      const courseId = JSON.stringify(course.course);
-
-      const courseDetails = await axios.get(
-        `http://localhost:8000/api-course/${courseId}`
-      );
-
-      setResults([...results, courseDetails.data]);
-    });
-    console.log(results);
-  };
 
   useEffect(() => {
-    setCubId(props.cubId);
-    request();
+    setResults(props.results);
 
     //console.log("REQUEST " + JSON.stringify(values));
     // axios.get(`http://localhost:8000/api-course/search/?&sub_category=Dessin&city=`).then((res) => {
@@ -62,11 +35,11 @@ const Wishlist = (props) => {
           marginRight: "10%",
         }}
       >
-        {results == [] ? (
+        {props.results === [] ? (
           <>Pas de favoris sauvegardés</>
         ) : (
           <>
-            {results.map(function (item) {
+            {props.results.map((item) => {
               return (
                 <>
                   <span
