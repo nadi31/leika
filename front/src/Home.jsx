@@ -25,7 +25,7 @@ import MenuBrowser from "./MenuBrowser";
 import MenuMobile from "./MenuMobile";
 import Results from "./Results";
 const Home = () => {
-  const [courseList, setCourseList] = useState(null);
+  const [courseList, setCourseList] = useState([]);
   const [results, setResults] = useState([]);
   const funcCourseList = (res) => {
     setCourseList(res.data);

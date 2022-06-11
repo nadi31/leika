@@ -45,6 +45,7 @@ import Form from "antd/lib/form/Form";
 import Results from "./Results";
 import { typeOf } from "react-responsive";
 import { isBreakOrContinueStatement } from "typescript";
+
 //Panier shopping
 
 const MenuBrowser = (props) => {
@@ -62,16 +63,6 @@ const MenuBrowser = (props) => {
     setCity(props.city);
     setDatemax(props.datemax);
   }, [props]);
-  const menuConnexion = () => {
-    console.log("ID USERRRR " + localStorage.getItem("user_type"));
-    if (JSON.parse(localStorage.getItem("connected"))) {
-      if (localStorage.getItem("user_type") === 2) {
-        return menuConnectedCub;
-      } else if (localStorage.getItem("user_type") === 3) {
-        return menuConnectedGiver;
-      }
-    }
-  };
 
   const [city, setCity] = useState("");
 
@@ -241,28 +232,26 @@ const MenuBrowser = (props) => {
     //fieldsValue.activity;
     //isVerified;
   };
-  const handleMenuConnexion = (value) => {
-    if (value.key === 3) {
+  const handleMenuConnexionCub = (value) => {
+    if (value.key === "3") {
       authLogOut();
       setConnected(false);
     } else {
       console.log(value.key);
     }
   };
-  const menuConnectedCub = (
-    <Menu onClick={handleMenuConnexion}>
-      <Menu.Item key="1">Mes commandes</Menu.Item>
-      <Menu.Item key="2">Mon profil</Menu.Item>
-      <Menu.Item key="3">Se déconnecter</Menu.Item>
-    </Menu>
-  );
-  const menuConnectedGiver = (
-    <Menu onClick={handleMenuConnexion}>
-      <Menu.Item key="1">Créer un cours</Menu.Item>
-      <Menu.Item key="2">Cours créés </Menu.Item>
-      <Menu.Item key="3">Se déconnecter</Menu.Item>
-    </Menu>
-  );
+  const handleMenuConnexionGiver = (value) => {
+    if (value.key === "3") {
+      authLogOut();
+      setConnected(false);
+    }
+    if (value.key === "1") {
+      navigate("/create");
+    } else {
+      console.log(value.key);
+    }
+  };
+
   const renderTitle = (title) => {
     return {
       value: title,
@@ -590,16 +579,38 @@ const MenuBrowser = (props) => {
           }}
           className="menu"
         >
-          {JSON.parse(localStorage.getItem("connected")) == true ? (
+          {localStorage.getItem("connected") === "true" ? (
             <>
-              <Dropdown overlay={() => menuConnexion()}>
+              <Dropdown
+                trigger={["click"]}
+                overlay={() => (
+                  <Menu>
+                    {localStorage.getItem("user_type") === "2" ? (
+                      <Menu onClick={(e) => handleMenuConnexionCub(e)}>
+                        <Menu.Item key="1">Mes commandes</Menu.Item>
+                        <Menu.Item key="2">Mon profil</Menu.Item>
+                        <Menu.Item key="3">Se déconnecter</Menu.Item>
+                      </Menu>
+                    ) : (
+                      <Menu onClick={(e) => handleMenuConnexionGiver(e)}>
+                        <Menu.Item key="1">Créer un cours</Menu.Item>
+                        <Menu.Item key="2">Cours créés </Menu.Item>
+                        <Menu.Item key="3">Se déconnecter</Menu.Item>
+                      </Menu>
+                    )}
+                  </Menu>
+                )}
+              >
                 <Menu.Item
                   style={{ fontSize: "25px" }}
                   //onClick={() => handleClick()}
                   key="connexion"
                   icon={<UserOutlined style={{ fontSize: "90%" }} />}
                 >
-                  Hello, {localStorage.getItem("first_name")}{" "}
+                  Hello{" "}
+                  {localStorage.getItem("user_type" === 2)
+                    ? ", " + localStorage.getItem("first_name")
+                    : ""}{" "}
                 </Menu.Item>
               </Dropdown>
             </>
