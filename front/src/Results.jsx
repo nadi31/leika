@@ -123,72 +123,69 @@ const Results = (props) => {
 
   return (
     <BrowserView>
-      <div key={activity}>
+      <div key={activity} style={{ width: "100%", display: "inline-block" }}>
         <MenuBrowser
           width={width}
           city={city}
           datemax={datemax}
           activity={activity}
         />
-        <div>
-          <div>
-            <div style={{ width: "20%" }}>
-              <Form>
-                <Form.Item label="Prix">
-                  {" "}
-                  <Slider
-                    range
-                    max={600}
-                    step={10}
-                    defaultValue={[0, 600]}
-                    onChange={(prix) => {
-                      onChangePrice(prix);
-                    }}
-                  />
-                </Form.Item>
+        <div style={{ width: "100%", display: "flex" }}>
+          <h4 style={{ marginTop: "1%", marginLeft: "1%" }}>Filtres</h4>
+          <Form style={{ width: "17%", marginTop: "3%", marginLeft: "1%" }}>
+            <Form.Item label="Prix">
+              {" "}
+              <Slider
+                range
+                max={600}
+                step={10}
+                defaultValue={[0, 600]}
+                onChange={(prix) => {
+                  onChangePrice(prix);
+                }}
+              />
+            </Form.Item>
 
-                <Form.Item name="seats" label="Nombre de place(s)">
-                  <InputNumber
-                    // defaultValue={this.state.courses.seats}
-                    //style={{ position: "absolute", marginLeft: 300 }}
-                    onChange={(e) => {
-                      onChangeSeats(e);
-                    }}
-                    min={0}
-                    max={10000}
-                  />
-                </Form.Item>
+            <Form.Item name="seats" label="Nombre de place(s)">
+              <InputNumber
+                // defaultValue={this.state.courses.seats}
+                //style={{ position: "absolute", marginLeft: 300 }}
+                onChange={(e) => {
+                  onChangeSeats(e);
+                }}
+                min={0}
+                max={10000}
+              />
+            </Form.Item>
 
-                <Form.Item name="cascader_age" label="Age">
-                  <Cascader
-                    // value={this.state.input}
-                    onChange={(e) => onChangeAge(e)}
-                    style={{ width: 300 }}
-                    options={age}
-                    placeholder="Sélectionner l'âge"
-                  />
-                </Form.Item>
-                <Form.Item name="cascader_level" label="Niveau">
-                  <Cascader
-                    //value={this.state.input}
-                    onChange={(e) => onChangeLevel(e)}
-                    style={{ width: 300 }}
-                    options={options}
-                    placeholder="Sélectionner le niveau"
-                  />
-                </Form.Item>
-                <Form.Item name="switch_remote" label="En ligne">
-                  <Switch onChange={(e) => onChangeRemote(e)} />
-                </Form.Item>
-
-                <Form.Item></Form.Item>
-              </Form>
-            </div>
-          </div>
+            <Form.Item name="cascader_age" label="Age">
+              <Cascader
+                // value={this.state.input}
+                onChange={(e) => onChangeAge(e)}
+                style={{ width: 300 }}
+                options={age}
+                placeholder="Sélectionner l'âge"
+              />
+            </Form.Item>
+            <Form.Item name="cascader_level" label="Niveau">
+              <Cascader
+                //value={this.state.input}
+                onChange={(e) => onChangeLevel(e)}
+                style={{ width: 300 }}
+                options={options}
+                placeholder="Sélectionner le niveau"
+              />
+            </Form.Item>
+            <Form.Item name="switch_remote" label="En ligne">
+              <Switch onChange={(e) => onChangeRemote(e)} />
+            </Form.Item>
+          </Form>
           <div
             className="top"
             style={{
               fontSize: "200%",
+              width: "70%",
+              // borderRightWidth: "thin",
             }}
           >
             Résultats de la recherche{" "}

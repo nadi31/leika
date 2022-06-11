@@ -659,6 +659,7 @@ const MenuBrowser = (props) => {
             borderRadius: "25px",
             padding: 0,
             width: "60%",
+            marginTop: "2%",
           }}
         >
           <AutoComplete
@@ -759,14 +760,17 @@ const MenuBrowser = (props) => {
             htmlType="submit"
             style={{
               border: "none",
-              width: "10%",
-              height: "100%",
+              width: "8%",
+              height: "90%",
+              padding: 0,
+              marginRight: "2%",
             }}
           >
             <SearchOutlined
               style={{
-                fontSize: props.width <= "800" ? "15px" : "30px",
+                fontSize: props.width <= "800" ? "14px" : "27px",
                 color: "#FFB319",
+                width: "50%",
               }}
             />
           </Button>
