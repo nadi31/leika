@@ -1,5 +1,6 @@
 import MenuBrowser from "./MenuBrowser";
 import Bloc from "./Bloc";
+import { useParams } from "react-router-dom";
 import * as moment from "moment";
 import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
 import {
@@ -51,11 +52,14 @@ const ProductDetail = (props) => {
   const [maxSeats, setMaxSeats] = useState(null);
   const [hourSelected, setHourSelected] = useState({});
   const [valueInput, setValueInput] = useState(1);
+  const [adress, setAdress] = useState(null);
   const [ratings, setRatings] = useState(null);
   const [comments, setComments] = useState([]);
-
+  const course_id = useParams();
+  const courseID = course_id["courseID"];
   const [disabled, setDisabled] = useState(false);
   const [nombreRating, setNombreRating] = useState(null);
+  const [giverDescription, setGiverDescription] = useState(null);
   const [a, setA] = useState([]);
   const addedToWishlist = () => {
     if (localStorage.getItem("ID") != null) {
@@ -66,7 +70,7 @@ const ProductDetail = (props) => {
           )}`,
           {
             cub: localStorage.getItem("ID_user"),
-            course: props.match.params.courseID,
+            course: courseID,
           }
         )
         .then((res) => {
@@ -289,7 +293,7 @@ const ProductDetail = (props) => {
       ),
     },
   ];
-  const courseID = props.match.params.courseID;
+  //const courseID = useParams();
   const { Step } = Steps;
   const [imagePrincipale, setImagePrincipale] = useState(kart);
   const [width, setWidth] = useState(window.innerWidth);
@@ -365,7 +369,6 @@ const ProductDetail = (props) => {
   };
 
   const requests = async () => {
-    const courseID = props.match.params.courseID;
     try {
       const res4 = await axios.get(
         `http://localhost:8000/api-course/review/course/${courseID}`
@@ -387,30 +390,40 @@ const ProductDetail = (props) => {
           "SUM " + sumRatings + "nombre " + nombreRating + " == " + division
         );
       }
-      await first_function().then(
-        console.log("COMMENTS" + JSON.stringify(comments))
-      );
+      await first_function().then(async () => {
+        console.log("COMMENTS" + JSON.stringify(comments));
 
-      const res3 = await axios.get(
-        `http://localhost:8000/api-course/hours/${courseID}`
-      );
+        const res3 = await axios.get(
+          `http://localhost:8000/api-course/hours/${courseID}`
+        );
 
-      setHours(res3.data);
-      console.log("HOURS " + hours);
-      if (hours != null) {
-        hours.map((n) => console.log(n));
-      }
-      const res = await axios.get(
-        `http://localhost:8000/api-course/${courseID}`
-      );
-      setCourse(res.data);
-      const res2 = await axios.get(
-        `http://localhost:8000/api/giver/${res.data.owner}`
-      );
+        console.log("RES 3   " + JSON.stringify(course));
+        setHours(res3.data);
+        console.log("HOURS " + hours);
+        if (hours != null) {
+          hours.map((n) => console.log(n));
+        }
+        const res = await axios.get(
+          `http://localhost:8000/api-course/${courseID}`
+        );
+        setCourse(res.data);
 
-      setGiver(res2.data);
+        const res2 = await axios.get(
+          `http://localhost:8000/api/giver/${res.data.owner}`
+        );
 
-      console.log("RES" + course);
+        setGiver(res2.data[0]);
+        setGiverDescription(res2.data[0].description);
+        console.log("GIVER " + JSON.stringify(res2.data[0].description));
+        console.log("FK " + res2.data[0].adress);
+        const res5 = await axios.get(
+          `http://localhost:8000/api/adress/${res2.data[0].adress}`
+        );
+
+        setAdress(res5.data);
+
+        console.log("RES" + JSON.stringify(adress));
+      });
 
       //setRatings(ratings );
     } catch (error) {
@@ -419,6 +432,7 @@ const ProductDetail = (props) => {
   };
 
   useEffect(() => {
+    console.log("ID " + course_id["courseID"]);
     if (!myRef.current === null) {
       executeScroll();
       update_sens();
@@ -587,13 +601,17 @@ const ProductDetail = (props) => {
               </span>
               <span>
                 <EnvironmentTwoTone twoToneColor="#02245c" />
-                134, Boulevard de la Paix
+                {adress
+                  ? adress[0].name +
+                    ", " +
+                    adress[0].zip_code +
+                    " " +
+                    adress[0].city
+                  : "chargement"}
               </span>
               <br />
               <br />
-              <span className="accroche">
-                Une ascension à plus de 1000 mètres, pour les plus témérères.
-              </span>
+              <span className="accroche">{course.accroche}</span>
               <br />
               <br />
               <span className="description">
@@ -667,9 +685,7 @@ const ProductDetail = (props) => {
           <Bloc
             yellow={true}
             height={"900px"}
-            content={
-              "On sait depuis longtemps que travailler avec du texte lisible et contenant du sens est source de d"
-            }
+            content={course.content}
             icone={
               <ExperimentTwoTone
                 twoToneColor="#ffa940"
@@ -682,9 +698,7 @@ const ProductDetail = (props) => {
           <Bloc
             yellow={true}
             height={"900px"}
-            content={
-              "On sait depuis longtemps que travailler avec du texte lisible et contenant du sens est source de d"
-            }
+            content={giverDescription}
             icone={
               <RocketTwoTone
                 twoToneColor="#ffa940"
@@ -704,9 +718,7 @@ const ProductDetail = (props) => {
         >
           <Bloc
             height={"900px"}
-            content={
-              "On sait depuis longtemps que travailler avec du texte lisible et contenant du sens est source de d"
-            }
+            content={course.aSavoir}
             icone={
               <BulbOutlined
                 twoToneColor="#ffa940"
@@ -718,9 +730,7 @@ const ProductDetail = (props) => {
           />
           <Bloc
             height={"900px"}
-            content={
-              "On sait depuis longtemps que travailler avec du texte lisible et contenant du sens est source de d"
-            }
+            content={course.annulation}
             icone={
               <InfoCircleOutlined
                 twoToneColor="#ffa940"
