@@ -25,6 +25,11 @@ urlpatterns = [
     path('review/cub/<pk>', ReviewListViewCub.as_view(),),
     path('review/giver/<pk>', ReviewListViewGiver.as_view(),),
     path('review/course/<pk>', ReviewListViewCourse.as_view(),),
+    path('giver/course/<pk>', CourseGiverView.as_view(),),
+
+
     path('wishlist/<pk>', WishlistView.as_view(),),
+
+
 ]
 #urlpatterns += router.urls

@@ -5,7 +5,7 @@ from django.db.models import Max, Min
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, ListCreateAPIView
 from courses.models import Course, CourseHour, Booking, SingleBooking
 from authentification.models import Giver, Adress
-#from .filters import DynamicSearchFilter
+# from .filters import DynamicSearchFilter
 from .serializers import *
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
@@ -13,11 +13,11 @@ from rest_framework import status, filters
 from rest_framework.views import APIView
 from rest_framework import status, permissions
 from django.db.models import Q
-#from django_filters.rest_framework import DjangoFilterBackend
+# from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import generics
 from authentification.serializers import GiverSerializer, AdressSerializer
-#from django_filters import rest_framework as filters
+# from django_filters import rest_framework as filters
 
 
 class researchCourseList(ListCreateAPIView):
@@ -31,10 +31,10 @@ class researchCourseList(ListCreateAPIView):
     serializer_class = CourseSerializer
 
     def get_queryset(self):  # new
-        #query = self.request.GET.get('q')
+        # query = self.request.GET.get('q')
         course_list = Course.objects.all()
         # SI la categorie est précisée:
-        #course_list_sub_cat = []
+        # course_list_sub_cat = []
         if self.request.query_params.get('sub_category'):
             sub_category = self.request.query_params.get('sub_category')
             print("**********"+"sub_category " + sub_category)
@@ -68,7 +68,7 @@ class researchCourseList(ListCreateAPIView):
                     print("**"+str(adress))
                     giver_list = Giver.objects.filter(
                         adress_id=adress).values_list('id')
-                    #print("GIVER"+ giver_list)
+                    # print("GIVER"+ giver_list)
                     for giver in giver_list:
                         course_list_city = Course.objects.filter(owner=giver)
                         for course in course_list_city:
@@ -152,7 +152,8 @@ class researchCourseList(ListCreateAPIView):
     print("REQ: ", self.request.GET.get('q'))
     query = self.request.GET.get('q')
     print("GET REQUEST: ", query)
-    courses = Course.objects.filter(Q(category__icontains=query) | Q(sub_category__icontains=query) | Q(isRemote=self.request.GET.get("isRemote"))).distinct()
+    courses = Course.objects.filter(Q(category__icontains=query) | Q(
+        sub_category__icontains=query) | Q(isRemote=self.request.GET.get("isRemote"))).distinct()
     print("Courses", courses)
     serial = self.get_serialized_class(query)
     print("SERIAL/ ", serial)
@@ -178,18 +179,18 @@ class researchCourseList(ListCreateAPIView):
 
 # recherche générale
 # def get(self, request, *args, **kwargs):
-#print ("RESQUEST"+ self.request.GET.get('q'))
-#q1= Course.objects.all().filter(category== self.request.GET.get('category'))
-#q2= q1.filter(category== self.request.GET.get('lieu'))
+# print ("RESQUEST"+ self.request.GET.get('q'))
+# q1= Course.objects.all().filter(category== self.request.GET.get('category'))
+# q2= q1.filter(category== self.request.GET.get('lieu'))
 
 
 class researchCourse(ListCreateAPIView):
 
     permission_classes = (permissions.AllowAny,)
     # queryset = Course.objects.all()
-    #filter_backends = (DynamicSearchFilter,)
-    #filter_backends = (filters.DjangoFilterBackend,)
-    #filterset_class = DynamicSearchFilter
+    # filter_backends = (DynamicSearchFilter,)
+    # filter_backends = (filters.DjangoFilterBackend,)
+    # filterset_class = DynamicSearchFilter
     # search_fields = ['category', 'age', 'isIntermediate', 'isAdvanced', 'isBeginner', 'category',
     #                 'sub_category', 'price', 'seats', 'isRemote', 'date', 'owner__adress__city', 'isVerified']
     queryset = Course.objects.all()
@@ -275,12 +276,26 @@ class CourseCreateView(APIView):
         if course_serializer.is_valid():
            # if request.POST['creation_front'] != True:
             course_serializer.save()
-            #course = Course.objects.filter(id=request.data.get("coursesID"))
+            # course = Course.objects.filter(id=request.data.get("coursesID"))
             # createCourseHour(course_serializer.data)
             return Response(course_serializer.data, status=status.HTTP_201_CREATED)
         else:
             print('error', course_serializer.errors)
             return Response(course_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CourseGiverView(APIView):
+    permission_classes = (permissions.AllowAny,)
+   # queryset = Course.objects.all()
+  #  serializer_class = CourseSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request, *args, **kwargs):
+
+        courses = Course.objects.filter(
+            owner=self.kwargs["pk"], isVerified=False)
+        serializer = CourseSerializer(courses, many=True)
+        return Response(serializer.data)
 
 
 class CourseUpdateView(APIView):
@@ -297,19 +312,19 @@ class CourseUpdateView(APIView):
         print("VALEUR1 ", request.data.get("value"))
         valeur = 0
         # valeur = int(request.data.get("value"))
-        print("VALEUR2 ", valeur)
+        print("VALEUR2 ", request.data.get("img1"))
         print("REQUEST : ", request.data)
         print("REQUEST : ", request.data.get("coursesID"))
         course = Course.objects.filter(id=request.data.get("coursesID"))
         course.update(title=request.data.get("title"), content=request.data.get("content"), date=request.data.get("date"), hour=request.data.get("hour"), isVerified=False, price=request.data.get("price"), isDiscounted=request.data.get("isDiscounted"), discount=request.data.get("discount"), isRemote=request.data.get("isRemote"), seats=request.data.get("seats"), dateFin=request.data.get("dateFin"), hourFin=request.data.get(
-            "hourFin"), isIntermediate=request.data.get("isIntermediate"), isBeginner=request.data.get("isBeginner"), isAdvanced=request.data.get("isAdvanced"), category=request.data.get("category"), sub_category=request.data.get("sub_category"), age=request.data.get("age"), value=valeur, date_fin=request.data.get("date_fin"), courseHourIsCreated=False)
+            "hourFin"), isIntermediate=request.data.get("isIntermediate"), isBeginner=request.data.get("isBeginner"), isAdvanced=request.data.get("isAdvanced"), category=request.data.get("category"), sub_category=request.data.get("sub_category"), age=request.data.get("age"), value=valeur, date_fin=request.data.get("date_fin"), courseHourIsCreated=False,)
         req = request.POST.copy()
         print("***REQ1: ", req)
         print("REQUEST FILES: ", request.FILES)
         obj = Course.objects.get(id=request.data.get("coursesID"))
-        os.remove(obj.thumbnail2.path)
-        os.remove(obj.thumbnail1.path)
-        os.remove(obj.thumbnail3.path)
+       # os.remove(obj.thumbnail2.path)
+       # os.remove(obj.thumbnail1.path)
+       # os.remove(obj.thumbnail3.path)
         if request.FILES != {}:
 
             if request.FILES.get("img1"):
@@ -332,7 +347,7 @@ class CourseUpdateView(APIView):
             # req.pop("img2")
             # req.pop("img3")
 
-        obj.save()
+            obj.save()
 
         serializer = CourseUpdateSerializer(data=req)
 
@@ -417,7 +432,7 @@ class SingleBookingView(ListAPIView):
         if single_serializer.is_valid():
            # if request.POST['creation_front'] != True:
             single_serializer.save()
-            #course = Course.objects.filter(id=request.data.get("coursesID"))
+            # course = Course.objects.filter(id=request.data.get("coursesID"))
             # createCourseHour(course_serializer.data)
             return Response(single_serializer.data, status=status.HTTP_201_CREATED)
         else:
@@ -529,6 +544,13 @@ class CustomHours(APIView):
         serializer = CourseHoursSerializer(courses, many=True)
         return Response(serializer.data)
 
+    def delete(self, request, *args, **kwargs):
+        print("FILTER " + self.kwargs['pk'])
+        CourseHour.objects.filter(course=self.kwargs['pk']).delete()
+        courses = CourseHour.objects.filter(course=self.kwargs['pk'])
+        serializer = CourseHoursSerializer(courses, many=True)
+        return Response(serializer.data)
+
 
 class CourseHoursCreateView(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -547,6 +569,8 @@ class CourseHoursCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
+        # Post.objects.filter(pub_date__gt=datetime.now()).delete(
+
         courseHour_serializer = CourseHoursSerializer(data=request.data)
 
         if courseHour_serializer.is_valid():
@@ -573,7 +597,7 @@ class ReviewListViewAll(APIView):
         ratingComplete = request.data
         singleBooking = SingleBooking.objects.get(
             id=request.data.get("booking"))
-        #print('single' + str(singleBooking[0].id))
+        # print('single' + str(singleBooking[0].id))
 
         cub = MyUser.objects.get(
             user_id=request.data.get("cub"))

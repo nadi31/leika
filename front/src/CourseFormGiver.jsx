@@ -667,27 +667,38 @@ class CourseForm extends React.Component {
     switch (this.state.category) {
       case "arts_plastiques":
         category = 1;
+        break;
 
       case "arts_de_scene":
         category = 2;
+        break;
       case "loisirs_creatifs":
         category = 3;
+        break;
       case "professionnel":
         category = 4;
+        break;
       case "culinaire":
         category = 5;
+        break;
       case "culture":
         category = 6;
+        break;
       case "linguistique":
         category = 7;
+        break;
       case "sport":
         category = 8;
+        break;
       case "jeux":
         category = 9;
+        break;
       case "beaute_bien_etre":
         category = 10;
+        break;
       case "tours_circuits":
         category = 11;
+        break;
 
       default:
         break;
@@ -787,8 +798,10 @@ class CourseForm extends React.Component {
     let form_data = new FormData();
     form_data.append("accroche", fieldsValue.accroche_input);
 
-    form_data.append("aSavoir", fieldsValue.annulation_input);
+    form_data.append("annulation", fieldsValue.annulation_input);
     form_data.append("aSavoir", fieldsValue.aSavoir_input);
+
+    form_data.append("content", fieldsValue.description_input);
     form_data.append("date", date1);
     form_data.append("hour", time1);
     form_data.append("courseHourIsCreated", convert(true));
@@ -814,7 +827,7 @@ class CourseForm extends React.Component {
       fieldsValue.upload.fileList[2].originFileObj.name
     );
     form_data.append("title", fieldsValue.title_input);
-    form_data.append("content", fieldsValue.content_input);
+    //form_data.append("content", fieldsValue.content_input);
     form_data.append("discount", parseFloat(this.state.discount));
     form_data.append("isRemote", convert(this.isRemote));
     form_data.append("price", parseFloat(fieldsValue.input_price));

@@ -241,12 +241,19 @@ const MenuBrowser = (props) => {
     }
   };
   const handleMenuConnexionGiver = (value) => {
-    if (value.key === "3") {
+    if (value.key === "5") {
       authLogOut();
       setConnected(false);
     }
     if (value.key === "1") {
-      navigate("/create");
+      //navigate("/create");
+      navigate("../create", { replace: true });
+    } else {
+      console.log(value.key);
+    }
+    if (value.key === "2") {
+      // navigate("");
+      navigate("../update/giver", { replace: true });
     } else {
       console.log(value.key);
     }
@@ -594,8 +601,10 @@ const MenuBrowser = (props) => {
                     ) : (
                       <Menu onClick={(e) => handleMenuConnexionGiver(e)}>
                         <Menu.Item key="1">Créer un cours</Menu.Item>
-                        <Menu.Item key="2">Cours créés </Menu.Item>
-                        <Menu.Item key="3">Se déconnecter</Menu.Item>
+                        <Menu.Item key="2">Modifier un cours </Menu.Item>
+                        <Menu.Item key="3">Mon Compte </Menu.Item>
+                        <Menu.Item key="4">Cours en ligne </Menu.Item>
+                        <Menu.Item key="5">Se déconnecter</Menu.Item>
                       </Menu>
                     )}
                   </Menu>
