@@ -1,4 +1,7 @@
+from django.http import HttpRequest
 from django.shortcuts import render
+from rest_framework.parsers import JSONParser
+import json
 from .models import MyUser, Giver, Adress, Cub
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import status, permissions
@@ -11,6 +14,33 @@ from .serializers import GiverSerializer, AdressSerializer, MyUserSerializer, Cu
 import os
 from rest_framework.generics import ListAPIView
 from rest_framework.parsers import MultiPartParser
+
+
+class AdressCreateView(APIView):
+    parser_classes = (MultiPartParser, FormParser,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, *args, **kwargs):
+
+        adress = Adress.objects.all()
+        serializer = AdressSerializer(adress, many=True)
+        #print("SERIALIZER2**", serializer)
+        res = serializer.data
+
+        return Response(res)
+
+    def post(self, request, *args, **kwargs):
+        adress_serializer = AdressSerializer(data=request.data)
+        print("REQ", request.data)
+        if adress_serializer.is_valid():
+           # if request.POST['creation_front'] != True:
+            adress_serializer.save()
+            # course = Course.objects.filter(id=request.data.get("coursesID"))
+            # createCourseHour(course_serializer.data)
+            return Response(adress_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print('error', adress_serializer.errors)
+            return Response(adress_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AdressDetailView(APIView):
@@ -66,6 +96,8 @@ class GiverDetailView(APIView):
 
     def post(self, request, pk, format='json'):
         user = Giver.objects.filter(id=self.kwargs['pk'])
+        print(request.data.get("description"))
+
         Giver.objects.filter(id=pk).update(
             description=request.data.get("description"), phone=request.data.get("phone"), appelation=request.data.get("appelation"), siret=request.data.get("siret"))
         req = request.POST.copy()
@@ -262,3 +294,66 @@ class CubUpdateMdpView(APIView):
             else:
                 print('error', user.errors)
                 return Response(user.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GiverCreateView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = (MultiPartParser, FormParser, JSONParser,)
+
+    def get(self, *args, **kwargs):
+
+        givers = Giver.objects.all()
+        serializer = GiverSerializer(givers, many=True)
+        #cub = user.cub_set.all()
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+
+        myjson = {}
+        myjson["user_type1"] = "3"
+        myjson["password"] = request.data.get("password")
+        myjson["username"] = request.data.get("username")
+        myjson["email"] = request.data.get("username")
+        #request._body = json.dumps(myjson)
+        #request.POST["user_type1"] = 3
+        print("myuser", myjson)
+        print("req", request.data)
+        myUser_serializer = MyUserSerializer(
+            data=myjson)
+        if myUser_serializer.is_valid():
+            obj = myUser_serializer.save()
+            print("REQ**", request.data)
+            req = request.data.copy()
+            print("REQ**", req)
+            del req["user"]
+            req["user"] = obj.user_id
+            #giver_serializer = GiverSerializer(data=req)
+            print("REQ", request.data)
+            Giver.objects.filter(user=obj.user_id).update(
+                description=request.data.get("description"), phone=request.data.get("phone"), appelation=request.data.get("appelation"), siret=request.data.get("siret"),  adress=request.data.get("adress"))
+            req = request.data.copy()
+            print("***REQ1: ", req)
+            if req.get("img1") != None:
+                req.pop("img1")
+                print("***REQUEST: ", request.FILES.get("img1"))
+                print("***REQ2: ", req)
+            # req.pop('img1')
+            # req.FILES.pop('img1')
+            #print("***REQ: ", req.data)
+            serializer = GiverSerializer(data=req)
+            if request.FILES.get("img1") != None:
+                # if request.data.get("img1") != None:
+                print("BGUYFHGF")
+                obj = Giver.objects.get(user=obj.user_id)
+                print("OBJECT", obj)
+                obj.img1 = request.data.get("img1")
+                obj.save()
+            if serializer.is_valid():
+                json = serializer.data
+                return Response(json, status=status.HTTP_201_CREATED)
+            else:
+                print('error', serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            print('error', myUser_serializer.errors)
+            return Response(myUser_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

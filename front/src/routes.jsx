@@ -9,6 +9,8 @@ import Results from "./Results";
 import ProfilCub from "./ProfilCub";
 import UpdateCourse from "./UpdateCourse";
 import CoursesToModify from "./CoursesToModify";
+import GiverProfil from "./GiverProfil";
+import GiverForm from "./GiverForm";
 
 const BaseRouter = () => (
   <Routes>
@@ -25,6 +27,8 @@ const BaseRouter = () => (
     />
     <Route exact path="/profil/:pk" element={<ProfilCub />} />
     <Route exact path="/update/giver" element={<CoursesToModify />} />
+    <Route exact path="/profil/giver" element={<GiverProfil />} />
+    <Route exact path="/create/giver" element={<GiverForm />} />
   </Routes>
 );
 export default BaseRouter;

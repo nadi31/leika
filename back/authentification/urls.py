@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
-from .views import ObtainTokenPairWithColorView, CustomUserCreate, GiverDetailView, AdressDetailView, MyUser, CubView, CubPhoneView, CubUpdateMdpView, CubList
+from .views import *
 urlpatterns = [
     #  path('token/obtain/', jwt_views.TokenObtainPairView.as_view(),
     #       name='token_create'),  # override sjwt stock token
@@ -14,7 +14,8 @@ urlpatterns = [
     path('cub/phone/<pk>', CubPhoneView.as_view()),
     path('cub/mdp/<pk>', CubUpdateMdpView.as_view()),
     path('cub/', CubList.as_view()),
-
+    path('create/giver', GiverCreateView.as_view()),
+    path('create/adress', AdressCreateView.as_view())
 
     #path('myUsers', MyUser.as_view()),
 
