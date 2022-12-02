@@ -1,6 +1,6 @@
 import React from "react";
 import { Image, Button, Modal, InputNumber, Input } from "antd";
-import "antd/dist/antd.css";
+//import "antd/dist/antd.css";
 import "./style/footer.css";
 import ParticleComponent from "./particules";
 import {
@@ -20,36 +20,40 @@ const Footer = (props) => {
       style={{
         position: "relative",
         width: "100%",
-        borderTop: '1px solid black',
-       display: "flex",
+        borderTop: "1px solid black",
+        display: "flex",
         margin: "30%",
-       
+
         background: "",
         margin: props.width <= 900 ? "auto" : "",
         opacity: "0.9",
       }}
     >
-       
       <div
         className="content_footer"
         style={{
-position: "relative",
-         display: "block",
+          position: "relative",
+          display: "block",
           alignSelf: props.width <= 900 ? "" : "flex-end",
           justifyContent: props.width <= 900 ? "" : "center",
-        zIndex: "-1",
-        
+          zIndex: "-1",
+
           margin: "auto",
           width: "100%",
           height: "20%",
           paddingBottom: "0px",
-      
-        
         }}
       >
-  
-        <div className="content"style={{display: props.width<=1200?"block":"flex", justifyContent: "center", zIndex:"1", width: "80%", margin: "auto"}}>
-       
+        <div
+          className="content"
+          style={{
+            display: props.width <= 1200 ? "block" : "flex",
+            justifyContent: "center",
+            zIndex: "1",
+            width: "80%",
+            margin: "auto",
+          }}
+        >
           <div
             className="about"
             style={{
@@ -153,7 +157,6 @@ position: "relative",
           />
         </div>
       </div>
-     
     </div>
   );
 };

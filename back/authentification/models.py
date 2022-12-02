@@ -1,8 +1,24 @@
 from django.db import models
 import inspect
+import requests
+from django.utils.crypto import get_random_string
 import os
-# djsr/authentication/models.py
+from rest_framework.authtoken.models import Token
+from django.http import HttpResponse, HttpRequest
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.mail import EmailMessage
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.translation import ugettext_lazy as _
+from .token import account_activation_token
 from django.contrib.auth.models import AbstractUser
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.contrib.auth import authenticate, login
+from rest_framework.response import Response
 
 # from django.contrib.auth.models import User
 
@@ -25,14 +41,17 @@ class MyUser(AbstractUser):
         (2, 'cub'),
         (3, 'giver'),
     )
+    #username = None
+    email = models.EmailField(_('email address'), unique=True)
     user_type1 = models.PositiveSmallIntegerField(
         choices=USER_TYPE_CHOICES, blank=True, null=True)
     user_id = models.AutoField(primary_key=True)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
     class Meta:
         db_table = 'MyUser'
 
-   
       #  self.password = self.set_password(password)
         # self.save()
     # def save(self, *args, **kwargs):
@@ -141,21 +160,112 @@ class Giver(models.Model):
         #print("DATA: " + json_data)
         # self.password = jwt.encode(
         # {'password': self.password},  key, algorithm="HS256")
-@ receiver(post_save, sender=MyUser)
+@receiver(post_save, sender=MyUser)
 def create_user_profile(sender, instance, created, **kwargs):
-    print("IDDDDD " + str(instance.user_id))
-    print("PAss " + str(instance.password))
-    print("JE SUIS: " + str(instance.user_type1))
-    if instance.user_type1 == 1:
-        Administrator.objects.create(user=instance)
-    elif instance.user_type1 == 2 :
-        print("ENREGISTREMENT CUBBBBBBBBB*****")
-        Cub.objects.create(user=instance)
-        print("ENREGISTREMENT CUBBBBB*" + instance.password)
-    elif instance.user_type1 == 3:
-        Giver.objects.create(user=instance)
+    if created:
+        # print('Activate your leikka account.')
 
-# send
+        # FRONTEND_URL = ('http://localhost:3000')
+        # BACKEND_URL = ('http://localhost:8000')
+        # token = get_random_string(length=32)
+        # tok = Token.objects.create(user=instance.email, key=token)
+
+        # tok.save()
+
+        # verify_link = FRONTEND_URL + '/email-verify/' + token
+        # subject, from_email, to = 'Verify Your Email', 'noreply@leikka.com', instance.email
+        # html_content = render_to_string('email.html', {
+        #                                 'verify_link': verify_link, 'base_url': FRONTEND_URL, 'backend_url': BACKEND_URL})
+        # #text_content = strip_tags(html_content)
+
+        # msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
+        # msg.attach_alternative(html_content, "text/html")
+        # msg.send()
+        # mail_subject = 'Activate your leikka account.'
+        # message = ('Hi %s,Please click on the link to confirm your registration,%s',
+        #            instance.first_name,
+        #            # 'domain': current_site.domain,
+        #            # urlsafe_base64_encode(force_bytes(instance.pk)),
+        #            account_activation_token.make_token(instance),
+        #            )
+
+        # to_email = instance.email
+
+        # print(to_email)
+        # email = EmailMessage(
+        #     mail_subject, message, to=[to_email]
+        # )
+        # try:
+        #     email.send()
+        #     print("email sent............................")
+        # # return HttpResponse('Please confirm your email address to complete the registration')
+        # except Exception as e:
+        #     print(e)
+
+        #     raise Http404
+        # or
+
+        #current_site = get_current_site(request)
+
+        print("IDDDDD " + str(instance.user_id))
+        print("PAss " + str(instance.password))
+        print("JE SUIS: " + str(instance.user_type1))
+        #token = Token.objects.create(user=instance)
+
+        if instance.user_type1 == 1:
+
+            Administrator.objects.create(user=instance)
+        elif instance.user_type1 == 2:
+            print("ENREGISTREMENT CUBBBBBBBBB*****")
+            Cub.objects.create(user=instance)
+            instance.is_active = False
+            instance.save()
+            print("ENREGISTREMENT CUBBBBB*" + instance.password)
+
+        elif instance.user_type1 == 3:
+            Giver.objects.create(user=instance)
+            instance.is_active = False
+            instance.save()
+
+
+"""else:
+        print("YOU ARE TRYING TO LOG IN")
+        user = authenticate(username=instance.email,
+                            password=instance.password)
+        #user = MyUser.objects.get(email=instance.email)
+      r = requests.post('http://localhost:8000/api/token/obtain/', data={"username": instance.email,
+                                                                           "password": instance.password})
+ print("USER", r) 
+       if r is not None:
+            print("IN***")
+
+            username = instance.email
+            password = instance.password
+            
+            newrequest = HttpRequest()
+            newrequest.method = 'POST'
+            newrequest.user = user
+            engine = import_module(settings.SESSION_ENGINE)
+            session_key = None
+            newrequest.session = engine.SessionStore(session_key)
+        if user is not None:
+            if user.is_active:
+                print("ACTIVE")
+                login(newrequest, user)
+                print("LOGED IN") """
+# Redirect to a success page.
+
+# Return a 'disabled account' error message
+""" 
+            else:
+                # Return an 'invalid login' error message.
+
+                return HttpResponse("Signed in")
+
+        else:
+            print("OUT***")
+            return HttpResponse("Not signed in") """
+
 # end
 # send
 # send

@@ -1,17 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Urbanist:wght@900&display=swap");
 
-@import url('https://fonts.googleapis.com/css2?family=Urbanist&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Urbanist&display=swap");
 
+.nom {
+  font-family: "Urbanist", sans-serif;
+  font-weight: 900;
+}
 
+.statut {
+  font-family: "Urbanist", sans-serif;
+  font-weight: 900;
+}
 
+.title {
+  font-family: "Urbanist", sans-serif;
+  font-weight: 600;
+  font-size: 19px;
+}
 
-.nom {font-family: 'Urbanist', sans-serif; font-weight: 900;} 
+.content {
+  font-family: "Urbanist", sans-serif;
+}
 
-.statut{font-family: 'Urbanist', sans-serif;font-weight: 900;} 
-
-.title{font-family: 'Urbanist', sans-serif;font-weight: 600; font-size: 19px;}
-
-.content{font-family: 'Urbanist', sans-serif;}
-
-
-.date{font-family: 'Urbanist', sans-serif;}
+.date {
+  font-family: "Urbanist", sans-serif;
+}

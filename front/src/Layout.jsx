@@ -1,8 +1,10 @@
 import React from "react";
-
+import { CookiesProvider } from "react-cookie";
 import "./style/style.css";
 import { BrowserRouter as Router } from "react-router-dom";
 import BaseRouter from "./routes";
+import "antd/dist/reset.css";
+
 //import DeviceEmulator from 'react-device-emulator';
 
 // <DeviceEmulator withDeviceSwitch withRotator>
@@ -11,7 +13,9 @@ import BaseRouter from "./routes";
 function Layout() {
   return (
     <Router>
-      <BaseRouter />
+      <CookiesProvider>
+        <BaseRouter />
+      </CookiesProvider>
     </Router>
   );
 }

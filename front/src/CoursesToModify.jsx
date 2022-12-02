@@ -99,10 +99,16 @@ const CoursesToModify = (props) => {
   useEffect(() => {
     localStorage.getItem("ID_user")
       ? axios
+
           .get(
             `http://localhost:8000/api-course/giver/course/${localStorage.getItem(
               "ID_user"
-            )}`
+            )}`,
+            {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
           )
           .then((res) => {
             console.log("RESULTS REQUEST" + JSON.stringify(res.data));

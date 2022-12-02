@@ -1,7 +1,7 @@
 import React from "react";
 //this is important
 import axios from "axios";
-
+import dayjs from "dayjs";
 import MenuBrowser from "./MenuBrowser";
 import MenuMobile from "./MenuMobile";
 import Footer from "./Footer";
@@ -34,7 +34,7 @@ import {
 
 import * as moment from "moment";
 
-import Password from "antd/lib/input/Password";
+//import Password from "antd/lib/input/Password";
 
 const { RangePicker } = DatePicker;
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
@@ -177,7 +177,7 @@ class CourseForm extends React.Component {
     },
   };*/
 
-  period = (date_min, date_max, frequence) => {
+  period = (date_min, date_max, date_maxx, frequence) => {
     let list_d1 = [];
     let list_d2 = [];
     let date_inter = "";
@@ -186,16 +186,19 @@ class CourseForm extends React.Component {
     let list_finale = [];
     switch (frequence) {
       case 1:
-        let d1 = moment(date_max).diff(date_min[0]._d, "days");
-        diff_date = moment(date_min[1]._d).diff(date_min[0]._d, "days");
+        console.log("****" + date_min + date_max + date_maxx);
+        let d1 = dayjs(date_maxx).diff(date_min, "day");
+        //diff_date = dayjs(date_).diff(date_min, "day");
         console.log("d1", d1);
         for (let i = 1; i <= d1; i++) {
-          date_inter = moment(date_min[0]._d).add(i, "days");
-          date_fin = moment(date_inter).add(diff_date, "days");
-          list_d1.push(date_inter._d);
-          list_d2.push(date_fin._d);
+          let date1 = dayjs(date_min).add(i, "day");
+          let date2 = dayjs(date_max).add(d1 + i, "day");
+          console.log("date inter " + date1);
+          console.log("date inter " + date2);
+          list_d1.push(date1);
+          list_d2.push(date2);
 
-          console.log("i", i);
+          // console.log("i", i);
         }
         //return list;
         list_d1.map((date, index) => console.log("liste1", index, date));
@@ -207,15 +210,15 @@ class CourseForm extends React.Component {
 
       case 2:
         console.log("2");
-        let d2 = moment(date_max).diff(date_min[0]._d, "weeks");
-        diff_date = moment(date_min[1]._d).diff(date_min[0]._d, "days");
+        let d2 = dayjs(date_maxx).diff(date_min, "week");
+        diff_date = dayjs(date_max).diff(date_min, "day");
         console.log("diff", diff_date);
         console.log("d2", d2);
         for (let i = 1; i <= d2; i++) {
-          date_inter = moment(date_min[0]._d).add(i, "weeks");
-          date_fin = moment(date_inter).add(diff_date, "days");
-          list_d1.push(date_inter._d);
-          list_d2.push(date_fin._d);
+          date_inter = dayjs(date_min).add(i, "week");
+          date_fin = dayjs(date_inter).add(diff_date, "day");
+          list_d1.push(date_inter);
+          list_d2.push(date_fin);
           console.log("i", i);
         }
         //return list;
@@ -226,13 +229,13 @@ class CourseForm extends React.Component {
         return list_finale;
 
       case 3:
-        let d3 = moment(date_max).diff(date_min[0]._d, "months");
-        diff_date = moment(date_min[1]._d).diff(date_min[0]._d, "days");
+        let d3 = dayjs(date_maxx).diff(date_min, "month");
+        diff_date = dayjs(date_min).diff(date_min, "day");
         for (let i = 1; i <= d3; i++) {
-          date_inter = moment(date_min[0]._d).add(i, "months");
-          date_fin = moment(date_inter).add(diff_date, "days");
-          list_d1.push(date_inter._d);
-          list_d2.push(date_fin._d);
+          date_inter = dayjs(date_min).add(i, "month");
+          date_fin = dayjs(date_inter).add(diff_date, "day");
+          list_d1.push(date_inter);
+          list_d2.push(date_fin);
           console.log("i", i);
         }
         //return list;
@@ -624,6 +627,8 @@ class CourseForm extends React.Component {
   //const tasks = Object.values(data.tasks);
 
   handleSubmit(fieldsValue) {
+    console.log("MOMENT " + fieldsValue["time_picker_b"].format("HH:mm"));
+    console.log("DATE1 " + fieldsValue["range_date"][0].format("YYYY-MM-DD"));
     const convert = (input) => {
       if (input) {
         return "True";
@@ -636,32 +641,23 @@ class CourseForm extends React.Component {
     let dateFin = null;
     let hour = null;
     let hourFin = null;
+
     if (fieldsValue.range_date === undefined) {
       date = this.state.courses.date;
       dateFin = this.state.courses.dateFin;
     } else {
-      date = moment(fieldsValue.range_date[0]._d, "DD-MM-YYYY").format(
-        "YYYY-MM-DD"
-      );
-      dateFin = moment(fieldsValue.range_date[1]._d, "DD-MM-YYYY").format(
-        "YYYY-MM-DD"
-      );
+      date = fieldsValue["range_date"][0].format("YYYY-MM-DD");
+      dateFin = fieldsValue["range_date"][1].format("YYYY-MM-DD");
     }
     if (fieldsValue.time_picker_b === undefined) {
       hour = this.state.courses.hour;
     } else {
-      hour = moment(fieldsValue.time_picker_b._d.toLocaleTimeString())
-        ._i.split(":")
-        .slice(0, -1)
-        .join(":");
+      hour = fieldsValue["time_picker_b"].format("HH:mm");
     }
     if (fieldsValue.time_picker_e === undefined) {
       hourFin = this.state.courses.hourFin;
     } else {
-      hourFin = moment(fieldsValue.time_picker_e._d.toLocaleTimeString())
-        ._i.split(":")
-        .slice(0, -1)
-        .join(":");
+      hourFin = fieldsValue["time_picker_b"].format("HH:mm");
     }
     let category = 0;
     switch (this.state.category) {
@@ -720,11 +716,11 @@ class CourseForm extends React.Component {
       //data= [...state.addedItems,{course:  action.course, quantity: 1, date: action.date}]
       this.state.liste_finale[0].map((date_debut, index1) =>
         Object.entries(this.state.list_seats).map(([key, value]) =>
-          moment(date_debut).format("DD/MM/YYYY") == key
+          dayjs(date_debut, "DD/MM/YYYY").format("DD/MM/YYYY") == key
             ? (list[index1] = value)
             : console.log(
                 "AFFICHER LA DATE 1: " +
-                  moment(date_debut).format("DD/MM/YYYY") +
+                  dayjs(date_debut, "DD/MM/YYYY").format("DD/MM/YYYY") +
                   "DATE 2: " +
                   key
               )
@@ -744,10 +740,7 @@ class CourseForm extends React.Component {
     //  console.log("LIST 2", index, seats)
     //);
     console.log("remote ", this.isRemote);
-    console.log(
-      "date_fin:",
-      moment(fieldsValue.range_date[1]._d, "DD-MM-YYYY").format("YYYY-MM-DD")
-    );
+    console.log("date_fin:", fieldsValue["range_date"][1].format("YYYY-MM-DD"));
 
     //moment(fieldsValue.range_date[0]._d.toLocaleDateString())
     //.format("YYYY/MM/DD")
@@ -761,35 +754,25 @@ class CourseForm extends React.Component {
       this.state.is_intermediate,
       this.state.is_avanced
     );
-    console.log(
-      "time",
-      moment(fieldsValue.time_picker_b._d.toLocaleTimeString())
-        ._i.split(":")
-        .slice(0, -1)
-    );
+
     console.log("PRICE", parseFloat(fieldsValue.input_price));
     console.log("DISOCUNT");
-    const time1 = moment(fieldsValue.time_picker_b._d.toLocaleTimeString())
-      ._i.split(":")
-      .slice(0, -1)
-      .join(":");
-    const time2 = moment(fieldsValue.time_picker_e._d.toLocaleTimeString())
-      ._i.split(":")
-      .slice(0, -1)
-      .join(":");
-    const date1 = moment(fieldsValue.range_date[0]._d, "DD-MM-YYYY").format(
-      "YYYY-MM-DD"
-    );
-    const date2 = moment(fieldsValue.range_date[1]._d, "DD-MM-YYYY").format(
-      "YYYY-MM-DD"
-    );
+    const time1 = fieldsValue["time_picker_b"].format("HH:mm");
+
+    const time2 = fieldsValue["time_picker_e"].format("HH:mm");
+
+    const date1 = fieldsValue["range_date"][0].format("YYYY-MM-DD");
+    const date2 = fieldsValue["range_date"][1].format("YYYY-MM-DD");
     const date3 = (date2, date_selected) => {
       if (date_selected == "") {
-        console.log("DATE3333", date2);
+        console.log(
+          "DATE3333",
+          dayjs(date2, "DD/MM/YYYY").format("YYYY-MM-DD")
+        );
         return date2;
       } else {
         console.log("DATE3", typeof this.state.date_selected);
-        return moment(date_selected, "DD-MM-YYYY").format("YYYY-MM-DD");
+        return dayjs(date_selected).format("YYYY-MM-DD");
       }
     };
     console.log("USER: " + this.state.ID_user);
@@ -846,7 +829,10 @@ class CourseForm extends React.Component {
     // console.log("***isAdvanced", convert(isAdvanced));
     axios
       .post("http://localhost:8000/api-course/create/course/api/", form_data, {
-        headers: { "content-type": "multipart/form-data" },
+        headers: {
+          "content-type": "multipart/form-data",
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
       })
       .then((res) => {
         localStorage.setItem("course_id", res.data.id);
@@ -854,7 +840,7 @@ class CourseForm extends React.Component {
         console.log("cours_ID", res.data.id);
 
         //dispatch(courseHoursAdded( res.data.id), date, dateFin, hour, hourFin);
-        console.log("VALUE", this.state.value);
+        console.log("VALUE", this.state.list2[0].length);
         if (this.state.value > 0) {
           for (
             let iteration_list1 = 0;
@@ -866,23 +852,28 @@ class CourseForm extends React.Component {
             form.append("course", res.data.id);
             form.append(
               "date",
-              moment(this.state.list2[0][iteration_list1], "DD-MM-YYYY").format(
+              dayjs(this.state.list2[0][iteration_list1], "DD-MM-YYYY").format(
                 "YYYY-MM-DD"
               )
             );
             form.append(
               "dateFin",
-              moment(this.state.list2[1][iteration_list1], "DD-MM-YYYY").format(
+              dayjs(this.state.list2[1][iteration_list1], "DD-MM-YYYY").format(
                 "YYYY-MM-DD"
               )
             );
             form.append("hour", time1);
             form.append("hourFin", time2);
-
+            console.log(
+              "SEATS*** " + parseFloat(this.state.list2[2][iteration_list1])
+            );
             form.append("seats", this.state.list2[2][iteration_list1]);
             axios
               .post("http://localhost:8000/api-course/create/hours/", form, {
-                headers: { "content-type": "multipart/form-data" },
+                headers: {
+                  "content-type": "multipart/form-data",
+                  Authorization: "Bearer " + localStorage.getItem("token"),
+                },
               })
               .then((res1) => {})
               .catch((err) => {
@@ -913,7 +904,11 @@ class CourseForm extends React.Component {
         form.append("seats", this.state.seats);
         axios
           .post("http://localhost:8000/api-course/create/hours/", form, {
-            headers: { "content-type": "multipart/form-data" },
+            headers: {
+              "content-type": "multipart/form-data",
+
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
           })
           .then((res2) => {})
           .catch((err1) => {
@@ -1253,7 +1248,13 @@ class CourseForm extends React.Component {
                   },
                 ]}
               >
-                <TimePicker format="HH:mm" placeholder="Heure de début" />
+                <TimePicker
+                  format="HH:mm"
+                  placeholder="Heure de début"
+                  onChange={(e) => {
+                    console.log(e);
+                  }}
+                />
               </Form.Item>
               <Form.Item
                 label="Heure de fin"
@@ -1323,12 +1324,17 @@ class CourseForm extends React.Component {
                     onClick={() => {
                       this.setState({
                         liste_finale: this.period(
-                          this.state.date,
-                          this.state.date_selected,
+                          this.state.date[0].format("YYYY-MM-DD"),
+                          this.state.date[1].format("YYYY-MM-DD"),
+                          this.state.date_selected.format("YYYY-MM-DD"),
                           this.state.value
                         ),
                         visibl: true,
                       });
+                      console.log(
+                        "**************" +
+                          this.state.date_selected.format("YYYY-MM-DD")
+                      );
                     }}
                   >
                     Valider
@@ -1391,9 +1397,8 @@ class CourseForm extends React.Component {
                   <div>
                     {this.state.liste_finale[0].map(
                       (date1, index1) => (
-                        (this.state.list_seats[
-                          moment(date1).format("DD/MM/YYYY")
-                        ] = this.state.selectedValue),
+                        (this.state.list_seats[date1.format("DD/MM/YYYY")] =
+                          this.state.selectedValue),
                         (
                           //this.state.liste_finale[1].map((date2, index2) => (
                           <div key={"div_" + index1}>
@@ -1403,11 +1408,11 @@ class CourseForm extends React.Component {
                               }}
                             >
                               {"Du " +
-                                moment(date1).format("DD/MM/YYYY") +
+                                date1.format("DD/MM/YYYY") +
                                 " au " +
-                                moment(
-                                  this.state.liste_finale[1][index1]
-                                ).format("DD/MM/YYYY")}
+                                this.state.liste_finale[1][index1].format(
+                                  "DD/MM/YYYY"
+                                )}
 
                               <Form.Item
                                 key={index1}

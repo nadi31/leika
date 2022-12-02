@@ -5,6 +5,8 @@ from django.db.models import Max, Min
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, ListCreateAPIView
 from courses.models import Course, CourseHour, Booking, SingleBooking
 from authentification.models import Giver, Adress
+from authentification.permissions import *
+from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 # from .filters import DynamicSearchFilter
 from .serializers import *
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -16,6 +18,7 @@ from django.db.models import Q
 # from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import generics
+from authentification.perm import GiverAdminOrReadOnlyCourses
 from authentification.serializers import GiverSerializer, AdressSerializer
 # from django_filters import rest_framework as filters
 
@@ -234,7 +237,7 @@ class CourseListView(ListAPIView):
 
 class CourseListGiverView(ListAPIView):
 
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsAdminOrSuperUser, IsGiver,)
     queryset = Course.objects.all()
    # serializer_class = CourseSerializer
 
@@ -247,7 +250,7 @@ class CourseListGiverView(ListAPIView):
 
 class CourseListGiverCubView(ListAPIView):
 
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsAdminOrSuperUser, IsGiver,)
     queryset = Course.objects.all()
    # serializer_class = CourseSerializer
 
@@ -260,10 +263,10 @@ class CourseListGiverCubView(ListAPIView):
 
 
 class CourseCreateView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsGiver,)
    # queryset = Course.objects.all()
   #  serializer_class = CourseSerializer
-    parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
 
     def get(self, request, *args, **kwargs):
         courses = Course.objects.all()
@@ -285,7 +288,7 @@ class CourseCreateView(APIView):
 
 
 class CourseGiverView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsAll,)
    # queryset = Course.objects.all()
   #  serializer_class = CourseSerializer
     parser_classes = (MultiPartParser, FormParser)
@@ -296,6 +299,90 @@ class CourseGiverView(APIView):
             owner=self.kwargs["pk"], isVerified=False)
         serializer = CourseSerializer(courses, many=True)
         return Response(serializer.data)
+
+
+class CourseGiveOnlineView(APIView):
+    permission_classes = (IsAll,)
+   # queryset = Course.objects.all()
+  #  serializer_class = CourseSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request, *args, **kwargs):
+
+        courses = Course.objects.filter(
+            owner=self.kwargs["pk"], isVerified=True)
+        serializer = CourseSerializer(courses, many=True)
+        return Response(serializer.data)
+
+
+class CourseAdminOnlineView(APIView):
+    permission_classes = (IsAdminOrSuperUser,)
+   # queryset = Course.objects.all()
+  #  serializer_class = CourseSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request, *args, **kwargs):
+
+        courses = Course.objects.filter(
+            isVerified=False)
+        serializer = CourseSerializer(courses, many=True)
+        return Response(serializer.data)
+
+
+class CourseUpdateAdminVerifyView(APIView):
+    permission_classes = (IsAdminOrSuperUser,)
+
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self,  request, pk, format='json'):
+        print("VALEUR1 ", request.data.get("value"))
+        valeur = 0
+        # valeur = int(request.data.get("value"))
+        print("VALEUR2 ", request.data.get("img1"))
+        print("REQUEST : ", request.data)
+        print("REQUEST : ", request.data.get("coursesID"))
+        course = Course.objects.filter(id=request.data.get("coursesID"))
+        course.update(title=request.data.get("title"), content=request.data.get("content"), date=request.data.get("date"), hour=request.data.get("hour"), isVerified=True, price=request.data.get("price"), isDiscounted=request.data.get("isDiscounted"), discount=request.data.get("discount"), isRemote=request.data.get("isRemote"), seats=request.data.get("seats"), dateFin=request.data.get("dateFin"), hourFin=request.data.get(
+            "hourFin"), isIntermediate=request.data.get("isIntermediate"), isBeginner=request.data.get("isBeginner"), isAdvanced=request.data.get("isAdvanced"), category=request.data.get("category"), sub_category=request.data.get("sub_category"), age=request.data.get("age"), value=valeur, date_fin=request.data.get("date_fin"), courseHourIsCreated=False,)
+        req = request.POST.copy()
+        print("***REQ1: ", req)
+        print("REQUEST FILES: ", request.FILES)
+        obj = Course.objects.get(id=request.data.get("coursesID"))
+       # os.remove(obj.thumbnail2.path)
+       # os.remove(obj.thumbnail1.path)
+       # os.remove(obj.thumbnail3.path)
+        if request.FILES != {}:
+
+            if request.FILES.get("img1"):
+
+                os.remove(obj.img1.path)
+
+                obj.img1 = request.FILES.get("img1")
+            if request.FILES.get("img2"):
+
+                os.remove(obj.img2.path)
+
+                obj.img2 = request.FILES.get("img2")
+            if request.FILES.get("img3"):
+
+                os.remove(obj.img3.path)
+
+                obj.img3 = request.FILES.get("img3")
+
+            # req.pop("img1")
+            # req.pop("img2")
+            # req.pop("img3")
+
+            obj.save()
+
+        serializer = CourseUpdateSerializer(data=req)
+
+        if serializer.is_valid():
+            json = serializer.data
+            return Response(json, status=status.HTTP_201_CREATED)
+        else:
+            print('error', serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CourseUpdateView(APIView):
@@ -384,7 +471,7 @@ class CourseUpdateView(APIView):
 
 
 class CourseDetailView(RetrieveAPIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsAll,)
 
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
@@ -417,7 +504,8 @@ class CourseDetailView(RetrieveAPIView):
 
 class SingleBookingView(ListAPIView):
 
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsAdminOrSuperUser,)
+    #permission_classes = (permissions.is_authenticated)
     queryset = SingleBooking.objects.all()
     serializer_class = SingleBookingSerializer
 
@@ -441,7 +529,7 @@ class SingleBookingView(ListAPIView):
 
 
 class BookingView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsAdminOrSuperUser,)
    # serializer_class = CourseHoursSerializer
 
     def get(self, request, *args, **kwargs):
@@ -499,7 +587,7 @@ class BookingView(APIView):
 
 class BookingCubView(APIView):
     model = Booking
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsCub,)
    # serializer_class = CourseHoursSerializer
 
     def get(self, request, *args, **kwargs):
@@ -515,7 +603,7 @@ class BookingCubView(APIView):
 
 class SingleBookingCubView(APIView):
     model = SingleBooking
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsCub,)
    # serializer_class = CourseHoursSerializer
 
     def get(self, request, *args, **kwargs):
@@ -553,7 +641,7 @@ class CustomHours(APIView):
 
 
 class CourseHoursCreateView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsGiver,)
    # queryset = Course.objects.all()
   #  serializer_class = CourseSerializer
     parser_classes = (MultiPartParser, FormParser)
@@ -583,7 +671,7 @@ class CourseHoursCreateView(APIView):
 
 class ReviewListViewAll(APIView):
 
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsCub,)
     parser_classes = [JSONParser]
 
     def get(self, request, *args, **kwargs):
@@ -690,3 +778,12 @@ class WishlistView(APIView):
         else:
             print('error', serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kargs):
+
+        wishL = Wishlist.objects.get(id=self.kwargs['pk'])
+
+        #wishLToDelete = Wishlist.objects.get(id=request.data.get("id"))
+        wishL.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

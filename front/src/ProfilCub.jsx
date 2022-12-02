@@ -36,7 +36,7 @@ import axios from "axios";
 import Wishlist from "./Wishlist";
 import Footer from "./Footer";
 import imgCub from "./cub_menu3.gif";
-import MenuItem from "antd/lib/menu/MenuItem";
+//import MenuItem from "antd/lib/menu/MenuItem";
 
 const ProfilCub = (props) => {
   const [unique, setUnique] = useState([]);
@@ -74,15 +74,24 @@ const ProfilCub = (props) => {
     console.log(rating);
 
     axios
-      .post("http://localhost:8000/api-course/review/", {
-        note: rating,
-        commentOn: true,
-        comment_cub: values.commentaire,
-        cub: pk,
-        booking: bookingRating,
-        course: courseRating,
-        titre: values.titre,
-      })
+      .post(
+        "http://localhost:8000/api-course/review/",
+        {
+          note: rating,
+          commentOn: true,
+          comment_cub: values.commentaire,
+          cub: pk,
+          booking: bookingRating,
+          course: courseRating,
+          titre: values.titre,
+        },
+
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      )
       .then((res) => {
         console.log("REGISTRATION LOG: " + JSON.stringify(res.data));
         setIsModalVisible(false);
@@ -113,7 +122,7 @@ const ProfilCub = (props) => {
     });
     axiosInstance
       .post("token/obtain/", {
-        username: localStorage.getItem("email"),
+        email: localStorage.getItem("email"),
         password: values.password,
       })
       .then((res) => {
@@ -124,6 +133,11 @@ const ProfilCub = (props) => {
               username: localStorage.getItem("email"),
 
               password: values.new_password,
+            },
+            {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
             }
           )
           .then((res) => {
@@ -150,7 +164,10 @@ const ProfilCub = (props) => {
     // console.log("***isAdvanced", convert(isAdvanced));
     axios
       .post(`http://localhost:8000/api/cub/${pk}`, form_data, {
-        headers: { "content-type": "multipart/form-data" },
+        headers: {
+          "content-type": "multipart/form-data",
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
       })
       .then((res) => {
         console.log("cours_ID", res.data.id);
@@ -199,9 +216,13 @@ const ProfilCub = (props) => {
     try {
       let singleDetail = [];
       const firstResponse = await axios.get(
-        `http://localhost:8000/api-course/cubBookings/${pk_key}`
+        `http://localhost:8000/api-course/cubBookings/${pk_key}`,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
       );
-
       await Promise.all(
         firstResponse.data.map(async (book) => {
           const booking = JSON.stringify(book.id);
@@ -209,7 +230,12 @@ const ProfilCub = (props) => {
           const dateHour = JSON.stringify(book.dateHour);
           console.log("REF" + JSON.stringify(book));
           const secondResponse = await axios.get(
-            `http://localhost:8000/api-course/cubSingleBookings/${booking}`
+            `http://localhost:8000/api-course/cubSingleBookings/${booking}`,
+            {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
           );
 
           await Promise.all(
@@ -247,13 +273,23 @@ const ProfilCub = (props) => {
       await first_function().then(console.log("COMPLETE***" + unique));
 
       const reviews = await axios.get(
-        `http://localhost:8000/api-course/review/cub/${pk_key}`
+        `http://localhost:8000/api-course/review/cub/${pk_key}`,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
       );
       setReview(reviews.data);
 
       console.log("REVIEWS " + JSON.stringify(reviews.data));
       const res = await axios.get(
-        `http://localhost:8000/api-course/wishlist/${pk_key}`
+        `http://localhost:8000/api-course/wishlist/${pk_key}`,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
       );
 
       console.log("RESULTS REQUEST" + JSON.stringify(res.data));
@@ -264,7 +300,12 @@ const ProfilCub = (props) => {
           const courseId = JSON.stringify(course.course);
 
           const courseDetails = await axios.get(
-            `http://localhost:8000/api-course/${courseId}`
+            `http://localhost:8000/api-course/${courseId}`,
+            {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
           );
           console.log(courseDetails.data);
           resFavoris.push(courseDetails.data);
@@ -283,15 +324,15 @@ const ProfilCub = (props) => {
   };
 
   useEffect(() => {
-    console.log("REQUEST1 " + props.params);
+    console.log("REQUEST1 " + localStorage.getItem("ID"));
 
     //const { location: { search } } = props;
     //const values = queryString.parse(search);
 
     window.addEventListener("resize", updateSize);
     //window.addEventListener("resize", update_sens);
-    const pk_key = props.match.params.pk;
-    setPk(props.match.params.pk);
+    const pk_key = localStorage.getItem("ID");
+    setPk(localStorage.getItem("ID"));
     console.log("PK" + pk);
     request(pk_key);
     console.log("ARRAY FINAL" + JSON.stringify(singleDetails));
@@ -348,10 +389,18 @@ const ProfilCub = (props) => {
     //console.log("COURSE" + JSON.stringify(res.data));
 */
     axios
-      .get(`http://localhost:8000/api/cub/${pk_key}`)
+      .get(`http://localhost:8000/api/cub/${pk_key}`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      })
       .then((res) => {
         axios
-          .get(`http://localhost:8000/api/cub/phone/${pk_key}`)
+          .get(`http://localhost:8000/api/cub/phone/${pk_key}`, {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          })
           .then((resPhone) => {
             setPhone(resPhone.data[0].phone);
             console.log("PHONE" + JSON.stringify(phone));

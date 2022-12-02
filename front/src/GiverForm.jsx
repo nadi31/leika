@@ -65,7 +65,10 @@ const GiverForm = (props) => {
     console.log(values);
     axios
       .post(`http://localhost:8000/api/create/adress`, form, {
-        headers: { "content-type": "multipart/form-data" },
+        headers: {
+          "content-type": "multipart/form-data",
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
       })
       .then((res) => {
         console.log("RES" + JSON.stringify(res["data"]["id"]));
@@ -89,7 +92,10 @@ const GiverForm = (props) => {
         }
         axios
           .post(`http://localhost:8000/api/create/giver`, form_data, {
-            headers: { "content-type": "multipart/form-data" },
+            headers: {
+              "content-type": "multipart/form-data",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
           })
           .then((res) => {
             message.success("Profil créé avec succès", 10);

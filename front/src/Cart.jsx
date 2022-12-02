@@ -1,6 +1,6 @@
 import React, { useState, useLayoutEffect, useEffect } from "react";
 import { Image, Button, Modal, InputNumber, message } from "antd";
-import "antd/dist/antd.css";
+//import "antd/dist/antd.css";
 import {
   ShoppingCartOutlined,
   DeleteOutlined,
@@ -283,16 +283,16 @@ const Cart = (props) => {
           </h2>
 
           <div>
-            {
-            JSON.parse(localStorage.getItem("cart")||"[]").length> 0? (<>
-              <Table
-                bordered={false}
-                showHeader={false}
-                columns={columns}
-                dataSource={data}
-                pagination={false}
-                scroll={{ x: 400, y: 500 }}
-                /*summary={(pageData) => {
+            {JSON.parse(localStorage.getItem("cart") || "[]").length > 0 ? (
+              <>
+                <Table
+                  bordered={false}
+                  showHeader={false}
+                  columns={columns}
+                  dataSource={data}
+                  pagination={false}
+                  scroll={{ x: 400, y: 500 }}
+                  /*summary={(pageData) => {
                 let totalPrice = 0;
 
                 pageData.forEach(({ price }) => {
@@ -312,31 +312,29 @@ const Cart = (props) => {
                   </>
                 );
               }}*/
-              /> <br />
-
-              <Button
-                id="payer"
-                onClick={() => {
-                  refactorizedData();
-                }}
-                style={{
-                  borderRadius: "25px",
-                  left: "70%",
-                  width: "30%",
-                  backgroundColor: "#ffd04f",
-                }}
-              >
-                Payer{" "}
-                <ShoppingCartOutlined
-                  style={{ color: "#eb0a0c", fontSize: "bold" }}
-                />
-              </Button></>
+                />{" "}
+                <br />
+                <Button
+                  id="payer"
+                  onClick={() => {
+                    refactorizedData();
+                  }}
+                  style={{
+                    borderRadius: "25px",
+                    left: "70%",
+                    width: "30%",
+                    backgroundColor: "#ffd04f",
+                  }}
+                >
+                  Payer{" "}
+                  <ShoppingCartOutlined
+                    style={{ color: "#eb0a0c", fontSize: "bold" }}
+                  />
+                </Button>
+              </>
             ) : (
-             <div> Votre panier est vide.</div>
-             
+              <div> Votre panier est vide.</div>
             )}
-
-           
           </div>
         </div>
       </Modal>

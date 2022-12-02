@@ -11,6 +11,7 @@ urlpatterns = [
     path('<pk>', CourseDetailView.as_view()),
     path('update/<pk>', CourseUpdateView.as_view()),
     # path(PicView.urlImage, PicView.as_view()),
+    path('update/verify/admin/<pk>', CourseUpdateAdminVerifyView.as_view()),
     path('create/hours/', CourseHoursCreateView.as_view()),
     path('hours/<pk>', CustomHours.as_view()),
     path('giver/cours/<pk>', CourseListGiverView.as_view()),
@@ -26,8 +27,8 @@ urlpatterns = [
     path('review/giver/<pk>', ReviewListViewGiver.as_view(),),
     path('review/course/<pk>', ReviewListViewCourse.as_view(),),
     path('giver/course/<pk>', CourseGiverView.as_view(),),
-
-
+    path('giver/online/course/<pk>', CourseGiveOnlineView.as_view(),),
+    path('admin/course/verify/', CourseAdminOnlineView.as_view(),),
     path('wishlist/<pk>', WishlistView.as_view(),),
 
 

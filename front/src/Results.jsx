@@ -24,7 +24,7 @@ const Results = (props) => {
   const [range, setRange] = useState(null);
   const [resFilters, setResFilters] = useState(null);
   const [prix, setPrix] = useState(null);
-  const [seats, setSeats] = useState(null);
+  const [seats, setSeats] = useState(1);
   const [filters, setFilters] = useState(false);
   const [prix_min, setPrix_min] = useState(null);
   const [prix_max, setPrix_max] = useState(null);
@@ -35,6 +35,133 @@ const Results = (props) => {
   const [city, setCity] = useState(null);
   const [datemax, setDatemax] = useState(null);
   const [state, setState] = useState(null);
+  const [res, setRes] = useState([]);
+  const [value, setValue] = useState(false);
+  const [years, setYears] = useState("");
+  const [isAdvanced, setIsAdvanced] = useState(false);
+  const [isIntermediate, setIsIntermediate] = useState(false);
+  const [isBeginner, setIsBeginner] = useState(false);
+  const [price, setPrice] = useState([0, 600]);
+  const filtering = (e, level, age) => {
+    console.log("IS BEGIN" + isBeginner, level);
+
+    if (age != null) {
+      console.log("AGE" + age);
+      switch (level) {
+        case "isBeginner":
+          setResults(
+            filters
+              .filter(
+                (course) => course.price <= price[1] && course.price >= price[0]
+              )
+              .filter((course) => course.seats >= seats)
+              .filter((course) => course.age.includes(age))
+              .filter((course) => course.isRemote === e)
+
+              .filter((course) => course.isBeginner === true)
+          );
+
+          console.log("IS BEGINNER");
+
+          break;
+        case "isIntermediate":
+          setResults(
+            filters
+              .filter(
+                (course) => course.price <= price[1] && course.price >= price[0]
+              )
+              .filter((course) => course.seats >= seats)
+              .filter((course) => course.age.includes(age))
+              .filter((course) => course.isRemote === e)
+
+              .filter((course) => course.isIntermediate === true)
+          );
+          break;
+        case "isAdvanced":
+          setResults(
+            filters
+              .filter(
+                (course) => course.price <= price[1] && course.price >= price[0]
+              )
+              .filter((course) => course.seats >= seats)
+              .filter((course) => course.age.includes(age))
+              .filter((course) => course.isRemote === e)
+              .filter((course) => course.isIntermediate === false)
+              .filter((course) => course.isBeginner === false)
+              .filter((course) => course.isAdvanced === true)
+          );
+          break;
+        default:
+          setResults(
+            filters
+              .filter(
+                (course) => course.price <= price[1] && course.price >= price[0]
+              )
+              .filter((course) => course.seats >= seats)
+              .filter((course) => course.age.includes(age))
+              .filter((course) => course.isRemote === e)
+            //.filter((course) => course.isAdvanced === true)
+          );
+          break;
+      }
+    } else {
+      switch (level) {
+        case "isBeginner":
+          setResults(
+            filters
+              .filter(
+                (course) => course.price <= price[1] && course.price >= price[0]
+              )
+              .filter((course) => course.seats >= seats)
+              //   .filter((course) => course.age.includes(years))
+              .filter((course) => course.isRemote === e)
+
+              .filter((course) => course.isBeginner === true)
+          );
+
+          console.log("IS BEGINNER");
+
+          break;
+        case "isIntermediate":
+          setResults(
+            filters
+              .filter(
+                (course) => course.price <= price[1] && course.price >= price[0]
+              )
+              .filter((course) => course.seats >= seats)
+              // .filter((course) => course.age.includes(years))
+              .filter((course) => course.isRemote === e)
+
+              .filter((course) => course.isIntermediate === true)
+          );
+          break;
+        case "isAdvanced":
+          setResults(
+            filters
+              .filter(
+                (course) => course.price <= price[1] && course.price >= price[0]
+              )
+              .filter((course) => course.seats >= seats)
+              // .filter((course) => course.age.includes(years))
+              .filter((course) => course.isRemote === e)
+              .filter((course) => course.isAdvanced === true)
+          );
+          break;
+        default:
+          setResults(
+            filters
+              .filter(
+                (course) => course.price <= price[1] && course.price >= price[0]
+              )
+              .filter((course) => course.seats >= seats)
+              // .filter((course) => course.age.includes(years))
+              .filter((course) => course.isRemote === e)
+            //.filter((course) => course.isAdvanced === true)
+          );
+          break;
+      }
+    }
+  };
 
   const onChangePrice = (price) => {
     console.log("LOW" + price[0]);
@@ -47,22 +174,48 @@ const Results = (props) => {
         (course) => course.price <= price[1] && course.price >= price[0]
       )
     );
+    setRes(
+      res.filter(
+        (course) => course.price <= price[1] && course.price >= price[0]
+      )
+    );
   };
 
   const onChangeAge = (age) => {
     setResults(filters.filter((course) => course.age.includes(age)));
+    setRes(res.filter((course) => course.age.includes(age)));
   };
   const onChangeLevel = (level) => {
     console.log(level[0]);
     switch (level[0]) {
       case "isBeginner":
         setResults(filters.filter((course) => course.isBeginner === true));
+        setRes(res.filter((course) => course.isBeginner === true));
         break;
       case "isIntermediate":
         setResults(filters.filter((course) => course.isIntermediate === true));
+        setRes(res.filter((course) => course.isIntermediate === true));
         break;
       case "isAdvanced":
         setResults(filters.filter((course) => course.isAdvanced === true));
+        setRes(res.filter((course) => course.isAdvanced === true));
+        break;
+      default:
+        break;
+    }
+  };
+  const onChangeLevele = (level) => {
+    console.log(level[0]);
+    switch (level[0]) {
+      case "isBeginner":
+        setIsBeginner(true);
+        console.log("hey");
+        break;
+      case "isIntermediate":
+        setIsIntermediate(true);
+        break;
+      case "isAdvanced":
+        setIsAdvanced(true);
         break;
       default:
         break;
@@ -71,11 +224,13 @@ const Results = (props) => {
 
   const onChangeRemote = (value) => {
     console.log(value);
-    setResults(filters.filter((course) => course.isRemote == value));
+    setResults(results.filter((course) => course.isRemote == value));
+    setRes(res.filter((course) => course.isRemote == value));
   };
 
   const onChangeSeats = (seats) => {
     setResults(filters.filter((course) => course.seats >= seats));
+    setRes(res.filter((course) => course.seats >= seats));
   };
   const options = [
     { value: "isBeginner", label: "Débutant" },
@@ -92,14 +247,53 @@ const Results = (props) => {
 
   const { Meta } = Card;
   const location = useLocation();
+  const category = (intCategory) => {
+    switch (intCategory) {
+      case "1":
+        return "Art";
 
+      case "2":
+        return "Arts de scene";
+
+      case "11":
+        return "Tours, Circuits, Expériences";
+
+      case "3":
+        return "Loisirs creatifs";
+
+      case "4":
+        return "Professionnel ";
+
+      case "5":
+        return "Culinaire";
+
+      case "6":
+        return "Culture";
+
+      case "7":
+        return "Linguistique";
+
+      case "8":
+        return "Sport";
+
+      case "9":
+        return "Jeux";
+
+      case "10":
+        return "Arts de scene ";
+
+      default:
+        return intCategory;
+        break;
+    }
+  };
   const useQuery = () => new URLSearchParams(useLocation().search);
 
   const request = useQuery();
   useEffect(() => {
     request.get("category") == null
       ? setActivity(request.get("sub_category"))
-      : setActivity(request.get("category"));
+      : setActivity(category(request.get("category")));
     //const category = searchParams.get("category");
     setCity(request.get("city"));
     setDatemax(request.get("date_max"));
@@ -116,6 +310,7 @@ const Results = (props) => {
         console.log("RESULTS REQUEST" + JSON.stringify(res.data));
         setResults(res.data);
         setFilters(res.data);
+        setRes(res.data);
       })
 
       .catch((err) => console.log(err));
@@ -141,17 +336,19 @@ const Results = (props) => {
                 step={10}
                 defaultValue={[0, 600]}
                 onChange={(prix) => {
-                  onChangePrice(prix);
+                  setPrice(prix);
+                  filtering(value, "", "");
                 }}
               />
             </Form.Item>
 
             <Form.Item name="seats" label="Nombre de place(s)">
               <InputNumber
-                // defaultValue={this.state.courses.seats}
+                defaultValue={1}
                 //style={{ position: "absolute", marginLeft: 300 }}
                 onChange={(e) => {
-                  onChangeSeats(e);
+                  setSeats(e);
+                  filtering(value, "", "");
                 }}
                 min={0}
                 max={10000}
@@ -160,8 +357,12 @@ const Results = (props) => {
 
             <Form.Item name="cascader_age" label="Age">
               <Cascader
+                //defaultValue={"Tous les âges"}
                 // value={this.state.input}
-                onChange={(e) => onChangeAge(e)}
+                onChange={(e) => {
+                  setYears(e);
+                  filtering(value, "", e[0]);
+                }}
                 style={{ width: 300 }}
                 options={age}
                 placeholder="Sélectionner l'âge"
@@ -169,15 +370,25 @@ const Results = (props) => {
             </Form.Item>
             <Form.Item name="cascader_level" label="Niveau">
               <Cascader
-                //value={this.state.input}
-                onChange={(e) => onChangeLevel(e)}
+                defaultValue={""}
+                onChange={(e) => {
+                  filtering(value, e[0], "");
+                }}
                 style={{ width: 300 }}
                 options={options}
                 placeholder="Sélectionner le niveau"
               />
             </Form.Item>
             <Form.Item name="switch_remote" label="En ligne">
-              <Switch onChange={(e) => onChangeRemote(e)} />
+              <Switch
+                //defaultValue={true}
+                onChange={(e) => {
+                  console.log("value" + e);
+                  setValue(e);
+                  console.log("value" + value);
+                  filtering(e, "", "");
+                }}
+              />
             </Form.Item>
           </Form>
           <div

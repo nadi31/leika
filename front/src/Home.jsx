@@ -1,11 +1,11 @@
 import React, { useState, useLayoutEffect, useEffect } from "react";
 import { ConfigProvider } from "antd";
-import frFR from "antd/lib/locale/fr_FR";
+//import frFR from "antd/lib/locale/fr_FR";
 //import MediaQuery from 'react-responsive';
 import { BrowserView, MobileView } from "react-device-detect";
 import { Card, Menu, Button, Input, AutoComplete, Carousel } from "antd";
 import axios from "axios";
-import "antd/dist/antd.css";
+
 import Footer from "./Footer";
 import {
   ShoppingCartOutlined,
@@ -75,6 +75,7 @@ const Home = () => {
                 id="button_giver"
                 style={{ marginTop: "-2%", border: "none" }}
                 title={res.data[0].title}
+                description={res.data[0].price + "€"}
               />
             </Card>
           </a>
@@ -98,6 +99,7 @@ const Home = () => {
                 id="button_giver"
                 style={{ border: "none", marginTop: "-2%" }}
                 title={res.data[1].title}
+                description={res.data[1].price + "€"}
               />
             </Card>
           </a>
@@ -121,6 +123,7 @@ const Home = () => {
                 id="button_giver"
                 style={{ border: "none", marginTop: "-2%" }}
                 title={res.data[2].title}
+                description={res.data[2].price + "€"}
               />
             </Card>
           </a>
@@ -150,7 +153,7 @@ const Home = () => {
   } else {
     return (
       <div id="root">
-        <ConfigProvider locale={frFR}>
+        <ConfigProvider>
           <MobileView>
             {" "}
             <MenuMobile />

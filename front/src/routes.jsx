@@ -11,7 +11,12 @@ import UpdateCourse from "./UpdateCourse";
 import CoursesToModify from "./CoursesToModify";
 import GiverProfil from "./GiverProfil";
 import GiverForm from "./GiverForm";
-
+import CourseOnline from "./CourseOnline";
+import CoursesToVerify from "./CourseToVerify";
+import CoursesCheck from "./CoursesCheck";
+import EmailVerify from "./EmailVerify";
+import MdpOublie from "./MdpOublie";
+import EmailVerifyGiver from "./EmailVerifyGiver";
 const BaseRouter = () => (
   <Routes>
     <Route exact path="/" element={<Home />} />
@@ -25,10 +30,20 @@ const BaseRouter = () => (
       element={<Results />}
       key={window.location.pathname}
     />
-    <Route exact path="/profil/:pk" element={<ProfilCub />} />
+    <Route exact path="/profil" element={<ProfilCub />} />
     <Route exact path="/update/giver" element={<CoursesToModify />} />
+    <Route exact path="/online/giver" element={<CourseOnline />} />
     <Route exact path="/profil/giver" element={<GiverProfil />} />
     <Route exact path="/create/giver" element={<GiverForm />} />
+    <Route exact path="/admin/list/verify" element={<CoursesToVerify />} />
+    <Route exact path="/admin/check/:courseID" element={<CoursesCheck />} />
+    <Route exact path="/email-verify/:token" element={<EmailVerify />} />
+    <Route
+      exact
+      path="/email-verify-giver/:token"
+      element={<EmailVerifyGiver />}
+    />
+    <Route exact path="/mdp/:token" element={<MdpOublie />} />
   </Routes>
 );
 export default BaseRouter;

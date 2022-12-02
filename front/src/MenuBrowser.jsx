@@ -8,7 +8,7 @@ import axios from "axios";
 import moment from "moment";
 import locale from "antd/es/date-picker/locale/fr_FR";
 import { ConfigProvider } from "antd";
-import frFR from "antd/lib/locale-provider/fr_FR";
+//import frFR from "antd/lib/locale-provider/fr_FR";
 import "moment/locale/fr";
 import { useNavigate, withRouter, useSearchParams } from "react-router-dom";
 import { browserHistory } from "react-router";
@@ -25,7 +25,7 @@ import {
   Image,
   Dropdown,
 } from "antd";
-import "antd/dist/antd.css";
+//import "antd/dist/antd.css";
 import {
   ShoppingCartOutlined,
   MenuOutlined,
@@ -41,14 +41,53 @@ import couture from "./couture.jpg";
 import kart from "./kart.jpg";
 import loop from "./loop.mp4";
 import kids from "./kids.png";
-import Form from "antd/lib/form/Form";
+//import Form from "antd/lib/form/Form";
 import Results from "./Results";
 import { typeOf } from "react-responsive";
 import { isBreakOrContinueStatement } from "typescript";
 
 //Panier shopping
+const category = (intCategory) => {
+  switch (intCategory) {
+    case 1:
+      return "Arts Plastiques";
 
+    case 2:
+      return "Arts de scène ";
+
+    case 11:
+      return "Tours/Circuits ";
+
+    case 3:
+      return "Loisirs créatifs ";
+
+    case 4:
+      return "Professionnel ";
+
+    case 5:
+      return "Culinaire";
+
+    case 6:
+      return "Culture";
+
+    case 7:
+      return "Linguistique ";
+
+    case 8:
+      return "Sport ";
+
+    case 9:
+      return "Jeux ";
+
+    case 10:
+      return "Arts de scène ";
+
+    default:
+      break;
+  }
+};
 const MenuBrowser = (props) => {
+  const [categoryFinale, setCategoryFinale] = useState(null);
   const [results, setResults] = useState([]);
   const [display, setDisplay] = useState(false);
   const [cubConnect, setCubConnect] = useState(false);
@@ -59,11 +98,47 @@ const MenuBrowser = (props) => {
   const [menuConnected, setMenuConnected] = useState(null);
   useEffect(() => {
     console.log("Activité " + moment(props.datemax).format("DD-MM-YYYY"));
+
     setActivity(props.activity);
     setCity(props.city);
     setDatemax(props.datemax);
   }, [props]);
+  const cat = (cat) => {
+    switch (cat) {
+      case "Arts plastiques" || 1:
+        setCategoryFinale(1);
 
+      case "Arts de scene" || 2:
+        setCategoryFinale(2);
+
+      case "loisirs_creatifs" || 3:
+        setCategoryFinale(3);
+
+      case "sport" || 8:
+        setCategoryFinale(8);
+
+      case "professionnel" || 4:
+        setCategoryFinale(4);
+
+      case "culinaire" || 5:
+
+      case "culture" || 6:
+        setCategoryFinale(6);
+
+      case "linguistique" || 7:
+        setCategoryFinale(7);
+
+      case "jeux" || 9:
+        setCategoryFinale(9);
+
+      case "tours_circuits" || 11:
+        setCategoryFinale(11);
+
+      default:
+        setCategoryFinale(cat);
+        break;
+    }
+  };
   const [city, setCity] = useState("");
 
   let history = useNavigate();
@@ -73,13 +148,7 @@ const MenuBrowser = (props) => {
   const navigate = useNavigate();
 
   const authLogOut = () => {
-    localStorage.setItem("token", null);
-    localStorage.setItem("expirationDate", null);
-    localStorage.setItem("user_type", null);
-    localStorage.setItem("ID_user", null);
-    localStorage.setItem("ID", null);
-    localStorage.setItem("first_name", null);
-    localStorage.setItem("connected", false);
+    localStorage.clear();
     window.dispatchEvent(new Event("message"));
   };
   const handleSubmit = () => {
@@ -233,29 +302,67 @@ const MenuBrowser = (props) => {
     //isVerified;
   };
   const handleMenuConnexionCub = (value) => {
+    if (value.key === "2") {
+      navigate("../profil", { replace: true });
+    }
     if (value.key === "3") {
-      authLogOut();
       setConnected(false);
+      authLogOut();
+
+      navigate("../", { replace: true });
     } else {
       console.log(value.key);
     }
   };
   const handleMenuConnexionGiver = (value) => {
     if (value.key === "5") {
-      authLogOut();
       setConnected(false);
+      authLogOut();
+
+      navigate("../", { replace: true });
     }
     if (value.key === "1") {
       //navigate("/create");
       navigate("../create", { replace: true });
-    } else {
-      console.log(value.key);
     }
     if (value.key === "2") {
       // navigate("");
       navigate("../update/giver", { replace: true });
-    } else {
-      console.log(value.key);
+    }
+    if (value.key === "3") {
+      // navigate("");
+      navigate("../profil/giver", { replace: true });
+    }
+
+    if (value.key === "4") {
+      // navigate("");
+      navigate("../online/giver", { replace: true });
+    }
+  };
+
+  const handleMenuConnexionAdmin = (value) => {
+    if (value.key === "4") {
+      setConnected(false);
+      authLogOut();
+
+      navigate("../", { replace: true });
+    }
+    if (value.key === "1") {
+      //navigate("/create");
+      navigate("../create/giver", { replace: true });
+    }
+    if (value.key === "2") {
+      //navigate("/create");
+      navigate("../create", { replace: true });
+    }
+
+    if (value.key === "3") {
+      // navigate("");
+      navigate("../update/giver", { replace: true });
+    }
+    if (value.key === "5") {
+      // navigate("");
+      navigate("../admin/list/verify", { replace: true });
     }
   };
 
@@ -592,7 +699,15 @@ const MenuBrowser = (props) => {
                 trigger={["click"]}
                 overlay={() => (
                   <Menu>
-                    {localStorage.getItem("user_type") === "2" ? (
+                    {localStorage.getItem("user_type") === "1" ? (
+                      <Menu onClick={(e) => handleMenuConnexionAdmin(e)}>
+                        <Menu.Item key="1">Créer un giver</Menu.Item>
+                        <Menu.Item key="2">Créer une expérience</Menu.Item>
+                        <Menu.Item key="3">Modifier une expérience</Menu.Item>
+                        <Menu.Item key="4">Se déconnecter</Menu.Item>
+                        <Menu.Item key="5">Cours à vérifier</Menu.Item>
+                      </Menu>
+                    ) : localStorage.getItem("user_type") === "2" ? (
                       <Menu onClick={(e) => handleMenuConnexionCub(e)}>
                         <Menu.Item key="1">Mes commandes</Menu.Item>
                         <Menu.Item key="2">Mon profil</Menu.Item>

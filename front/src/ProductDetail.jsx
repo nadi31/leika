@@ -34,6 +34,8 @@ import {
   DownCircleOutlined,
   ShoppingCartOutlined,
   CaretDownOutlined,
+  HeartFilled,
+  HeartTwoTone,
   RocketTwoTone,
   ExperimentTwoTone,
   EnvironmentTwoTone,
@@ -60,22 +62,54 @@ const ProductDetail = (props) => {
   const [disabled, setDisabled] = useState(false);
   const [nombreRating, setNombreRating] = useState(null);
   const [giverDescription, setGiverDescription] = useState(null);
-  const [a, setA] = useState([]);
+  const [a, setA] = useState(false);
+  const [wLID, setWLID] = useState(null);
+
+  const deletedToWishlist = () => {
+    if (localStorage.getItem("ID") !== "null" && a) {
+      axios
+        .delete(
+          `http://localhost:8000/api-course/wishlist/${wLID}`,
+
+          {
+            id: wLID,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        )
+        .then((res) => {
+          message.success("Supprimé des Favoris");
+          setA(false);
+        })
+        .catch((err) => {
+          message.error("Déjà supprimé des favoris");
+        });
+    }
+  };
   const addedToWishlist = () => {
-    if (localStorage.getItem("ID") != null) {
+    if (localStorage.getItem("ID") !== "null") {
       axios
         .post(
           `http://localhost:8000/api-course/wishlist/${localStorage.getItem(
             "ID"
           )}`,
+
           {
             cub: localStorage.getItem("ID_user"),
             course: courseID,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
           }
         )
         .then((res) => {
           message.success("Ajouté Aux Favoris");
-          setDisabled(true);
+          setA(true);
         })
         .catch((err) => {
           message.error("Déjà ajouté aux favoris");
@@ -295,7 +329,7 @@ const ProductDetail = (props) => {
   ];
   //const courseID = useParams();
   const { Step } = Steps;
-  const [imagePrincipale, setImagePrincipale] = useState(kart);
+  const [imagePrincipale, setImagePrincipale] = useState();
   const [width, setWidth] = useState(window.innerWidth);
   const [small, setSmall] = useState("horizontal");
   const refactorizedData = (dataForBasket, initBasket) => {
@@ -367,7 +401,45 @@ const ProductDetail = (props) => {
   const executeScroll = () => {
     myRef.current.scrollIntoView({ block: "end", behavior: "smooth" });
   };
+  const category = (intCategory) => {
+    switch (intCategory) {
+      case 1:
+        return "Arts Plastiques";
 
+      case 2:
+        return "Arts de scène ";
+
+      case 11:
+        return "Tours/Circuits ";
+
+      case 3:
+        return "Loisirs créatifs ";
+
+      case 4:
+        return "Professionnel ";
+
+      case 5:
+        return "Culinaire";
+
+      case 6:
+        return "Culture";
+
+      case 7:
+        return "Linguistique ";
+
+      case 8:
+        return "Sport ";
+
+      case 9:
+        return "Jeux ";
+
+      case 10:
+        return "Arts de scène ";
+
+      default:
+        break;
+    }
+  };
   const requests = async () => {
     try {
       const res4 = await axios.get(
@@ -379,6 +451,7 @@ const ProductDetail = (props) => {
       let sumRatings = 0;
       async function first_function() {
         res4.data.map((single) => {
+          console.log("NOTE**" + single.note);
           sumRatings += single.note;
           if (single.commentOn) {
             comments.push(single);
@@ -423,6 +496,27 @@ const ProductDetail = (props) => {
         setAdress(res5.data);
 
         console.log("RES" + JSON.stringify(adress));
+
+        const res6 = await axios.get(
+          ` http://localhost:8000/api-course/wishlist/${localStorage.getItem(
+            "ID"
+          )}`,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        );
+        res6.data.map((single) => {
+          console.log("DEJA " + single.course + " " + courseID);
+          if (JSON.stringify(single.course) === courseID) {
+            setA(true);
+            setWLID(single.id);
+            console.log("DEJA******");
+          }
+        });
+
+        setAdress(res5.data);
       });
 
       //setRatings(ratings );
@@ -455,7 +549,7 @@ const ProductDetail = (props) => {
     marginLeft: width <= 1200 ? "2%" : "",
   };
 
-  if (course === null) {
+  if (course === null || giverDescription === null) {
     return <div>Loading..</div>;
   } else {
     return (
@@ -546,7 +640,7 @@ const ProductDetail = (props) => {
                         <Image
                           preview={false}
                           style={{ width: "100%" }}
-                          src={imagePrincipale}
+                          src={course.img1}
                         />
                       }
                     ></Card>
@@ -567,10 +661,18 @@ const ProductDetail = (props) => {
                 <Breadcrumb.Item href="">
                   <HomeOutlined />
                 </Breadcrumb.Item>
-                <Breadcrumb.Item href="">
+                <Breadcrumb.Item href={`/search/?category=${course.category}`}>
                   <span>
                     <ThunderboltTwoTone twoToneColor="#ffc069" />
-                    Sports Extrêmes
+                    {category(course.category)}
+                  </span>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item
+                  href={`/search/?sub_category=${course.sub_category}`}
+                >
+                  <span>
+                    <ThunderboltTwoTone twoToneColor="#ffc069" />
+                    {course.sub_category}
                   </span>
                 </Breadcrumb.Item>
               </Breadcrumb>
@@ -580,6 +682,7 @@ const ProductDetail = (props) => {
                 style={{
                   color: "#ffc069",
                 }}
+                disabled
                 allowHalf
                 value={ratings}
               />{" "}
@@ -592,9 +695,17 @@ const ProductDetail = (props) => {
               >
                 {nombreRating} avis
               </a>{" "}
-              <Button disabled={disabled} onClick={addedToWishlist}>
-                Ajouter aux favoris
-              </Button>
+              {a ? (
+                <HeartFilled
+                  style={{ color: "#ffc069" }}
+                  onClick={deletedToWishlist}
+                />
+              ) : (
+                <HeartOutlined
+                  style={{ color: "#ffc069" }}
+                  onClick={addedToWishlist}
+                />
+              )}
               <br />
               <span className="accroche" style={{ marginRight: "70px" }}>
                 {course.price}€
@@ -622,7 +733,7 @@ const ProductDetail = (props) => {
                     color: "#02245c",
                     textDecoration: "underline",
                   }}
-                  href=""
+                  href="#descr"
                 >
                   Voir plus
                 </a>
@@ -675,6 +786,7 @@ const ProductDetail = (props) => {
         </div>
 
         <div
+          id="descr"
           style={{
             display: width <= 1200 ? "block" : "flex",
             justifyContent: width <= 1200 ? "" : "center",
@@ -754,7 +866,7 @@ const ProductDetail = (props) => {
                         prenom={comment.prenom}
                         titre={comment.titre}
                         content={comment.comment_cub}
-                        date={moment(comment.dateHour).format("d MMM")}
+                        date={moment(comment.dateHour).format("Do MMMM  YYYY")}
                         rating={comment.note}
                         statut={"GOLD"}
                       />
