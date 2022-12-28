@@ -30,6 +30,7 @@ import {
   UploadOutlined,
   ScheduleOutlined,
   LoadingOutlined,
+  PoundOutlined,
 } from "@ant-design/icons";
 
 import * as moment from "moment";
@@ -49,6 +50,8 @@ const age = [
   { value: "Adultes", label: "Adultes" },
   { value: "Ados", label: "Ados" },
   { value: "Enfants", label: "Enfants" },
+  { value: "Bébé", label: "Bébé" },
+  { value: "Parents+Enfant", label: "Parent/enfant" },
 ];
 const category = [
   { value: "arts_plastiques", label: "Arts plastiques" },
@@ -62,6 +65,10 @@ const category = [
   { value: "jeux", label: "Jeux" },
   { value: "beaute_bien_etre", label: "Beauté & bien-être" },
   { value: "tours_circuits", label: "Tours et circuits" },
+  { value: "plein_air", label: "Plein air" },
+  { value: "evenement", label: "Évènement" },
+
+  { value: "stage", label: "Stage" },
 ];
 
 const formItemLayout = {
@@ -137,6 +144,9 @@ class CourseForm extends React.Component {
       seats: 0,
       disabled: true,
       is_remote: true,
+      is_duo: false,
+      is_team: false,
+      is_terroir: false,
       isRemote: false,
       is_beginner: false,
       is_avanced: false,
@@ -286,6 +296,37 @@ class CourseForm extends React.Component {
     this.is_Remote();
   };
 
+  list_langue = [
+    { value: "Français", label: "Français" },
+    { value: "Anglais", label: "Anglais" },
+    { value: "Allemand", label: "Allemand" },
+    { value: "Espagnol", label: "Espagnol" },
+    { value: "Russe", label: "Russe" },
+  ];
+
+  list_plein_air = [
+    { value: "Randonnées", label: "Randonnées" },
+    { value: "Centres Aérés", label: "Centres Aérés" },
+    { value: "Kayac", label: "Kayac" },
+    { value: "Canoë", label: "Canoë" },
+    { value: "Canyoning", label: "Canyoning" },
+    { value: "Promenade", label: "Promenade" },
+    { value: "Mini-Golf", label: "Mino-Golf" },
+    { value: "Camping", label: "Camping" },
+    { value: "Accrobranche", label: "Accrobranche" },
+    { value: "Tyrolienne", label: "Tyrolienne" },
+    { value: "Balade à cheval", label: "Balade à cheval" },
+    { value: "Escalade", label: "Escalade" },
+    { value: "Course d'obstacle", label: "Course d'obstacle" },
+    { value: "Scoutisme", label: "Scoutisme" },
+  ];
+  list_stages = [
+    { value: "Stage_survie", label: "Stage de survie" },
+    { value: "Stage_cuisine", label: "Stage de cuisine" },
+    { value: "Stage de couture", label: "Stage de couture" },
+    { value: "Stage de couture", label: "Stage de couture" },
+  ];
+
   list_arts_plastiques = [
     { value: "Calligraphie", label: "Calligraphie" },
     { value: "Dessin", label: "Dessin" },
@@ -331,7 +372,6 @@ class CourseForm extends React.Component {
     { value: "Spiritualité", label: "Spiritualité" },
   ];
   list_jeux = [
-    { value: "Accrobranche", label: "Accrobranche" },
     { value: "Airsolf", label: "Airsolf" },
     { value: "Escape games", label: "Escape Games" },
     { value: "Laser games", label: "Laser games" },
@@ -352,12 +392,12 @@ class CourseForm extends React.Component {
     { value: "Apiculture", label: "Apiculture" },
     { value: "Aquarium", label: "Aquarium" },
     { value: "Balade en bateau", label: "Balade en bateau" },
-    { value: "Balade à cheval", label: "Balade à cheval" },
+    { value: "Montgolfière", label: "Mongolfière" },
     { value: "Cirque", label: "Cirque" },
     { value: "Fermes", label: "Fermes" },
     { value: "Magie", label: "Magie" },
     { value: "Maisons hantées", label: "Maisons Hantées" },
-    { value: "Randonnées", label: "Randonnées" },
+
     { value: "Zoo", label: "Zoo" },
   ];
   list_pro = [
@@ -373,6 +413,15 @@ class CourseForm extends React.Component {
     { value: "Premiers secours", label: "Premiers secours" },
     { value: "Programmation", label: "Programmation" },
     { value: "Rédaction", label: "Rédaction" },
+  ];
+  list_event = [
+    { value: "Séminaire", label: "Séminaires" },
+    { value: "Concert", label: "Concert" },
+    { value: "Communication", label: "Communication" },
+    { value: "Animations", label: "Animations" },
+    { value: "Spectacle", label: "Spectacle" },
+    { value: "Gastronomie", label: "Gastronomie" },
+    { value: "Mentorat", label: "Mentorat" },
   ];
   list_sport = [
     { value: "Aéronautiques", label: "Aéronautiques" },
@@ -403,6 +452,44 @@ class CourseForm extends React.Component {
     console.log("valeurs de eeeeee : " + e[0]);
     this.setState({ category: e[0] });
     switch (e[0]) {
+      case "plein_air":
+        return (
+          <AutoComplete
+            style={{ top: -57, width: 200, right: -550 }}
+            options={this.list_plein_air}
+            placeholder="Sélectionner la sous-catégorie"
+            filterOption={(inputValue, options) =>
+              options.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
+              -1
+            }
+          />
+        );
+      case "evenement":
+        return (
+          <AutoComplete
+            style={{ top: -57, width: 200, right: -550 }}
+            options={this.list_event}
+            placeholder="Sélectionner la sous-catégorie"
+            filterOption={(inputValue, options) =>
+              options.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
+              -1
+            }
+          />
+        );
+
+      case "stage":
+        return (
+          <AutoComplete
+            style={{ top: -57, width: 200, right: -550 }}
+            options={this.list_stages}
+            placeholder="Sélectionner la sous-catégorie"
+            filterOption={(inputValue, options) =>
+              options.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
+              -1
+            }
+          />
+        );
+
       case "arts_plastiques":
         return (
           <AutoComplete
@@ -813,6 +900,9 @@ class CourseForm extends React.Component {
     //form_data.append("content", fieldsValue.content_input);
     form_data.append("discount", parseFloat(this.state.discount));
     form_data.append("isRemote", convert(this.isRemote));
+    form_data.append("isTeam", convert(this.is_team));
+    form_data.append("isTerroir", convert(this.is_terroir));
+    form_data.append("isDuo", convert(this.is_duo));
     form_data.append("price", parseFloat(fieldsValue.input_price));
     form_data.append("isIntermediate", convert(this.state.is_intermediatee));
     form_data.append("isBeginner", convert(this.state.is_beginner));
@@ -1484,7 +1574,9 @@ class CourseForm extends React.Component {
                   </Button>
                 </Upload>
               </Form.Item>
-
+              <Form.Item name="language" label="Langue">
+                <AutoComplete options={this.list_langue}></AutoComplete>
+              </Form.Item>
               <Form.Item name="switch_discount" label="Réduction">
                 <Switch onClick={this.toggle} />
                 {this.state.disabled ? (
@@ -1507,6 +1599,25 @@ class CourseForm extends React.Component {
               <Form.Item name="switch_remote" label="Activité en ligne">
                 <Switch onClick={this.remote} />
               </Form.Item>
+              <Form.Item name="switch_team" label="Activités de team building">
+                <Switch
+                  onClick={() =>
+                    this.setState({ is_team: !this.state.is_team })
+                  }
+                />
+              </Form.Item>
+              <Form.Item name="switch_duo" label="Activité à faire en duo">
+                <Switch
+                  onClick={() => this.setState({ is_duo: !this.state.is_duo })}
+                />
+              </Form.Item>
+              <Form.Item name="switch_terroir" label="Activité Terroir">
+                <Switch
+                  oonClick={() =>
+                    this.setState({ is_terroir: !this.state.is_terroir })
+                  }
+                />
+              </Form.Item>
               <Form.Item
                 name="input_price"
                 rules={[
@@ -1515,7 +1626,7 @@ class CourseForm extends React.Component {
                     message: "Veuillez renseigner le prix ",
                   },
                 ]}
-                label="Prix"
+                label="Prix Individuel"
               >
                 <InputNumber
                   //defaultValue={this.state.courses.price}
@@ -1524,6 +1635,27 @@ class CourseForm extends React.Component {
                   max={10000}
                 />
               </Form.Item>
+              <span style={{ marginLeft: 150 }}>
+                {" "}
+                Offres de groupe:{" "}
+                <Button
+                  type="primary"
+                  onClick={this.showMod}
+                  style={{
+                    marginLeft: "2%",
+                    marginBottom: "4%",
+                    marginTop: -60,
+                  }}
+                >
+                  <PoundOutlined />
+                </Button>{" "}
+              </span>
+
+              <Modal>
+                <p>
+                  De <InputNumber />à<InputNumber />: <InputNumber />
+                </p>
+              </Modal>
 
               <Form.Item
                 name="cascader_age"

@@ -3,20 +3,45 @@ import React, {
   useLayoutEffect,
   useCallback,
   useEffect,
+  useRef,
 } from "react";
 import axios from "axios";
 import moment from "moment";
 import locale from "antd/es/date-picker/locale/fr_FR";
 import { ConfigProvider } from "antd";
 //import frFR from "antd/lib/locale-provider/fr_FR";
+import MenuActivity from "./MenuActivity";
+import MenuKids from "./MenuKids";
 import "moment/locale/fr";
+import board from "./board.png";
+import drill from "./drill.png";
+import eiffel from "./eiffel.png";
+import museum from "./museum.png";
+import noodles from "./noodles.png";
+import sculpture from "./sculpture.png";
+import sewing from "./sewing.png";
+import spa from "./spa.png";
+import sport from "./sport.png";
+import theatre from "./theatre.png";
+import duo from "./duo.png";
+import team from "./team.png";
+import gift from "./gift.png";
+import {
+  RocketOutlined,
+  ExperimentOutlined,
+  CalendarOutlined,
+} from "@ant-design/icons";
 import { useNavigate, withRouter, useSearchParams } from "react-router-dom";
 import { browserHistory } from "react-router";
-//import MediaQuery from 'react-responsive';
+import Icon from "@ant-design/icons";
 import { BrowserView, MobileView } from "react-device-detect";
 import {
   Card,
+  Tabs,
   Menu,
+  Breadcrumb,
+  Tag,
+  Affix,
   Button,
   Input,
   AutoComplete,
@@ -30,112 +55,103 @@ import {
   ShoppingCartOutlined,
   MenuOutlined,
   UserOutlined,
+  MailOutlined,
+  AppstoreOutlined,
+  SettingOutlined,
   SearchOutlined,
   SmileTwoTone,
 } from "@ant-design/icons";
 import Connexion from "./Connexion";
 import Cart from "./Cart";
-import logo2 from "./leika_logo2.gif";
+import logo2 from "./leika_logo2.png";
 import para from "./para.jpg";
 import couture from "./couture.jpg";
 import kart from "./kart.jpg";
 import loop from "./loop.mp4";
-import kids from "./kids.png";
+import kidIcon from "./kids.png";
 //import Form from "antd/lib/form/Form";
 import Results from "./Results";
 import { typeOf } from "react-responsive";
-import { isBreakOrContinueStatement } from "typescript";
+import { isBreakOrContinueStatement, nodeModuleNameResolver } from "typescript";
+import dayjs from "dayjs";
 
 //Panier shopping
-const category = (intCategory) => {
-  switch (intCategory) {
-    case 1:
-      return "Arts Plastiques";
 
-    case 2:
-      return "Arts de scène ";
-
-    case 11:
-      return "Tours/Circuits ";
-
-    case 3:
-      return "Loisirs créatifs ";
-
-    case 4:
-      return "Professionnel ";
-
-    case 5:
-      return "Culinaire";
-
-    case 6:
-      return "Culture";
-
-    case 7:
-      return "Linguistique ";
-
-    case 8:
-      return "Sport ";
-
-    case 9:
-      return "Jeux ";
-
-    case 10:
-      return "Arts de scène ";
-
-    default:
-      break;
-  }
-};
 const MenuBrowser = (props) => {
   const [categoryFinale, setCategoryFinale] = useState(null);
+  const [kids, setKids] = useState(false);
   const [results, setResults] = useState([]);
+  const [menuArt, setMenuArt] = useState(false);
   const [display, setDisplay] = useState(false);
   const [cubConnect, setCubConnect] = useState(false);
   const [giverConnect, setGiverConnect] = useState(false);
   const [connected, setConnected] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams({});
   const [datemax, setDatemax] = useState(null);
+  const [top, setTop] = useState(10);
   const [menuConnected, setMenuConnected] = useState(null);
+  //const [menuArt, setMenuArt] = useState(false);
+  const [menuGames, setMenuGames] = useState(false);
+  const [menuDrill, setMenuDrill] = useState(false);
+  const [menuTour, setMenuTour] = useState(false);
+  const [menuCulture, setMenuCulture] = useState(false);
+  const [menuCuisine, setMenuCuisine] = useState(false);
+  const [menuDIY, setMenuDIY] = useState(false);
+  const [menuBeauty, setMenyBeauty] = useState(false);
+  const [menuSports, setMenuSports] = useState(false);
+  const [menuTheatre, setMenuTheatre] = useState(false);
+  const [menuLanguage, setMenuLanguage] = useState(false);
   useEffect(() => {
-    console.log("Activité " + moment(props.datemax).format("DD-MM-YYYY"));
-
+    console.log("Activité " + dayjs(props.date_max).format("DD/MM/YYYY"));
+    setKids(props.kids);
     setActivity(props.activity);
+    console.log("Activité " + props.activity);
+    cat(props.activity);
     setCity(props.city);
-    setDatemax(props.datemax);
+    setDatemax(props.date_max);
   }, [props]);
   const cat = (cat) => {
+    setMenuConnected(true);
     switch (cat) {
       case "Arts plastiques" || 1:
-        setCategoryFinale(1);
+        setMenuArt(true);
+        break;
+      case "Arts de scène" || 2:
+        setMenuTheatre(true);
+        break;
+      case "Loisirs creatifs" || 3:
+        setMenuDIY(true);
+        break;
+      case "Sport" || 8:
+        setMenuSports(true);
+        break;
+      case "Professionnel" || 4:
+        console.log("HERE");
+        setMenuDrill(true);
+        break;
+      case "Culinaire" || 5:
+        setMenuCuisine(true);
+        break;
+      case "Culture" || 6:
+        setMenuCulture(true);
+        break;
+      case "Beauté et Bien-être":
+        setMenyBeauty(true);
+        break;
+      case "Linguistique" || 7:
+        setMenuLanguage(true);
+        break;
 
-      case "Arts de scene" || 2:
-        setCategoryFinale(2);
+      case "Jeux" || 9:
+        setMenuGames(true);
+        break;
 
-      case "loisirs_creatifs" || 3:
-        setCategoryFinale(3);
-
-      case "sport" || 8:
-        setCategoryFinale(8);
-
-      case "professionnel" || 4:
-        setCategoryFinale(4);
-
-      case "culinaire" || 5:
-
-      case "culture" || 6:
-        setCategoryFinale(6);
-
-      case "linguistique" || 7:
-        setCategoryFinale(7);
-
-      case "jeux" || 9:
-        setCategoryFinale(9);
-
-      case "tours_circuits" || 11:
-        setCategoryFinale(11);
+      case "Tours, Circuits, Expériences" || 11:
+        setMenuTour(true);
+        break;
 
       default:
-        setCategoryFinale(cat);
+        //  setCategoryFinale(cat);
         break;
     }
   };
@@ -145,13 +161,19 @@ const MenuBrowser = (props) => {
 
   let query = "";
 
+  const slider = useRef(null);
   const navigate = useNavigate();
 
   const authLogOut = () => {
     localStorage.clear();
     window.dispatchEvent(new Event("message"));
   };
-  const handleSubmit = () => {
+  const goToPosts = () =>
+    navigate({
+      pathname: "/search/",
+      search: `?${searchParams}`,
+    });
+  const handleSubmit = (activi) => {
     console.log("Received values of form: " + activity + city);
 
     //Faire en sorte, pour que ça marche, que les sub_category ne contiennent pas de mots clés similaires à category
@@ -171,76 +193,93 @@ const MenuBrowser = (props) => {
           "Sport" ||
       "Beauté" 
       ))*/
-    switch (activity) {
-      case "Art":
+    switch (activi) {
+      case 1:
+        // setMenuArt(true);
         searchParams.delete(["city"]);
         searchParams.delete(["date_max"]);
         searchParams.set("category", 1);
         searchParams.delete(["sub_category"]);
         query = query + "&category=" + "1";
         break;
-      case "Arts de scene":
+      case 2:
+        //setMenuTheatre(true);
         searchParams.delete(["city"]);
         searchParams.delete(["date_max"]);
         searchParams.set("category", 2);
         searchParams.delete(["sub_category"]);
         query = query + "&category=" + "2";
         break;
-      case "Loisirs creatifs":
+      case 3:
+        //  setMenuDIY(true);
         searchParams.delete(["city"]);
         searchParams.delete(["date_max"]);
         searchParams.set("category", 3);
         searchParams.delete(["sub_category"]);
         query = query + "&category=" + "3";
         break;
-      case "Culinaire":
+      case 5:
+        setMenuCuisine(true);
         searchParams.delete(["city"]);
         searchParams.delete(["date_max"]);
         searchParams.set("category", 5);
         searchParams.delete(["sub_category"]);
         query = query + "&category=" + "5";
         break;
-      case "Culture":
+      case 6:
+        // setMenuCulture(true);
         searchParams.delete(["city"]);
         searchParams.delete(["date_max"]);
         searchParams.set("category", 6);
         searchParams.delete(["sub_category"]);
         query = query + "&category=" + "6";
         break;
-      case "Jeux":
+      case 9:
         searchParams.delete(["city"]);
         searchParams.delete(["date_max"]);
         searchParams.set("category", 9);
         searchParams.delete(["sub_category"]);
         query = query + "&category=" + "9";
         break;
-      case "Langues":
+      case 7:
+        // setMenuLanguage(true);
         searchParams.delete(["city"]);
         searchParams.delete(["date_max"]);
         searchParams.set("category", 7);
         searchParams.delete(["sub_category"]);
         query = query + "&category=" + "7";
         break;
-      case "Tours, Circuits, Expériences":
+      case 11:
+        setMenuTour(true);
         searchParams.delete(["city"]);
         searchParams.delete(["date_max"]);
         searchParams.set("category", 11);
         searchParams.delete(["sub_category"]);
         query = query + "&category=" + "11";
         break;
-      case "Pro":
+      case 4:
+        // setMenuDrill(true);
         searchParams.delete(["city"]);
         searchParams.delete(["date_max"]);
         searchParams.set("category", 4);
         searchParams.delete(["sub_category"]);
         query = query + "&category=" + "4";
         break;
-      case "Sport":
+      case 8:
+        // setMenuSports(true);
         searchParams.delete(["city"]);
         searchParams.delete(["date_max"]);
         searchParams.set("category", 8);
         searchParams.delete(["sub_category"]);
         query = query + "&category=" + "8";
+        break;
+      case 10:
+        // setMenyBeauty(true);
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("category", 10);
+        searchParams.delete(["sub_category"]);
+        query = query + "&category=" + "10";
         break;
       case "":
         searchParams.delete(["city"]);
@@ -258,12 +297,6 @@ const MenuBrowser = (props) => {
         delete searchParams["category"];
         break;
       default:
-        searchParams.delete(["city"]);
-        searchParams.delete(["date_max"]);
-        searchParams.set("sub_category", activity);
-        searchParams.delete(["category"]);
-        query = query + "&sub_category=" + activity;
-
         break;
     }
 
@@ -276,11 +309,6 @@ const MenuBrowser = (props) => {
     console.log("SEARCH " + searchParams);
     //setSearchParams(searchParams);
 
-    const goToPosts = () =>
-      navigate({
-        pathname: "/search/",
-        search: `?${searchParams}`,
-      });
     goToPosts();
 
     window.location.reload();
@@ -607,16 +635,26 @@ const MenuBrowser = (props) => {
       >
         {" "}
         <a href={"/"}>
-          <img
-            style={{
-              justifyContent: "left",
-              width: props.width <= "1100" ? "50%" : "80%",
-              marginLeft: "20%",
-            }}
-            id="img_logo_desktop"
-            src={logo2}
-            alt="logo"
-          ></img>
+          <Affix top={90} style={{ backgroundColor: "white" }}>
+            <div
+              style={{
+                background: "white", //varies height for mobile...
+                height: "250%",
+                width: "130%",
+              }}
+            >
+              <img
+                style={{
+                  justifyContent: "left",
+                  width: props.width <= "1100" ? "50%" : "50%",
+                  marginLeft: "20%",
+                }}
+                id="img_logo_desktop"
+                src={logo2}
+                alt="logo"
+              ></img>
+            </div>
+          </Affix>
         </a>
         {props.width <= 800 ? (
           <>
@@ -649,11 +687,14 @@ const MenuBrowser = (props) => {
             >
               <Menu.Item
                 id="kids"
-                //onClick={() => handleClick()}
+                onClick={() => {
+                  navigate("../kids", { replace: true });
+                  setKids(true);
+                }}
                 key="kids"
                 icon={
                   <Image
-                    src={kids}
+                    src={kidIcon}
                     preview={false}
                     style={{ width: "20px", marginLeft: "-30%", bottom: "0" }}
                   />
@@ -664,16 +705,36 @@ const MenuBrowser = (props) => {
 
               <Menu.Item
                 //onClick={() => handleClick()}
-                key="parties"
-                // icon={<UserOutlined />}
+                key="team"
               >
-                Soirée Privée
+                Team Building
               </Menu.Item>
 
               <Menu.Item
                 //onClick={() => handleClick()}
-                key="gift"
+                key="duo"
                 // icon={<UserOutlined />}
+              >
+                Activités en duo
+              </Menu.Item>
+              <Menu.Item
+                //onClick={() => handleClick()}
+                key="gift"
+                icon={
+                  <Icon
+                    component={() => (
+                      <img
+                        src={gift}
+                        height={30}
+                        style={{
+                          // margin: "0 7px 0 0",
+                          //paddingTop: 10,
+                          float: "center",
+                        }}
+                      />
+                    )}
+                  />
+                }
               >
                 Carte Cadeau
               </Menu.Item>
@@ -718,7 +779,6 @@ const MenuBrowser = (props) => {
                         <Menu.Item key="1">Créer un cours</Menu.Item>
                         <Menu.Item key="2">Modifier un cours </Menu.Item>
                         <Menu.Item key="3">Mon Compte </Menu.Item>
-                        <Menu.Item key="4">Cours en ligne </Menu.Item>
                         <Menu.Item key="5">Se déconnecter</Menu.Item>
                       </Menu>
                     )}
@@ -749,14 +809,13 @@ const MenuBrowser = (props) => {
             </Menu.Item>
           )}
           <Menu.Item
-            style={{ fontSize: "50px" }}
+            style={{ fontSize: "25px" }}
             onClick={() => handleCart()}
             key="cart"
-            icon={<ShoppingCartOutlined style={{ fontSize: "50%" }} />}
+            icon={<ShoppingCartOutlined style={{ fontSize: "90%" }} />}
           ></Menu.Item>
         </Menu>
       </div>
-
       {connexion ? (
         <div>
           <Connexion
@@ -776,7 +835,6 @@ const MenuBrowser = (props) => {
       ) : (
         <></>
       )}
-
       <div
         id="autoc"
         style={{
@@ -790,14 +848,14 @@ const MenuBrowser = (props) => {
           style={{
             position: "flex",
             display: "flex",
-            justifyContent: "center",
+            //justifyContent: "center",
             borderRadius: "25px",
             padding: 0,
-            width: "60%",
+            width: "40%",
             marginTop: "2%",
           }}
         >
-          <AutoComplete
+          {/*      <AutoComplete
             className="dashboardSearch"
             onChange={(e) => {
               setActivity(e);
@@ -826,13 +884,14 @@ const MenuBrowser = (props) => {
                 width: "100%",
                 height: "100%",
                 border: 0,
+                fontFamily: "Dosis",
               }}
               size="large"
               // defaultValue={activity}
               prefix={props.width >= 650 ? "Quelle Expérience ?" : ""}
               placeholder="Parachutisme, tricot..."
             />
-          </AutoComplete>
+          </AutoComplete> */}
           <AutoComplete
             className="dashboardSearch"
             onChange={(e) => {
@@ -840,7 +899,7 @@ const MenuBrowser = (props) => {
               console.log("City...: " + e);
             }}
             defaultValue={props.city}
-            style={{ width: "30%", border: 0 }}
+            style={{ width: "50%", border: 0 }}
             options={options2}
             filterOption={(inputValue, option) =>
               option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
@@ -853,6 +912,7 @@ const MenuBrowser = (props) => {
                 width: "100%",
                 height: "100%",
                 border: 0,
+                fontFamily: "Dosis",
               }}
               size="large"
               prefix={"Où?"}
@@ -860,7 +920,7 @@ const MenuBrowser = (props) => {
             />
           </AutoComplete>
           <div
-            style={{ width: "10%", paddingTop: "0.5%", fontSize: "16px" }}
+            style={{ width: "10%", paddingTop: "1%", fontSize: "16px" }}
             className="dashboardSearch"
           >
             Quel jour?{" "}
@@ -868,21 +928,21 @@ const MenuBrowser = (props) => {
 
           <DatePicker
             locale={locale}
-            style={{ width: "30%", paddingTop: "" }}
+            style={{ width: "50%", paddingTop: "" }}
             // defaultValue={}
             placeholder={["Sélectionner le jour"]}
             // showTime
 
-            defaultValue={props.datemax ? moment(props.datemax) : undefined}
-            format="DD-MM-YYYY"
+            defaultValue={
+              props.date_max
+                ? dayjs(props.date_max, "DD/MM/YYYY").format("YYYY-MM-DD")
+                : undefined
+            }
+            format="DD/MM/YYYY"
             onChange={(newDate) => {
               if (newDate) {
-                console.log(
-                  moment(newDate._d, "DD-MM-YYYY").format("YYYY-MM-DD")
-                );
-                setDatemax(
-                  moment(newDate._d, "DD-MM-YYYY").format("YYYY-MM-DD")
-                );
+                // console.log(dayjs(newDate, "DD/MM/YYYY").format("YYYY-MM-DD"));
+                setDatemax(dayjs(newDate, "DD/MM/YYYY").format("YYYY-MM-DD"));
               } else setDatemax(undefined);
             }}
             //HH:mm
@@ -910,6 +970,1469 @@ const MenuBrowser = (props) => {
             />
           </Button>
         </div>
+      </div>
+      <br />
+      {kids ? (
+        <MenuKids activity={activity} date_max={datemax} city={city} />
+      ) : (
+        <MenuActivity activity={activity} date_max={datemax} city={city} />
+      )}
+      <div style={{ marginLeft: "10%" }}>
+        {searchParams.get(["date_max"]) ? (
+          <Tag
+            onClose={() => {
+              setDatemax("");
+
+              searchParams.delete(["date_max"]);
+              goToPosts();
+              window.location.reload();
+            }}
+            style={{
+              fontSize: "18px",
+              marginBottom: "1%",
+              fontFamily: "Dosis",
+              color: "black",
+            }}
+            icon=<CalendarOutlined />
+            closable
+            color="#f7b526"
+          >
+            {dayjs(searchParams.get(["date_max"])).format("DD/MM/YYYY")}
+          </Tag>
+        ) : (
+          <></>
+        )}
+        {activity ? (
+          <Tag
+            onClose={() => {
+              searchParams.delete(["category"]);
+              searchParams.delete(["sub_category"]);
+              goToPosts();
+              window.location.reload();
+
+              setMenuConnected(false);
+            }}
+            style={{
+              fontSize: "18px",
+              marginBottom: "1%",
+              fontFamily: "Dosis",
+              color: "black",
+            }}
+            icon={<ExperimentOutlined />}
+            closable
+            color="#f7b526"
+          >
+            {activity}
+          </Tag>
+        ) : null}
+        {props.city ? (
+          <Tag
+            onClose={() => {
+              searchParams.delete(["city"]);
+              goToPosts();
+              window.location.reload();
+            }}
+            style={{
+              fontSize: "18px",
+              marginBottom: "1%",
+              fontFamily: "Dosis",
+              color: "black",
+            }}
+            icon=<RocketOutlined />
+            closable
+            color="#f7b526"
+          >
+            {props.city}
+          </Tag>
+        ) : null}
+
+        {menuBeauty && menuConnected ? (
+          <>
+            <Breadcrumb
+              separator="|"
+              style={{
+                width: "100%",
+                //  marginLeft: "17%",
+                // paddingLeft: "18%",
+                marginBottom: "3%",
+                fontFamily: "Dosis",
+                border: "none",
+
+                fontSize: "16px",
+                // color: "gray",
+              }}
+            >
+              <Breadcrumb.Item>
+                <a href="">Spa </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>Massage</Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>Cosmétique</Breadcrumb.Item>{" "}
+            </Breadcrumb>
+          </>
+        ) : (
+          <></>
+        )}
+        {menuArt && menuConnected ? (
+          <>
+            <Breadcrumb
+              separator="|"
+              style={{
+                width: "100%",
+                //  marginLeft: "17%",
+                // paddingLeft: "18%",
+                marginBottom: "3%",
+                fontFamily: "Dosis",
+                border: "none",
+
+                fontSize: "16px",
+                // color: "gray",
+              }}
+            >
+              <Breadcrumb.Item>
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Calligraphie");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Calligraphie{" "}
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Dessin");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Dessin
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Photographie");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Photographie
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Sculpture");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Sculpture
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Peinture");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Peinture
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Poterie");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Poterie
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Vitraux");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Vitraux
+                </a>
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          </>
+        ) : (
+          <></>
+        )}
+        {menuGames && menuConnected ? (
+          <>
+            <Breadcrumb
+              separator="|"
+              style={{
+                width: "100%",
+                //  marginLeft: "17%",
+                // paddingLeft: "18%",
+                marginBottom: "3%",
+                fontFamily: "Dosis",
+                border: "none",
+
+                fontSize: "16px",
+                // color: "gray",
+              }}
+            >
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Accrobranche");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Accrobranche
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Airsoft");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Airsoft
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Escape Games");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Escape Games
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Laser Games");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Laser Games
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Paintball");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Paintball
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Jeux de société");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Jeux de société
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Jeux vidéo");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Jeux vidéo
+                </a>
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          </>
+        ) : (
+          <></>
+        )}
+        {menuTheatre && menuConnected ? (
+          <>
+            <Breadcrumb
+              separator="|"
+              style={{
+                width: "100%",
+                //  marginLeft: "17%",
+                // paddingLeft: "18%",
+                marginBottom: "3%",
+                fontFamily: "Dosis",
+                border: "none",
+
+                fontSize: "16px",
+                // color: "gray",
+              }}
+            >
+              <Breadcrumb.Item>
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Danse");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Danse
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Improvisation");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Improvisation
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Musique");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Musique
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Scénographie");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Scénographie
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Théatre");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Théatre
+                </a>
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          </>
+        ) : (
+          <></>
+        )}
+        {menuDIY && menuConnected ? (
+          <>
+            <Breadcrumb
+              separator="|"
+              style={{
+                width: "100%",
+                //  marginLeft: "17%",
+                // paddingLeft: "18%",
+                marginBottom: "3%",
+                fontFamily: "Dosis",
+                border: "none",
+
+                fontSize: "16px",
+                // color: "gray",
+              }}
+            >
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Bijoux");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Bijoux
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Composition Florale");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Composition Florale
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Crochet");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Crochet
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Couture");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Couture
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Modélisme");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Modélisme
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Stylisme");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Stylisme
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Travail du bois");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Travail du bois
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Travail du métal");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Travail du métal
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Travail du verre");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Travail du verre
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Tricot");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Tricot
+                </a>
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          </>
+        ) : (
+          <></>
+        )}
+        {menuCuisine && menuConnected ? (
+          <>
+            <Breadcrumb
+              separator="|"
+              style={{
+                width: "100%",
+                //  marginLeft: "17%",
+                // paddingLeft: "18%",
+                marginBottom: "3%",
+                fontFamily: "Dosis",
+                border: "none",
+
+                fontSize: "16px",
+                // color: "gray",
+              }}
+            >
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Cours de cuisine");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Cours de cuisine
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Dégustation");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Dégustation
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Fabrication de boisson");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Fabrication de boisson
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Pâtisserie");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Pâtisserie
+                </a>
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          </>
+        ) : (
+          <></>
+        )}
+        {menuCulture && menuConnected ? (
+          <>
+            <Breadcrumb
+              separator="|"
+              style={{
+                width: "100%",
+                //  marginLeft: "17%",
+                // paddingLeft: "18%",
+                marginBottom: "3%",
+                fontFamily: "Dosis",
+                border: "none",
+
+                fontSize: "16px",
+                // color: "gray",
+              }}
+            >
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Cinéma");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Cinéma
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Concert");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Concert
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Musée");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Musée
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Opéra");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Opéra
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Philosophie");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Philosophie
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Spiritualité");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Spiritualité
+                </a>
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          </>
+        ) : (
+          <></>
+        )}
+        {menuLanguage && menuConnected ? (
+          <>
+            <Breadcrumb
+              separator="|"
+              style={{
+                width: "100%",
+                //  marginLeft: "17%",
+                // paddingLeft: "18%",
+                marginBottom: "3%",
+                fontFamily: "Dosis",
+                border: "none",
+
+                fontSize: "16px",
+                // color: "gray",
+              }}
+            >
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Anglais");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Anglais
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Arabe");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Arabe
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Chinois");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Chinois
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Espagnol");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Espagnol
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Japonais");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Japonais
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Portuguais");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Portuguais
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>Russe</Breadcrumb.Item>
+            </Breadcrumb>
+          </>
+        ) : (
+          <></>
+        )}
+        {menuTour && menuConnected ? (
+          <>
+            <Breadcrumb
+              separator="|"
+              style={{
+                width: "100%",
+                //  marginLeft: "17%",
+                // paddingLeft: "18%",
+                marginBottom: "3%",
+                fontFamily: "Dosis",
+                border: "none",
+
+                fontSize: "16px",
+                // color: "gray",
+              }}
+            >
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Apiculture");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Apiculture
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Aquarium");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Aquarium
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Balade en bateau");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Balade en bateau
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Balade à cheval");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Balade à cheval
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Cirque");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Cirque
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Fermes");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Fermes
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Magie");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Magie
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Maison Hantées");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Maisons hantées
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Randonnées");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Randonnées
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Zoo");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Zoo
+                </a>
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          </>
+        ) : (
+          <></>
+        )}
+        {menuDrill && menuConnected ? (
+          <>
+            <Breadcrumb
+              separator="|"
+              style={{
+                width: "100%",
+                //  marginLeft: "17%",
+                // paddingLeft: "18%",
+                marginBottom: "3%",
+                fontFamily: "Dosis",
+                border: "none",
+
+                fontSize: "16px",
+                // color: "gray",
+              }}
+            >
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Beauté");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Beauté
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Bricolage");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Bricolage
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Communication");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Communication
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Gestion");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Gestion
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Jardinage");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Jardinage
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Logiciels");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Logiciels
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Management");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Management
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Médecine douce");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Médecine douce
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Mode");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Mode
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Premiers secours");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Premiers Secours
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Programmation");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Programmation
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Rédaction");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Rédaction
+                </a>
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          </>
+        ) : (
+          <></>
+        )}
+        {menuSports && menuConnected ? (
+          <>
+            <Breadcrumb
+              separator="|"
+              style={{
+                width: "100%",
+                //  marginLeft: "17%",
+                // paddingLeft: "18%",
+                marginBottom: "3%",
+                fontFamily: "Dosis",
+                border: "none",
+
+                fontSize: "16px",
+                // color: "gray",
+              }}
+            >
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Aéronautiques");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Aéronautiques
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Badminton");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Badminton
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Basket");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Basket
+                </a>
+              </Breadcrumb.Item>{" "}
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Boxe");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Boxe
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Crossfit");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Crossfit
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Escalade");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Escalade
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Fitness");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Fitness
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Football");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Football
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Golf");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Golf
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Handball");
+                    searchParams.delete(["Handball"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Handball
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Karting");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Karting
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Montgolfiere");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Montgolfiere
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Moto");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Moto
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Natation");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Natation
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Parachutisme");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Parachutisme
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Parapente");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Parapente
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Pilates");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Pilates
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Saut à l'élastique");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Saut à l'élastique
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Sport de combat");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Sport de combat
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Tennis");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Tennis
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Yoga");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Yoga
+                </a>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {" "}
+                <a
+                  onClick={() => {
+                    searchParams.set("sub_category", "Zumba");
+                    searchParams.delete(["category"]);
+                    goToPosts();
+                    window.location.reload();
+                  }}
+                >
+                  Zumba
+                </a>
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
       <div> </div>
     </BrowserView>

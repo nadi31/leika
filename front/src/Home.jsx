@@ -220,6 +220,7 @@ const Home = () => {
 
           <BrowserView>
             <MenuBrowser
+              kids={false}
               setDisplay={setDisplay}
               width={width}
               setResults={setResults}

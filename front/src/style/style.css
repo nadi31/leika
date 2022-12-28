@@ -9,6 +9,14 @@
   color: #616055;
   background: white !important;
 }
+.ant-carousel > .slick-slider > .slick-list {
+  overflow: visible;
+}
+
+.ant-carousel {
+  width: 70%;
+  overflow: visible;
+}
 .ant-table {
   font-family: "Roboto", sans-serif;
 }

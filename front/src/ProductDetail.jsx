@@ -63,6 +63,7 @@ const ProductDetail = (props) => {
   const [nombreRating, setNombreRating] = useState(null);
   const [giverDescription, setGiverDescription] = useState(null);
   const [a, setA] = useState(false);
+  const [kids, setKids] = useState(false);
   const [wLID, setWLID] = useState(null);
 
   const deletedToWishlist = () => {
@@ -531,6 +532,7 @@ const ProductDetail = (props) => {
       executeScroll();
       update_sens();
     }
+
     requests();
   }, []);
 
@@ -559,7 +561,11 @@ const ProductDetail = (props) => {
         </MobileView>
 
         <BrowserView>
-          <MenuBrowser width={width} />
+          {course.age === "Enfants" ? (
+            <MenuBrowser kids={true} width={width} />
+          ) : (
+            <MenuBrowser kids={false} width={width} />
+          )}
         </BrowserView>
 
         <div style={{ width: "100%" }}>

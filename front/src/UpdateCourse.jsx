@@ -173,8 +173,6 @@ const UpdateCourse = () => {
   const list_culture = [
     { value: "Cinéma", label: "Cinéma" },
     { value: "Concert", label: "Concert" },
-    { value: "Jeux de société", label: "Jeux de société" },
-    { value: "Jeux vidéo", label: "Jeux vidéo" },
     { value: "Musée", label: "Musée" },
     { value: "Opéra", label: "Opéra" },
     { value: "Philosophie", label: "Philosophie" },
@@ -182,12 +180,12 @@ const UpdateCourse = () => {
   ];
   const list_jeux = [
     { value: "Accrobranche", label: "Accrobranche" },
-    { value: "Airsolf", label: "Airsolf" },
+    { value: "Airsoft", label: "Airsoft" },
     { value: "Escape games", label: "Escape Games" },
     { value: "Laser games", label: "Laser games" },
     { value: "Paintball", label: "Paintball" },
-    { value: "Philosophie", label: "Philosophie" },
-    { value: "Spiritualite", label: "Spiritualité" },
+    { value: "Jeux de société", label: "Jeux de société" },
+    { value: "Jeux vidéo", label: "Jeux vidéo" },
   ];
   const list_langues = [
     { value: "Anglais", label: "Anglais" },

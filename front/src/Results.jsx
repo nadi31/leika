@@ -2,16 +2,23 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useNavigate, withRouter } from "react-router-dom";
 import { BrowserView, MobileView } from "react-device-detect";
+import Icon from "@ant-design/icons";
+import { RocketOutlined, ExperimentOutlined } from "@ant-design/icons";
 import {
   Card,
   Slider,
   DatePicker,
   Form,
+  Menu,
+  Tag,
+  Breadcrumb,
   InputNumber,
   Cascader,
   Switch,
   Button,
 } from "antd";
+import experience from "./experience.png";
+import dayjs from "dayjs";
 import * as moment from "moment";
 import MenuBrowser from "./MenuBrowser";
 import MenuMobile from "./MenuMobile";
@@ -19,6 +26,18 @@ import axios from "axios";
 import Footer from "./Footer";
 import queryString from "query-string";
 const Results = (props) => {
+  const [menuArt, setMenuArt] = useState(false);
+  const [menuGames, setMenuGames] = useState(false);
+  const [menuDrill, setMenuDrill] = useState(false);
+  const [menuTour, setMenuTour] = useState(false);
+  const [menuCulture, setMenuCulture] = useState(false);
+  const [menuCuisine, setMenuCuisine] = useState(false);
+  const [menuDIY, setMenuDIY] = useState(false);
+  const [menuBeauty, setMenyBeauty] = useState(false);
+  const [menuSports, setMenuSports] = useState(false);
+  const [menuTheatre, setMenuTheatre] = useState(false);
+  const [menuLanguage, setMenuLanguage] = useState(false);
+
   const [results, setResults] = useState([]);
   const [req, setReq] = useState(null);
   const [range, setRange] = useState(null);
@@ -250,37 +269,48 @@ const Results = (props) => {
   const category = (intCategory) => {
     switch (intCategory) {
       case "1":
-        return "Art";
+        setMenuArt(true);
+        return "Arts plastiques";
 
       case "2":
-        return "Arts de scene";
+        setMenuTheatre(true);
+        return "Arts de scène";
 
       case "11":
+        setMenuTour(true);
         return "Tours, Circuits, Expériences";
 
       case "3":
+        setMenuDIY(true);
         return "Loisirs creatifs";
 
       case "4":
-        return "Professionnel ";
+        setMenuDrill(true);
+        return "Professionnel";
 
       case "5":
+        setMenuCuisine(true);
         return "Culinaire";
 
       case "6":
+        setMenuCulture(true);
         return "Culture";
 
       case "7":
+        setMenuLanguage(true);
         return "Linguistique";
 
       case "8":
+        setMenuSports(true);
         return "Sport";
 
       case "9":
+        setMenuGames(true);
         return "Jeux";
 
       case "10":
-        return "Arts de scene ";
+        setMenyBeauty(true);
+        return "Beauté et Bien-être";
 
       default:
         return intCategory;
@@ -291,9 +321,11 @@ const Results = (props) => {
 
   const request = useQuery();
   useEffect(() => {
-    request.get("category") == null
-      ? setActivity(request.get("sub_category"))
-      : setActivity(category(request.get("category")));
+    if (request.get("category") == null) {
+      setActivity(request.get("sub_category"));
+    } else {
+      setActivity(category(request.get("category")));
+    }
     //const category = searchParams.get("category");
     setCity(request.get("city"));
     setDatemax(request.get("date_max"));
@@ -326,14 +358,24 @@ const Results = (props) => {
           activity={activity}
         />
         <div style={{ width: "100%", display: "flex" }}>
-          <h4 style={{ marginTop: "1%", marginLeft: "1%" }}>Filtres</h4>
-          <Form style={{ width: "17%", marginTop: "3%", marginLeft: "1%" }}>
+          <h5
+            style={{
+              color: "grey",
+              marginTop: "-1%",
+              marginLeft: "1%",
+              textDecoration: "underline",
+            }}
+          >
+            Filtres
+          </h5>
+          <Form style={{ width: "14%", marginTop: "3%", marginLeft: "-2.5%" }}>
             <Form.Item label="Prix">
               {" "}
               <Slider
                 range
                 max={600}
                 step={10}
+                //style={{ color: "black" }}
                 defaultValue={[0, 600]}
                 onChange={(prix) => {
                   setPrice(prix);
@@ -342,16 +384,16 @@ const Results = (props) => {
               />
             </Form.Item>
 
-            <Form.Item name="seats" label="Nombre de place(s)">
+            <Form.Item name="seats" label="Place(s)">
               <InputNumber
                 defaultValue={1}
-                //style={{ position: "absolute", marginLeft: 300 }}
+                style={{ width: "100%" }}
                 onChange={(e) => {
                   setSeats(e);
                   filtering(value, "", "");
                 }}
                 min={0}
-                max={10000}
+                max={1000}
               />
             </Form.Item>
 
@@ -363,7 +405,7 @@ const Results = (props) => {
                   setYears(e);
                   filtering(value, "", e[0]);
                 }}
-                style={{ width: 300 }}
+                //style={{ width: 300 }}
                 options={age}
                 placeholder="Sélectionner l'âge"
               />
@@ -374,7 +416,7 @@ const Results = (props) => {
                 onChange={(e) => {
                   filtering(value, e[0], "");
                 }}
-                style={{ width: 300 }}
+                // style={{ width: 300 }}
                 options={options}
                 placeholder="Sélectionner le niveau"
               />
@@ -391,6 +433,7 @@ const Results = (props) => {
               />
             </Form.Item>
           </Form>
+
           <div
             className="top"
             style={{
@@ -399,7 +442,6 @@ const Results = (props) => {
               // borderRightWidth: "thin",
             }}
           >
-            Résultats de la recherche{" "}
             <div
               style={{
                 position: "flex",

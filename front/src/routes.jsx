@@ -17,6 +17,7 @@ import CoursesCheck from "./CoursesCheck";
 import EmailVerify from "./EmailVerify";
 import MdpOublie from "./MdpOublie";
 import EmailVerifyGiver from "./EmailVerifyGiver";
+import Kids from "./Kids";
 const BaseRouter = () => (
   <Routes>
     <Route exact path="/" element={<Home />} />
@@ -30,6 +31,7 @@ const BaseRouter = () => (
       element={<Results />}
       key={window.location.pathname}
     />
+    <Route exact path="/kids" element={<Kids />} />
     <Route exact path="/profil" element={<ProfilCub />} />
     <Route exact path="/update/giver" element={<CoursesToModify />} />
     <Route exact path="/online/giver" element={<CourseOnline />} />
