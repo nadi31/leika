@@ -640,6 +640,39 @@ class CustomHours(APIView):
         return Response(serializer.data)
 
 
+class OfferssCreateView(APIView):
+    permission_classes = (permissions.AllowAny,)
+   # queryset = Course.objects.all()
+  #  serializer_class = CourseSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+  #  def get(self, request, *args, **kwargs):
+   #     courseHour = Course.objects.all()
+    #    serializer = CourseSerializer(courses, many=True)
+    #    return Response(serializer.data)
+
+    queryset = Offers.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        # user = Giver.objects.filter(id=self.kwargs['pk'])
+        offerPerCourse = Offers.objects.filter(course=self.kwargs['pk'])
+
+        serializer = OffersSerializer(offerPerCourse, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        # Post.objects.filter(pub_date__gt=datetime.now()).delete(
+
+        offerSerial = OffersSerializer(data=request.data)
+
+        if offerSerial.is_valid():
+            offerSerial.save()
+            return Response(offerSerial.data, status=status.HTTP_201_CREATED)
+        else:
+            print('error', offerSerial.errors)
+            return Response(offerSerial.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class CourseHoursCreateView(APIView):
     permission_classes = (IsGiver,)
    # queryset = Course.objects.all()

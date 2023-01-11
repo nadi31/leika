@@ -18,6 +18,7 @@ import EmailVerify from "./EmailVerify";
 import MdpOublie from "./MdpOublie";
 import EmailVerifyGiver from "./EmailVerifyGiver";
 import Kids from "./Kids";
+import GiverView from "./GiverView";
 const BaseRouter = () => (
   <Routes>
     <Route exact path="/" element={<Home />} />
@@ -40,6 +41,7 @@ const BaseRouter = () => (
     <Route exact path="/admin/list/verify" element={<CoursesToVerify />} />
     <Route exact path="/admin/check/:courseID" element={<CoursesCheck />} />
     <Route exact path="/email-verify/:token" element={<EmailVerify />} />
+    <Route exact path="/giver/:giverID" element={<GiverView />} />
     <Route
       exact
       path="/email-verify-giver/:token"

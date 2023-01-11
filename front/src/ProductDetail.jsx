@@ -55,6 +55,7 @@ const ProductDetail = (props) => {
   const [hourSelected, setHourSelected] = useState({});
   const [valueInput, setValueInput] = useState(1);
   const [adress, setAdress] = useState(null);
+  const [price, setPrice] = useState(null);
   const [ratings, setRatings] = useState(null);
   const [comments, setComments] = useState([]);
   const course_id = useParams();
@@ -65,7 +66,7 @@ const ProductDetail = (props) => {
   const [a, setA] = useState(false);
   const [kids, setKids] = useState(false);
   const [wLID, setWLID] = useState(null);
-
+  const [offers, setOffers] = useState(null);
   const deletedToWishlist = () => {
     if (localStorage.getItem("ID") !== "null" && a) {
       axios
@@ -130,7 +131,7 @@ const ProductDetail = (props) => {
           }}
           style={{ borderRadius: "25px", width: "100%" }}
         >
-          Le {date} à {hour} - {seats} place(s)
+          Le {date} à {hour} - {seats} place(s) disponible(s)
         </Button>
       </Timeline.Item>
     );
@@ -227,6 +228,14 @@ const ProductDetail = (props) => {
           Nombre de place(s){" "}
           <Button
             onClick={() => {
+              if (offers !== null) {
+                offers.map((offer, index) => {
+                  valueInput - 1 >= offer.seatsFirst &&
+                  valueInput <= offer.seatsLast
+                    ? setPrice(offer.price)
+                    : setPrice(course.price);
+                });
+              }
               if (valueInput <= 1) {
                 setValueInput(1);
               } else {
@@ -250,6 +259,15 @@ const ProductDetail = (props) => {
           ></InputNumber>
           <Button
             onClick={() => {
+              if (offers !== null) {
+                offers.map((offer, index) => {
+                  valueInput + 1 >= offer.seatsFirst &&
+                  valueInput <= offer.seatsLast
+                    ? setPrice(offer.price)
+                    : setPrice(course.price);
+                });
+              }
+
               if (valueInput >= maxSeats) {
                 setValueInput(maxSeats);
               } else if (valueInput < 1) {
@@ -261,6 +279,20 @@ const ProductDetail = (props) => {
           >
             +
           </Button>
+          {price ? (
+            price !== course.price ? (
+              <>
+                {" "}
+                pour
+                <p style={{ textDecoration: " line-through" }}>
+                  {course.price}
+                </p>
+                <p>{price}€</p>
+              </>
+            ) : (
+              <p>pour {price}€</p>
+            )
+          ) : null}
           <Button
             id="button"
             style={{
@@ -482,6 +514,8 @@ const ProductDetail = (props) => {
         );
         setCourse(res.data);
 
+        setPrice(res.data.price);
+
         const res2 = await axios.get(
           `http://localhost:8000/api/giver/${res.data.owner}`
         );
@@ -497,6 +531,13 @@ const ProductDetail = (props) => {
         setAdress(res5.data);
 
         console.log("RES" + JSON.stringify(adress));
+
+        const res4 = await axios.get(
+          `http://localhost:8000/api-course/create/offers/${courseID}`
+        );
+
+        setOffers(res4.data);
+        offers.map((offer, index) => console.log("liste1", index, offer.id));
 
         const res6 = await axios.get(
           ` http://localhost:8000/api-course/wishlist/${localStorage.getItem(
@@ -663,25 +704,6 @@ const ProductDetail = (props) => {
                 marginTop: "2%",
               }}
             >
-              <Breadcrumb>
-                <Breadcrumb.Item href="">
-                  <HomeOutlined />
-                </Breadcrumb.Item>
-                <Breadcrumb.Item href={`/search/?category=${course.category}`}>
-                  <span>
-                    <ThunderboltTwoTone twoToneColor="#ffc069" />
-                    {category(course.category)}
-                  </span>
-                </Breadcrumb.Item>
-                <Breadcrumb.Item
-                  href={`/search/?sub_category=${course.sub_category}`}
-                >
-                  <span>
-                    <ThunderboltTwoTone twoToneColor="#ffc069" />
-                    {course.sub_category}
-                  </span>
-                </Breadcrumb.Item>
-              </Breadcrumb>
               <span className={"title_activity"}>{course.title}</span>
               <br />
               <Rate
@@ -712,10 +734,7 @@ const ProductDetail = (props) => {
                   onClick={addedToWishlist}
                 />
               )}
-              <br />
-              <span className="accroche" style={{ marginRight: "70px" }}>
-                {course.price}€
-              </span>
+              <br /> <br />
               <span>
                 <EnvironmentTwoTone twoToneColor="#02245c" />
                 {adress
@@ -744,7 +763,34 @@ const ProductDetail = (props) => {
                   Voir plus
                 </a>
               </span>
-              <br />
+              <br /> <br />
+              <span className="accroche" style={{ marginRight: "70px" }}>
+                {course.price} € pour 1 place
+              </span>
+              <br /> <br />
+              <span>
+                {offers !== null ? (
+                  <>
+                    <ThunderboltTwoTone twoToneColor="ffa940 " />
+                    Offre spéciale
+                    <ThunderboltTwoTone twoToneColor="ffa940 " />
+                    <br />
+                    <br />
+                    {offers.map((offer, index) => (
+                      <span>
+                        <ThunderboltTwoTone twoToneColor="ffa940 " />
+                        {"À partir de  " +
+                          offer.seatsFirst +
+                          " jusqu'à " +
+                          offer.seatsLast +
+                          " places: " +
+                          offer.price +
+                          " €"}{" "}
+                      </span>
+                    ))}
+                  </>
+                ) : null}
+              </span>
               <br />
               <br />
               {width <= 1200 ? (
@@ -816,14 +862,33 @@ const ProductDetail = (props) => {
           <Bloc
             yellow={true}
             height={"900px"}
-            content={giverDescription}
+            content={
+              <div style={{ justifyContent: "center" }}>
+                <a href={"http://localhost:3000/giver/" + giver.id}>
+                  <Image
+                    style={{
+                      borderRadius: "50%",
+                      width: "100px",
+                      height: "100px",
+                    }}
+                    preview={false}
+                    src={giver.img1}
+                  />{" "}
+                </a>
+                <a href={"http://localhost:3000/giver/" + giver.id}>
+                  {" "}
+                  <h2> {giver.appelation}</h2>
+                </a>
+                <p>{giver.description}</p>
+              </div>
+            }
             icone={
               <RocketTwoTone
                 twoToneColor="#ffa940"
                 style={{ fontSize: "25px" }}
               />
             }
-            titre={"À propos du Giver"}
+            titre={"Proposé par"}
             width={width <= 1200 ? "80%" : "40%"}
           />
         </div>

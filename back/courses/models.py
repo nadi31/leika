@@ -52,7 +52,11 @@ class Course(models.Model):
     isIntermediate = models.BooleanField(default=False)
     isBeginner = models.BooleanField(default=False)
     isAdvanced = models.BooleanField(default=False)
-    # giver= models.ForeignKey(Giver, on_delete=models.CASCADE)
+    valOffers = models.IntegerField(null=True, blank=True)
+    teamBuildingActivity = models.BooleanField(default=False)
+    duoActivity = models.BooleanField(default=False)
+    terroirActivity = models.BooleanField(default=False)
+    language = models.CharField(max_length=30, null=True, blank=True)
 
     CATEGORY_CHOICES = (
         (1, 'arts_plastiques'),
@@ -101,6 +105,13 @@ class CourseHour(models.Model):
     dateFin = models.DateField(default=None, blank=False, null=False)
     hourFin = models.TimeField(null=True, blank=True)
     seats = models.IntegerField(null=True, blank=True)
+
+
+class Offers(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    seatsFirst = models.IntegerField(null=True, blank=True)
+    seatsLast = models.IntegerField(null=True, blank=True)
+    price = models.IntegerField(null=True, blank=True)
 
 
 # @ receiver(post_save, sender=Course, dispatch_uid="makeThumbnail_update")

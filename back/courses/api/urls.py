@@ -13,6 +13,8 @@ urlpatterns = [
     # path(PicView.urlImage, PicView.as_view()),
     path('update/verify/admin/<pk>', CourseUpdateAdminVerifyView.as_view()),
     path('create/hours/', CourseHoursCreateView.as_view()),
+    path('create/offers/', OfferssCreateView.as_view()),
+    path('create/offers/<pk>', OfferssCreateView.as_view()),
     path('hours/<pk>', CustomHours.as_view()),
     path('giver/cours/<pk>', CourseListGiverView.as_view()),
     path('list/cours/<pk>', CourseListGiverCubView.as_view()),

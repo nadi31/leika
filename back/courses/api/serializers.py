@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from courses.models import Course, CourseHour, Booking, Wishlist, SingleBooking, Review
+from courses.models import Course, CourseHour, Booking, Wishlist, SingleBooking, Review, Offers
 from authentification.models import Giver, Adress, MyUser, Cub
 
 
@@ -57,7 +57,10 @@ class CourseHoursSerializer(serializers.ModelSerializer):
         model = CourseHour
         fields = '__all__'
 
-
+class OffersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Offers
+        fields = '__all__'
 class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:

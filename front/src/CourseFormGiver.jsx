@@ -30,6 +30,7 @@ import {
   UploadOutlined,
   ScheduleOutlined,
   LoadingOutlined,
+  PlusSquareOutlined,
   PoundOutlined,
 } from "@ant-design/icons";
 
@@ -67,7 +68,6 @@ const category = [
   { value: "tours_circuits", label: "Tours et circuits" },
   { value: "plein_air", label: "Plein air" },
   { value: "evenement", label: "Évènement" },
-
   { value: "stage", label: "Stage" },
 ];
 
@@ -141,7 +141,11 @@ class CourseForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSub = this.handleSub.bind(this);
     this.state = {
+      addLine: true,
+      listAtt: [],
+      addIdx: 0,
       seats: 0,
+      listRed: [],
       disabled: true,
       is_remote: true,
       is_duo: false,
@@ -149,7 +153,7 @@ class CourseForm extends React.Component {
       is_terroir: false,
       isRemote: false,
       is_beginner: false,
-      is_avanced: false,
+      is_advanced: false,
       is_intermediate: false,
       loading: false,
       visible: false,
@@ -163,6 +167,7 @@ class CourseForm extends React.Component {
       date_selected: "",
       discount: 0,
       c_id: null,
+      modal_offre_visible: false,
       element: null,
       ID_user: null,
       user_type: null,
@@ -186,7 +191,47 @@ class CourseForm extends React.Component {
       }
     },
   };*/
+  add = () => {
+    console.log("hey");
+    if (this.state.addLine) {
+      return (
+        <>
+          <p>
+            De{" "}
+            <InputNumber
+              // defaultValue={this.state.courses.seats}
+              //style={{ position: "absolute", marginLeft: 300 }}
+              onChange={() => {}}
+              min={0}
+              max={10000}
+            />
+            à{" "}
+            <InputNumber
+              // defaultValue={this.state.courses.seats}
+              //style={{ position: "absolute", marginLeft: 300 }}
+              onChange={() => {}}
+              min={0}
+              max={10000}
+            />
+            places :{" "}
+            <InputNumber
+              // defaultValue={this.state.courses.seats}
+              //style={{ position: "absolute", marginLeft: 300 }}
+              onChange={() => {}}
+              min={0}
+              max={10000}
+            />
+            €<Button onClick={() => this.setState({ addLine: true })}>+</Button>
+          </p>
+        </>
+      );
+    }
 
+    this.setState({ addLine: false });
+  };
+  addLin = () => {
+    this.setState({ addLine: this.state.addLine + 1 });
+  };
   period = (date_min, date_max, date_maxx, frequence) => {
     let list_d1 = [];
     let list_d2 = [];
@@ -897,16 +942,20 @@ class CourseForm extends React.Component {
       fieldsValue.upload.fileList[2].originFileObj.name
     );
     form_data.append("title", fieldsValue.title_input);
-    //form_data.append("content", fieldsValue.content_input);
+    form_data.append("language", fieldsValue.language_input);
     form_data.append("discount", parseFloat(this.state.discount));
     form_data.append("isRemote", convert(this.isRemote));
     form_data.append("isTeam", convert(this.is_team));
     form_data.append("isTerroir", convert(this.is_terroir));
     form_data.append("isDuo", convert(this.is_duo));
     form_data.append("price", parseFloat(fieldsValue.input_price));
-    form_data.append("isIntermediate", convert(this.state.is_intermediatee));
+    form_data.append("isIntermediate", convert(this.state.is_intermediate));
     form_data.append("isBeginner", convert(this.state.is_beginner));
     form_data.append("isAdvanced", convert(this.state.is_advanced));
+    form_data.append("valOffers", this.state.addIdx);
+    form_data.append("teamBuildingActivity", convert(this.state.is_team));
+    form_data.append("duoActivity", convert(this.state.is_duo));
+    form_data.append("terroirActivity", convert(this.state.is_terroir));
     form_data.append("value", this.state.value);
     form_data.append("age", fieldsValue.cascader_age);
     form_data.append("category", category);
@@ -925,12 +974,33 @@ class CourseForm extends React.Component {
         },
       })
       .then((res) => {
+        // console.log("977" + this.state.addIdx);
+        if (this.state.listAtt.length > 0) {
+          for (let i = 0; i < this.state.listAtt.length; i += 3) {
+            let form = new FormData();
+            form.append("seatsFirst", this.state.listAtt[i]);
+            form.append("course", res.data.id);
+            form.append("seatsLast", this.state.listAtt[i + 1]);
+            form.append("price", this.state.listAtt[i + 2]);
+            axios
+              .post("http://localhost:8000/api-course/create/offers/", form, {
+                headers: {
+                  "content-type": "multipart/form-data",
+                  Authorization: "Bearer " + localStorage.getItem("token"),
+                },
+              })
+
+              .catch((err) => {
+                console.log("ERROR1", err.response);
+              });
+          }
+        }
         localStorage.setItem("course_id", res.data.id);
         localStorage.setItem("course", res.data);
         console.log("cours_ID", res.data.id);
 
         //dispatch(courseHoursAdded( res.data.id), date, dateFin, hour, hourFin);
-        console.log("VALUE", this.state.list2[0].length);
+        //console.log("VALUE", this.state.list2[0].length);
         if (this.state.value > 0) {
           for (
             let iteration_list1 = 0;
@@ -1002,11 +1072,11 @@ class CourseForm extends React.Component {
           })
           .then((res2) => {})
           .catch((err1) => {
-            console.log("ERROR2", err1.response);
+            console.log("ERROR2", err1);
           });
       })
       .catch((err) => {
-        console.log("ERROR3", err.response);
+        console.log("ERROR3", err);
       });
 
     //console.log("COUSEIDDDD", course_id);
@@ -1474,7 +1544,7 @@ class CourseForm extends React.Component {
               </Modal>
 
               <Modal
-                visible={this.state.visibl}
+                open={this.state.visibl}
                 // onOk={this.handleOk}
                 onCancel={this.handleCancel2}
                 title="Récapitulatif"
@@ -1574,7 +1644,7 @@ class CourseForm extends React.Component {
                   </Button>
                 </Upload>
               </Form.Item>
-              <Form.Item name="language" label="Langue">
+              <Form.Item name="language_input" label="Langue">
                 <AutoComplete options={this.list_langue}></AutoComplete>
               </Form.Item>
               <Form.Item name="switch_discount" label="Réduction">
@@ -1613,7 +1683,7 @@ class CourseForm extends React.Component {
               </Form.Item>
               <Form.Item name="switch_terroir" label="Activité Terroir">
                 <Switch
-                  oonClick={() =>
+                  onClick={() =>
                     this.setState({ is_terroir: !this.state.is_terroir })
                   }
                 />
@@ -1640,7 +1710,12 @@ class CourseForm extends React.Component {
                 Offres de groupe:{" "}
                 <Button
                   type="primary"
-                  onClick={this.showMod}
+                  onClick={() => {
+                    var list = [];
+                    this.setState({
+                      modal_offre_visible: true,
+                    });
+                  }}
                   style={{
                     marginLeft: "2%",
                     marginBottom: "4%",
@@ -1650,11 +1725,193 @@ class CourseForm extends React.Component {
                   <PoundOutlined />
                 </Button>{" "}
               </span>
+              <Modal
+                title="Offres si réservations de plusieurs places"
+                footer={[
+                  <Button
+                    key="back"
+                    onClick={() => {
+                      this.setState({
+                        modal_offre_visible: false,
+                        listAtt: [],
+                      });
+                    }}
+                  >
+                    Annuler
+                  </Button>,
+                  <Button
+                    key="submit"
+                    type="primary"
+                    onClick={() => {
+                      this.state.listAtt.map((list_small, i) =>
+                        console.log("Indice " + i + ": " + list_small)
+                      );
+                      this.setState({
+                        listRed: this.state.listAtt,
+                        modal_offre_visible: false,
+                      });
+                    }}
+                  >
+                    Valider
+                  </Button>,
+                ]}
+                onCancel={() => {
+                  this.setState({
+                    modal_offre_visible: false,
+                    listRed: [],
+                  });
+                }}
+                centered
+                open={this.state.modal_offre_visible}
+                width={500}
+              >
+                <Form
+                  layout="inline"
+                  size="medium"
+                  onSubmit={this.handleOffers}
+                  onFinish={this.handleOffers}
+                >
+                  <p>
+                    {" "}
+                    De:
+                    <Form.Item>
+                      <InputNumber
+                        //key= {"i" + this.state.addIdx}
+                        // defaultValue={this.state.courses.seats}
+                        //style={{ position: "absolute", marginLeft: 300 }}
+                        onBlur={(e) => {
+                          console.log("VAL" + e.target.value);
+                          this.setState({
+                            listAtt: [...this.state.listAtt, e.target.value],
+                          });
+                        }}
+                        min={0}
+                        max={10000}
+                      />
+                    </Form.Item>
+                    à{" "}
+                    <Form.Item>
+                      {" "}
+                      <InputNumber
+                        //key={"o" + this.state.addIdx}
+                        // defaultValue={this.state.courses.seats}
 
-              <Modal>
-                <p>
-                  De <InputNumber />à<InputNumber />: <InputNumber />
-                </p>
+                        //style={{ position: "absolute", marginLeft: 300 }}
+                        onBlur={(e) => {
+                          console.log("VAL" + e.target.value);
+                          this.setState({
+                            listAtt: [...this.state.listAtt, e.target.value],
+                          });
+                        }}
+                        min={0}
+                        max={10000}
+                      />
+                    </Form.Item>
+                    places :{" "}
+                    <Form.Item>
+                      {" "}
+                      <InputNumber
+                        // key={"v" + this.state.addIdx}
+                        // defaultValue={this.state.courses.seats}
+                        //style={{ position: "absolute", marginLeft: 300 }}
+                        onBlur={(e) => {
+                          console.log("VAL" + e.target.value);
+                          this.setState({
+                            listAtt: [...this.state.listAtt, e.target.value],
+                          });
+                        }}
+                        min={0}
+                        max={10000}
+                      />
+                      €
+                    </Form.Item>
+                    <Button
+                      onClick={() =>
+                        this.setState({
+                          addIdx: this.state.addIdx + 1,
+                        })
+                      }
+                    >
+                      +
+                    </Button>
+                  </p>
+                  {Array.from({ length: this.state.addIdx }).map(() => (
+                    <p>
+                      De{" "}
+                      <Form.Item>
+                        {" "}
+                        <InputNumber
+                          // defaultValue={this.state.courses.seats}
+                          //style={{ position: "absolute", marginLeft: 300 }}
+                          onBlur={(e) => {
+                            console.log("VAL" + e.target.value);
+                            this.setState({
+                              listAtt: [...this.state.listAtt, e.target.value],
+                            });
+                          }}
+                          min={0}
+                          max={10000}
+                        />
+                      </Form.Item>
+                      à{" "}
+                      <Form.Item>
+                        <InputNumber
+                          //   key={"o" + this.state.addIdx}
+                          // defaultValue={this.state.courses.seats}
+                          //style={{ position: "absolute", marginLeft: 300 }}
+                          onBlur={(e) => {
+                            console.log("VAL" + e.target.value);
+                            this.setState({
+                              listAtt: [...this.state.listAtt, e.target.value],
+                            });
+                          }}
+                          min={0}
+                          max={10000}
+                        />
+                      </Form.Item>
+                      places :{" "}
+                      <Form.Item>
+                        {" "}
+                        <InputNumber
+                          //  key={"v" + this.state.addIdx}
+                          // defaultValue={this.state.courses.seats}
+                          //style={{ position: "absolute", marginLeft: 300 }}
+                          onBlur={(e) => {
+                            console.log("VAL" + e.target.value);
+                            this.setState({
+                              listAtt: [...this.state.listAtt, e.target.value],
+                            });
+                          }}
+                          min={0}
+                          max={10000}
+                        />
+                      </Form.Item>
+                      €
+                      <Button
+                        onClick={() =>
+                          this.setState({
+                            addIdx: this.state.addIdx + 1,
+                          })
+                        }
+                      >
+                        +
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          this.setState({
+                            listRed: this.state.listRed.splice(
+                              this.state.addIdx,
+                              1
+                            ),
+                            addIdx: this.state.addIdx - 1,
+                          })
+                        }
+                      >
+                        -
+                      </Button>
+                    </p>
+                  ))}
+                </Form>
               </Modal>
 
               <Form.Item
