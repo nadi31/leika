@@ -587,6 +587,7 @@ const CourseUpdateGiver = (props) => {
   setCourseID(useParams());
   useEffect(() => {
     setID_user(localStorage.getItem("ID_user"));
+
     try {
       const res4 = axios.get(
         `http://localhost:8000/api-course/review/course/${courseID}`

@@ -1,5 +1,6 @@
 import React, { useState, useLayoutEffect, useEffect } from "react";
 import { ConfigProvider } from "antd";
+
 //import frFR from "antd/lib/locale/fr_FR";
 //import MediaQuery from 'react-responsive';
 import { BrowserView, MobileView } from "react-device-detect";
@@ -220,6 +221,7 @@ const Home = () => {
 
           <BrowserView>
             <MenuBrowser
+              team={false}
               kids={false}
               setDisplay={setDisplay}
               width={width}

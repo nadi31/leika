@@ -22,6 +22,8 @@ urlpatterns = [
     path('mdp/<pk>', UserMdpOublieView.as_view()),
     path('mdp', UserMdpOublieView.as_view()),
     path('user', UserOublieView.as_view()),
+    path('giver/adress/<pk>', AdressesGiverView.as_view()),
+    #
     #path('myUsers', MyUser.as_view()),
 
 ]

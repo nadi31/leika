@@ -2,6 +2,14 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useNavigate, withRouter } from "react-router-dom";
 import { BrowserView, MobileView } from "react-device-detect";
+import { GoogleMap, MarkerF, LoadScript } from "@react-google-maps/api";
+import {
+  CheckCircleTwoTone,
+  HeartTwoTone,
+  SmileTwoTone,
+} from "@ant-design/icons";
+import Geocode from "react-geocode";
+import Map from "./Map"; // import the map here
 import Icon from "@ant-design/icons";
 import { RocketOutlined, ExperimentOutlined } from "@ant-design/icons";
 import {
@@ -17,6 +25,7 @@ import {
   Switch,
   Button,
 } from "antd";
+import dancee from "./star.png";
 import experience from "./experience.png";
 import dayjs from "dayjs";
 import * as moment from "moment";
@@ -53,7 +62,7 @@ const Results = (props) => {
   const [activity, setActivity] = useState(null);
   const [city, setCity] = useState(null);
   const [datemax, setDatemax] = useState(null);
-  const [state, setState] = useState(null);
+  const [markers, setMarkers] = useState([]);
   const [res, setRes] = useState([]);
   const [value, setValue] = useState(false);
   const [years, setYears] = useState("");
@@ -61,6 +70,17 @@ const Results = (props) => {
   const [isIntermediate, setIsIntermediate] = useState(false);
   const [isBeginner, setIsBeginner] = useState(false);
   const [price, setPrice] = useState([0, 600]);
+  const shape = {
+    coords: [1, 1, 1, 20, 18, 20, 18, 1],
+    type: "poly",
+  };
+  const loc = {
+    address: "1600 Amphitheatre Parkway, Mountain View, california.",
+    lat: 37.42216,
+    lng: -122.08427,
+  }; // our location object from earlier
+
+  const image = {};
   const filtering = (e, level, age) => {
     console.log("IS BEGIN" + isBeginner, level);
 
@@ -223,6 +243,7 @@ const Results = (props) => {
         break;
     }
   };
+
   const onChangeLevele = (level) => {
     console.log(level[0]);
     switch (level[0]) {
@@ -343,153 +364,168 @@ const Results = (props) => {
         setResults(res.data);
         setFilters(res.data);
         setRes(res.data);
+        res.data.map((res) => console.log("" + res.lat));
       })
 
       .catch((err) => console.log(err));
   }, []);
 
-  return (
-    <BrowserView>
-      <div key={activity} style={{ width: "100%", display: "inline-block" }}>
-        <MenuBrowser
-          width={width}
-          city={city}
-          datemax={datemax}
-          activity={activity}
-        />
-        <div style={{ width: "100%", display: "flex" }}>
-          <h5
-            style={{
-              color: "grey",
-              marginTop: "-1%",
-              marginLeft: "1%",
-              textDecoration: "underline",
-            }}
-          >
-            Filtres
-          </h5>
-          <Form style={{ width: "14%", marginTop: "3%", marginLeft: "-2.5%" }}>
-            <Form.Item label="Prix">
-              {" "}
-              <Slider
-                range
-                max={600}
-                step={10}
-                //style={{ color: "black" }}
-                defaultValue={[0, 600]}
-                onChange={(prix) => {
-                  setPrice(prix);
-                  filtering(value, "", "");
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item name="seats" label="Place(s)">
-              <InputNumber
-                defaultValue={1}
-                style={{ width: "100%" }}
-                onChange={(e) => {
-                  setSeats(e);
-                  filtering(value, "", "");
-                }}
-                min={0}
-                max={1000}
-              />
-            </Form.Item>
-
-            <Form.Item name="cascader_age" label="Age">
-              <Cascader
-                //defaultValue={"Tous les âges"}
-                // value={this.state.input}
-                onChange={(e) => {
-                  setYears(e);
-                  filtering(value, "", e[0]);
-                }}
-                //style={{ width: 300 }}
-                options={age}
-                placeholder="Sélectionner l'âge"
-              />
-            </Form.Item>
-            <Form.Item name="cascader_level" label="Niveau">
-              <Cascader
-                defaultValue={""}
-                onChange={(e) => {
-                  filtering(value, e[0], "");
-                }}
-                // style={{ width: 300 }}
-                options={options}
-                placeholder="Sélectionner le niveau"
-              />
-            </Form.Item>
-            <Form.Item name="switch_remote" label="En ligne">
-              <Switch
-                //defaultValue={true}
-                onChange={(e) => {
-                  console.log("value" + e);
-                  setValue(e);
-                  console.log("value" + value);
-                  filtering(e, "", "");
-                }}
-              />
-            </Form.Item>
-          </Form>
-
+  {
+    if (results !== null) {
+      return (
+        <BrowserView>
           <div
-            className="top"
-            style={{
-              fontSize: "200%",
-              width: "70%",
-              // borderRightWidth: "thin",
-            }}
+            key={activity}
+            style={{ width: "100%", display: "inline-block" }}
           >
-            <div
-              style={{
-                position: "flex",
-                display: "inline",
-                width: "100%",
-                float: "left",
-                marginRight: "10%",
-              }}
-            >
-              {results === [] ? (
-                <>Loading</>
-              ) : (
-                results.map((res) => {
-                  return (
-                    <span
-                      style={{
-                        position: "flex",
-                        display: "inline",
-                        width: "30%",
-                        float: "left",
-                        marginRight: "3%",
-                      }}
-                      key={res.id}
-                    >
-                      <a href={"/product/" + res.id}>
-                        <Card
-                          hoverable
-                          style={{ border: "none", width: "100%" }}
-                          cover={<img alt="example" src={res.img1} />}
-                        >
-                          <Meta
-                            id="button_giver"
-                            style={{ marginTop: "-2%", border: "none" }}
-                            title={res.title}
-                            description={res.price + "€"}
-                          />
-                        </Card>
-                      </a>
-                    </span>
-                  );
-                })
-              )}
+            <MenuBrowser
+              width={width}
+              city={city}
+              datemax={datemax}
+              activity={activity}
+            />
+            <div style={{ width: "100%", display: "flex" }}>
+              <h5
+                style={{
+                  color: "grey",
+                  marginTop: "-1%",
+                  marginLeft: "1%",
+                  textDecoration: "underline",
+                }}
+              >
+                Filtres
+              </h5>
+              <Form
+                style={{ width: "14%", marginTop: "3%", marginLeft: "-2.5%" }}
+              >
+                <Form.Item label="Prix">
+                  {" "}
+                  <Slider
+                    range
+                    max={600}
+                    step={10}
+                    //style={{ color: "black" }}
+                    defaultValue={[0, 600]}
+                    onChange={(prix) => {
+                      setPrice(prix);
+                      filtering(value, "", "");
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item name="seats" label="Place(s)">
+                  <InputNumber
+                    defaultValue={1}
+                    style={{ width: "100%" }}
+                    onChange={(e) => {
+                      setSeats(e);
+                      filtering(value, "", "");
+                    }}
+                    min={0}
+                    max={1000}
+                  />
+                </Form.Item>
+
+                <Form.Item name="cascader_age" label="Age">
+                  <Cascader
+                    //defaultValue={"Tous les âges"}
+                    // value={this.state.input}
+                    onChange={(e) => {
+                      setYears(e);
+                      filtering(value, "", e[0]);
+                    }}
+                    //style={{ width: 300 }}
+                    options={age}
+                    placeholder="Sélectionner l'âge"
+                  />
+                </Form.Item>
+                <Form.Item name="cascader_level" label="Niveau">
+                  <Cascader
+                    defaultValue={""}
+                    onChange={(e) => {
+                      filtering(value, e[0], "");
+                    }}
+                    // style={{ width: 300 }}
+                    options={options}
+                    placeholder="Sélectionner le niveau"
+                  />
+                </Form.Item>
+                <Form.Item name="switch_remote" label="En ligne">
+                  <Switch
+                    //defaultValue={true}
+                    onChange={(e) => {
+                      console.log("value" + e);
+                      setValue(e);
+                      console.log("value" + value);
+                      filtering(e, "", "");
+                    }}
+                  />
+                </Form.Item>
+              </Form>
+
+              <div
+                className="top"
+                style={{
+                  fontSize: "200%",
+                  width: "70%",
+                  // borderRightWidth: "thin",
+                }}
+              >
+                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
+                  <Map locations={results} />
+                </LoadScript>
+                <div
+                  style={{
+                    position: "flex",
+                    display: "inline",
+                    width: "100%",
+                    float: "left",
+                    marginRight: "10%",
+                  }}
+                >
+                  {results === [] ? (
+                    <>Loading</>
+                  ) : (
+                    results.map((res) => {
+                      return (
+                        <>
+                          <span
+                            style={{
+                              position: "flex",
+                              display: "inline",
+                              width: "30%",
+                              float: "left",
+                              marginRight: "3%",
+                            }}
+                            key={res.id}
+                          >
+                            <a href={"/product/" + res.id}>
+                              <Card
+                                hoverable
+                                style={{ border: "none", width: "100%" }}
+                                cover={<img alt="example" src={res.img1} />}
+                              >
+                                <Meta
+                                  id="button_giver"
+                                  style={{ marginTop: "-2%", border: "none" }}
+                                  title={res.title}
+                                  description={res.price + "€"}
+                                />
+                              </Card>
+                            </a>
+                          </span>
+                        </>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
             </div>
+            <Footer width={width} />{" "}
           </div>
-        </div>
-        <Footer width={width} />{" "}
-      </div>
-    </BrowserView>
-  );
+        </BrowserView>
+      );
+    }
+  }
 };
 export default Results;

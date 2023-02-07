@@ -19,6 +19,9 @@ import MdpOublie from "./MdpOublie";
 import EmailVerifyGiver from "./EmailVerifyGiver";
 import Kids from "./Kids";
 import GiverView from "./GiverView";
+import TeamBuilding from "./TeamBuilding";
+
+import Map from "./Map";
 const BaseRouter = () => (
   <Routes>
     <Route exact path="/" element={<Home />} />
@@ -33,6 +36,7 @@ const BaseRouter = () => (
       key={window.location.pathname}
     />
     <Route exact path="/kids" element={<Kids />} />
+    <Route exact path="/team" element={<TeamBuilding />} />
     <Route exact path="/profil" element={<ProfilCub />} />
     <Route exact path="/update/giver" element={<CoursesToModify />} />
     <Route exact path="/online/giver" element={<CourseOnline />} />
@@ -42,6 +46,7 @@ const BaseRouter = () => (
     <Route exact path="/admin/check/:courseID" element={<CoursesCheck />} />
     <Route exact path="/email-verify/:token" element={<EmailVerify />} />
     <Route exact path="/giver/:giverID" element={<GiverView />} />
+    <Route exact path="/map" element={<Map />} />
     <Route
       exact
       path="/email-verify-giver/:token"

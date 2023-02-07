@@ -398,7 +398,10 @@ const UpdateCourse = () => {
     { value: "beaute_bien_etre", label: "Beauté & bien-être" },
     { value: "tours_circuits", label: "Tours et circuits" },
   ];
-
+  const [is_terroir, setIs_terroir] = useState(false);
+  const [teamBuildingActivity, setTeamBuildingActivity] = useState(false);
+  const [mapResults, setMapResults] = useState(null);
+  const [results, setResults] = useState(null);
   const [width, setWidth] = useState(window.innerWidth);
   const [selectedValue, setSelectedValue] = useState(0);
   const [date, setDate] = useState([]);
@@ -420,7 +423,14 @@ const UpdateCourse = () => {
   const [hours, setHours] = useState(null);
   const [categoryFinale, setCategoryFinale] = useState(0);
   const [imgs, setImgs] = useState([]);
+  const [duoActivity, setDuoActivity] = useState(false);
   const [changeValue, setChangeValue] = useState(false);
+  //offres
+  const [modal_offre_visible, setModal_offre_visible] = useState(false);
+  const [listAtt, setListAtt] = useState([]);
+  const [listRed, setListRed] = useState([]);
+  //setAddIdx
+  const [addIdx, setAddIdx] = useState(0);
   const showModal = () => {
     setVisible(true);
   };
@@ -477,6 +487,8 @@ const UpdateCourse = () => {
     console.log(window.innerWidth);
   }
   useLayoutEffect(() => {
+    // setID_user(localStorage.getItem("ID_user"));
+
     window.addEventListener("resize", updateSize);
     return () => window.removeEventListener("resize", updateSize);
   }, []);
@@ -490,7 +502,21 @@ const UpdateCourse = () => {
     // console.log("HEY, PARAMS: " + JSON.stringify(params["courseID"]));
   }
   useEffect(() => {
-    //await ().then(async () => {
+    const idGiver = localStorage.getItem("ID");
+    axios
+      .get(`http://localhost:8000/api/giver/adress/${idGiver}`)
+      .then((res) => {
+        setResults(res.data);
+        let mapArray = [];
+        console.log("RESULTS REQUEST" + JSON.stringify(res.data));
+        // setResults(res.data);
+        res.data.map((res) =>
+          mapArray.push({ label: res.name, value: res.id })
+        );
+        //mapArray = JSON.stringify(mapArray);
+        setMapResults(mapArray);
+        console.log("RESULTS ****" + JSON.stringify(mapArray));
+      });
 
     const courseID = params["courseID"];
     try {
@@ -536,6 +562,35 @@ const UpdateCourse = () => {
     }
   };
   const onFinish = (values) => {
+    if (this.state.listAtt.length > 0) {
+      axios.delete(
+        `http://localhost:8000/api-course/del/offers/${params["courseID"]}`,
+        {
+          headers: {
+            "content-type": "multipart/form-data",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
+      for (let i = 0; i < this.state.listAtt.length; i += 3) {
+        let form = new FormData();
+        form.append("seatsFirst", this.state.listAtt[i]);
+        form.append("course", params["courseID"]);
+        form.append("seatsLast", this.state.listAtt[i + 1]);
+        form.append("price", this.state.listAtt[i + 2]);
+        axios
+          .post("http://localhost:8000/api-course/create/offers/", form, {
+            headers: {
+              "content-type": "multipart/form-data",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          })
+
+          .catch((err) => {
+            console.log("ERROR1", err.response);
+          });
+      }
+    }
     //console.log("IMAGE " + courseDetails.img1);
     //console.log("HOUR " + values);
     axios
@@ -629,6 +684,9 @@ const UpdateCourse = () => {
     form_data.append("coursesID", params["courseID"]);
     form_data.append("isVerified", "False");
     form_data.append("isDiscounted", convert(values.switch_discount));
+    form_data.append("terroirActivity", convert(is_terroir));
+    form_data.append("duoActivity", convert(duoActivity));
+    form_data.append("teamBuildingActivity", convert(teamBuildingActivity));
     form_data.append("date", date1);
     form_data.append("dateFin", date2);
     form_data.append("hourFin", time2);
@@ -664,6 +722,7 @@ const UpdateCourse = () => {
     form_data.append("isAdvanced", convert(values.is_avanced));
     form_data.append("value", value);
     form_data.append("age", values.cascader_age);
+    form_data.append("lieu", values.cascader_lieu);
     form_data.append("category", categoryFinale);
 
     values.autocomplete != null
@@ -718,7 +777,7 @@ const UpdateCourse = () => {
         }
       });
   };
-  if (courseDetails) {
+  if (courseDetails && mapResults) {
     return (
       <div className="page">
         <BrowserView>
@@ -748,7 +807,7 @@ const UpdateCourse = () => {
               //range_date_debut: courseDetails.date,
               //range_date_fin: courseDetails.dateFin,
               //time_picker_b: courseDetails.hour,
-              //time_picker_e: courseDetails.hourFin,
+              cascader_lieu: courseDetails.lieu,
               cascader_age: [courseDetails.age],
               cascader_level: courseDetails.isAdvanced
                 ? ["isAdvanced"]
@@ -896,6 +955,7 @@ const UpdateCourse = () => {
                 defaultChecked={courseDetails.isDiscounted}
               />
             </Form.Item>
+
             {courseDetails.isDiscounted || disabled ? (
               <Form.Item valuePropName="input_discount">
                 <InputNumber
@@ -912,9 +972,194 @@ const UpdateCourse = () => {
             ) : (
               <></>
             )}
+            {/*ofress*/}
+            <span style={{ marginLeft: 150 }}>
+              Offres de groupe:{" "}
+              <Button
+                type="primary"
+                onClick={() => {
+                  var list = [];
+
+                  setModal_offre_visible(true);
+                }}
+                style={{
+                  marginLeft: "2%",
+                  marginBottom: "4%",
+                  marginTop: -60,
+                }}
+              ></Button>{" "}
+            </span>
+            <Modal
+              title="Offres si réservations de plusieurs places"
+              footer={[
+                <Button
+                  key="back"
+                  onClick={() => {
+                    setModal_offre_visible(false);
+                    setListAtt([]);
+                  }}
+                >
+                  Annuler
+                </Button>,
+                <Button
+                  key="submit"
+                  type="primary"
+                  onClick={() => {
+                    listAtt.map((list_small, i) =>
+                      console.log("Indice " + i + ": " + list_small)
+                    );
+
+                    setListRed(listAtt);
+                    setModal_offre_visible(false);
+                  }}
+                >
+                  Valider
+                </Button>,
+              ]}
+              onCancel={() => {
+                setModal_offre_visible(false);
+                setListAtt([]);
+              }}
+              centered
+              open={modal_offre_visible}
+              width={500}
+            >
+              <Form
+                layout="inline"
+                size="medium"
+                // onSubmit={handleOffers}
+                // onFinish={handleOffers}
+              >
+                <p>
+                  {" "}
+                  De:
+                  <Form.Item>
+                    <InputNumber
+                      //key= {"i" + this.state.addIdx}
+                      // defaultValue={this.state.courses.seats}
+                      //style={{ position: "absolute", marginLeft: 300 }}
+                      onBlur={(e) => {
+                        listAtt === []
+                          ? setListAtt([e.target.value])
+                          : setListAtt([...listAtt, e.target.value]);
+                      }}
+                      min={0}
+                      max={10000}
+                    />
+                  </Form.Item>
+                  à{" "}
+                  <Form.Item>
+                    {" "}
+                    <InputNumber
+                      //key={"o" + this.state.addIdx}
+                      // defaultValue={this.state.courses.seats}
+
+                      //style={{ position: "absolute", marginLeft: 300 }}
+                      onBlur={(e) => {
+                        console.log("VAL" + e.target.value);
+                        setListAtt([...listAtt, e.target.value]);
+                      }}
+                      min={0}
+                      max={10000}
+                    />
+                  </Form.Item>
+                  places :{" "}
+                  <Form.Item>
+                    {" "}
+                    <InputNumber
+                      // key={"v" + this.state.addIdx}
+                      // defaultValue={this.state.courses.seats}
+                      //style={{ position: "absolute", marginLeft: 300 }}
+                      onBlur={(e) => {
+                        console.log("VAL" + e.target.value);
+                        setListAtt([...listAtt, e.target.value]);
+                      }}
+                      min={0}
+                      max={10000}
+                    />
+                    €
+                  </Form.Item>
+                  <Button onClick={() => setAddIdx(addIdx + 1)}>+</Button>
+                </p>
+                {Array.from({ length: addIdx }).map(() => (
+                  <p>
+                    De{" "}
+                    <Form.Item>
+                      {" "}
+                      <InputNumber
+                        // defaultValue={this.state.courses.seats}
+                        //style={{ position: "absolute", marginLeft: 300 }}
+                        onBlur={(e) => {
+                          console.log("VAL" + e.target.value);
+                          setListAtt([...listAtt, e.target.value]);
+                        }}
+                        min={0}
+                        max={10000}
+                      />
+                    </Form.Item>
+                    à{" "}
+                    <Form.Item>
+                      <InputNumber
+                        //   key={"o" + this.state.addIdx}
+                        // defaultValue={this.state.courses.seats}
+                        //style={{ position: "absolute", marginLeft: 300 }}
+                        onBlur={(e) => {
+                          console.log("VAL" + e.target.value);
+                          setListAtt([...listAtt, e.target.value]);
+                        }}
+                        min={0}
+                        max={10000}
+                      />
+                    </Form.Item>
+                    places :{" "}
+                    <Form.Item>
+                      {" "}
+                      <InputNumber
+                        //  key={"v" + this.state.addIdx}
+                        // defaultValue={this.state.courses.seats}
+                        //style={{ position: "absolute", marginLeft: 300 }}
+                        onBlur={(e) => {
+                          console.log("VAL" + e.target.value);
+                          setListAtt([...listAtt, e.target.value]);
+                        }}
+                        min={0}
+                        max={10000}
+                      />
+                    </Form.Item>
+                    €<Button onClick={() => setAddIdx(addIdx + 1)}>+</Button>
+                    <Button
+                      onClick={() => {
+                        setListRed(listRed.splice(addIdx, 1));
+                        setAddIdx(addIdx - 1);
+                      }}
+                    >
+                      -
+                    </Button>
+                  </p>
+                ))}
+              </Form>
+            </Modal>
 
             <Form.Item name="switch_remote" label="Activité en ligne">
               <Switch defaultChecked={courseDetails.isRemote} />
+            </Form.Item>
+            <Form.Item name="switch_team" label="Activités de team building">
+              <Switch
+                defaultChecked={courseDetails.teamBuildingActivity}
+                onClick={() => setTeamBuildingActivity(!teamBuildingActivity)}
+              />
+            </Form.Item>
+            <Form.Item name="switch_duo" label="Activité à faire en duo">
+              <Switch
+                defaultChecked={courseDetails.duoActivity}
+                onClick={() => setDuoActivity(!duoActivity)}
+              />
+            </Form.Item>
+            <Form.Item name="switch_terroir" label="Activité Terroir">
+              <Switch
+                defaultChecked={courseDetails.terroirActivity}
+                onClick={() => setIs_terroir(!is_terroir)}
+              />{" "}
             </Form.Item>
             <Form.Item name="input_price" label="Prix">
               <InputNumber
@@ -939,6 +1184,24 @@ const UpdateCourse = () => {
                 style={{ width: 300 }}
                 options={options}
                 placeholder="Sélectionner le niveau"
+              />
+            </Form.Item>
+            <Form.Item
+              name="cascader_lieu"
+              rules={[
+                {
+                  required: true,
+                  message: "Veuillez renseigner le lieu ",
+                },
+              ]}
+              label="Lieu"
+            >
+              <Cascader
+                // value={this.state.input}
+                // onChange={(e) => this.level_selector(e)}
+                style={{ width: 300 }}
+                options={mapResults}
+                placeholder="Sélectionner le lieu"
               />
             </Form.Item>
             <Form.Item name="cascader_category" label="Catégorie">

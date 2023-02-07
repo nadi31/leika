@@ -10,7 +10,19 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
 
         fields = '__all__'
-    #    extra_fields = ['courseHour']
+
+
+class ResearchCourseSerializer(serializers.ModelSerializer):
+    lat = serializers.FloatField()
+    lng = serializers.FloatField()
+    city = serializers.CharField()
+    country = serializers.CharField()
+    adress = serializers.CharField()
+
+    class Meta:
+        model = Course
+        fields = ["id", "title", "accroche", "aSavoir", "content", "annulation",
+                  "date", "hour", "isVerified", "price", "img1", "img2", "img2", "isDiscounted", "discount", "isRemote", "points", "seats", "needCertificate", "dateFin", "hourFin", "thumbnail1", "thumbnail2", "thumbnail3", "isIntermediate", "isBeginner", "isAdvanced", "valOffers", "teamBuildingActivity", "duoActivity", "terroirActivity", "language", "city", "country", "adress", "lat", "lng"]
 
   #  def get_field_names(self, declared_fields, info):
   #      expanded_fields = super(CourseSerializer, self).get_field_names(
@@ -57,10 +69,13 @@ class CourseHoursSerializer(serializers.ModelSerializer):
         model = CourseHour
         fields = '__all__'
 
+
 class OffersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offers
         fields = '__all__'
+
+
 class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:

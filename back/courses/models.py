@@ -38,6 +38,8 @@ class Course(models.Model):
     discount = models.FloatField(null=True, blank=True)
     isRemote = models.BooleanField(default=False)
     points = models.IntegerField(null=True, blank=True)
+
+    lieu = models.IntegerField(null=True, blank=True)
     seats = models.IntegerField(null=True, blank=True)
     needCertificate = models.BooleanField(default=False)
     dateFin = models.DateField(null=True, blank=True)

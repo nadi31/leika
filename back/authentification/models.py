@@ -101,18 +101,6 @@ class Administrator(models.Model):
         return self.user.email
 
 
-class Adress(models.Model):
-    name = models.CharField(max_length=200, null=True, blank=True)
-    zip_code = models.CharField(max_length=10, null=True, blank=True)
-    city = models.CharField(max_length=100)
-    apartment_number = models.CharField(max_length=10, null=True, blank=True)
-    country = models.CharField(max_length=100, null=True, blank=True)
-    add_ons = models.CharField(max_length=1000, null=True, blank=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Cub(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE,)
     user_type1 = 2
@@ -135,8 +123,6 @@ class Giver(models.Model):
     img1 = models.ImageField(null=True, blank=True,
                              upload_to="gallery", default='../media/sewing.png')
 
-    adress = models.ForeignKey(
-        Adress, on_delete=models.CASCADE, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     appelation = models.TextField(null=True, blank=True)
     siret = models.CharField(max_length=12, null=True, blank=True)
@@ -149,6 +135,20 @@ class Giver(models.Model):
         return self.user.email
 
 
+class Adress(models.Model):
+    name = models.CharField(max_length=200, null=True, blank=True)
+    zip_code = models.CharField(max_length=10, null=True, blank=True)
+    city = models.CharField(max_length=100)
+    apartment_number = models.CharField(max_length=10, null=True, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    add_ons = models.CharField(max_length=1000, null=True, blank=True)
+    giver = models.ForeignKey(
+        MyUser, on_delete=models.CASCADE, null=True, blank=True)
+    lat = models.FloatField(null=True, blank=True)
+    lng = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 # @ receiver(pre_save, sender=MyUser)
 
 # def create_password(sender,  instance, created, **kwargs):
@@ -160,6 +160,8 @@ class Giver(models.Model):
         #print("DATA: " + json_data)
         # self.password = jwt.encode(
         # {'password': self.password},  key, algorithm="HS256")
+
+
 @receiver(post_save, sender=MyUser)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

@@ -597,7 +597,7 @@ class GiverCreateView(APIView):
 
             print("REQ", obj)
             Giver.objects.filter(user=obj.user_id).update(
-                description=request.data.get("description"), phone=request.data.get("phone"), appelation=request.data.get("appelation"), siret=request.data.get("siret"),  adress=request.data.get("adress"), img1=request.data.get("img1"))
+                description=request.data.get("description"), phone=request.data.get("phone"), appelation=request.data.get("appelation"), siret=request.data.get("siret"),  img1=request.data.get("img1"))
             # requ = request.data.copy()
             print("***REQ1: ", req)
             json = myUser_serializer.data
@@ -623,7 +623,9 @@ class GiverCreateView(APIView):
             req.pop("img1")
             print("***REQUEST: ", request.FILES.get("img1"))
             print("***REQ2: ", req)
-            return Response(status=status.HTTP_201_CREATED)
+            json = req.pop("user")
+            print('id' + str(json))
+            return Response(json, status=status.HTTP_201_CREATED)
 
         else:
             print('error', myUser_serializer.errors)
@@ -640,3 +642,22 @@ class GiverCreateView(APIView):
             #  print("OBJECT", obj)
             # obj.img1 = request.data.get("img1")
             # obj.save()
+
+
+class AdressesGiverView(APIView):
+    #permission_classes = (IsGiver,)
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = (MultiPartParser, FormParser, JSONParser,)
+
+    def get(self, *args, **kwargs):
+
+        #adresses = Adress.objects.all()
+
+        #serializer = GiverSerializer(givers, many=True)
+        adresses = Adress.objects.filter(giver=self.kwargs['pk'])
+        serializer = AdressSerializer(adresses, many=True)
+        # cub = user.cub_set.all()
+        return Response(serializer.data)
+
+        # cub = user.cub_set.all()
+        return Response(serializer.data)

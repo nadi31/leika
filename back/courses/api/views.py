@@ -31,7 +31,7 @@ class researchCourseList(ListCreateAPIView):
     queryset = Course.objects.all()
     queryset2 = Adress.objects.all()
     queryset3 = Giver.objects.all()
-    serializer_class = CourseSerializer
+    serializer_class = ResearchCourseSerializer
 
     def get_queryset(self):  # new
         # query = self.request.GET.get('q')
@@ -53,95 +53,78 @@ class researchCourseList(ListCreateAPIView):
             print("**********"+"category " + category)
             course_list_cat = Course.objects.filter(
                 category=category)  # | Q(state__icontains=query)
-            for course in course_list_cat:
-                print(course.id)
+
+        # request._body = json.dumps(myjson)
+        # request.POST["user_type1"] = 3
+
         else:
             course_list_cat = course_list
         # SI la ville est précisée:
-        if self.request.query_params.get('city'):
 
-            city = self.request.query_params.get('city')
-            print("**********"+"ville " + city)
-
-            adress_list = Adress.objects.filter(
-                Q(city__icontains=city)).values_list('id')
-            if adress_list:
-                for adress in adress_list:
-
-                    print("**"+str(adress))
-                    giver_list = Giver.objects.filter(
-                        adress_id=adress).values_list('id')
-                    # print("GIVER"+ giver_list)
-                    for giver in giver_list:
-                        course_list_city = Course.objects.filter(owner=giver)
-                        for course in course_list_city:
-                            print(course.id)
-            else:
-                course_list_city = Course.objects.none()
-        else:
-            course_list_city = course_list
-
-        # SI le prix min est précisé
-        if self.request.query_params.get('prix_min') and not(self.request.query_params.get('prix_max')):
-            prix_min = int(self.request.query_params.get('prix_min'))
-            course_list_pmin = course_list.filter(Q(price__gte=prix_min))
-            print("**********"+"prix " + str(prix_min))
-        # SI le prix max est précisé
-        else:
-            course_list_pmin = course_list
-
-        if self.request.query_params.get('prix_max') and not (self.request.query_params.get('prix_min')):
-            prix_max = int(self.request.query_params.get('prix_max'))
-            course_list_pmax = course_list.filter(Q(price__lt=prix_max))
-            print("**********"+"prix_max " + str(prix_max))
-        else:
-            course_list_pmax = course_list
-        # SI les prix min et max sont précisés
-        if self.request.query_params.get('prix_max') and self.request.query_params.get('prix_min'):
-            prix_max = int(self.request.query_params.get('prix_max'))
-            prix_min = int(self.request.query_params.get('prix_min'))
-            course_list_p = course_list.filter(
-                Q(price__lt=prix_max, price__gte=prix_min))
-        else:
-            course_list_p = course_list
-
-        # SI les dates sont précisés
-        if self.request.query_params.get('date_max') and not (self.request.query_params.get('date_min')):
-            date_max = self.request.query_params.get('date_max')
-            print("**********"+"date_max " + str(date_max))
-            course_list_dmax = course_list.filter(date=date_max)
-        else:
-            course_list_dmax = course_list
-        if self.request.query_params.get('date_min') and not (self.request.query_params.get('date_max')):
-            date_min = self.request.query_params.get('date_min')
-            print("**********"+"date_min " + str(date_min))
-            course_list_dmin = course_list.filter(Q(date__gte=date_min))
-        else:
-            course_list_dmin = course_list
-        if self.request.query_params.get('date_min') and (self.request.query_params.get('date_max')):
-
-            date_max = self.request.query_params.get('date_min')
-            date_min = self.request.query_params.get('date_max')
-            print("**********"+"date_min " + str(date_min))
-            print("**********"+"date_max " + str(date_max))
-            course_list_d = course_list.filter(
-                Q(date__lt=date_min, date__gte=date_max))
-        else:
-            course_list_d = course_list
         # SI seats est précisé
 
-        if self.request.query_params.get('seats'):
-            seats = int(self.request.query_params.get('seats'))
-            course_list_seats = course_list.filter(Q(seats__gte=seats))
-            print("**********"+"seats " + str(seats))
-        else:
-            course_list_seats = course_list
-        intersection = course_list_cat & course_list_city & course_list_d & course_list_dmax & course_list_dmin & course_list_pmax & course_list_pmin & course_list_p & course_list_seats & course_list_sub_cat
-        serializer = CourseSerializer(intersection, many=True)
-        for inter in intersection:
-            print("**"+str(inter.id))
+        intersection = course_list_cat & course_list_sub_cat
+        courseListFinal = []
+        for course in intersection:
+            # ajout de la ville
+
+            # return Response(serializer.data)
+            myjson = {}
+            myjson["id"] = course.id
+            myjson["title"] = course.title
+
+            myjson["accroche"] = course.accroche
+            myjson["aSavoir"] = course.aSavoir
+            myjson["content"] = course.content
+            myjson["annulation"] = course.annulation
+            myjson["date"] = course.date
+            myjson["hour"] = course.hour
+            myjson["isVerified"] = course.isVerified
+            myjson["price"] = course.price
+            myjson["img1"] = course.img1
+            myjson["img2"] = course.img2
+            myjson["img2"] = course.img2
+            myjson["isDiscounted"] = course.isDiscounted
+            myjson["discount"] = course.discount
+            myjson["isRemote"] = course.isRemote
+            myjson["points"] = course.points
+            myjson["seats"] = course.seats
+            myjson["needCertificate"] = course.needCertificate
+            myjson["dateFin"] = course.dateFin
+            myjson["hourFin"] = course.hourFin
+            myjson["thumbnail1"] = course.thumbnail1
+            myjson["thumbnail2"] = course.thumbnail2
+            myjson["thumbnail3"] = course.thumbnail3
+            myjson["isIntermediate"] = course.isIntermediate
+            myjson["isBeginner"] = course.isBeginner
+            myjson["isAdvanced"] = course.isAdvanced
+            myjson["valOffers"] = course.valOffers
+            myjson["teamBuildingActivity"] = course.teamBuildingActivity
+            myjson["duoActivity"] = course.duoActivity
+            myjson["terroirActivity"] = course.terroirActivity
+            myjson["language"] = course.language
+
+            print("OWNER*** " + str(course.owner))
+            myuser = MyUser.objects.get(email=course.owner)
+            giver = Giver.objects.get(user_id=myuser.user_id)
+            adress = Adress.objects.get(name=giver.adress)
+            print("**********lat" + str(adress.lat))
+            myjson["lat"] = adress.lat
+            myjson["lng"] = adress.lng
+            city = adress.city
+            country = adress.country
+            adress = adress.name
+            print("OWNER*** " + str(city))
+            myjson["city"] = city
+            myjson["country"] = country
+            myjson["adress"] = adress
+
+            courseListFinal.append(myjson)
+
+        serializer = ResearchCourseSerializer(courseListFinal, many=True)
+
         if serializer:
-            return intersection
+            return courseListFinal
         else:
             print('error', serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -671,6 +654,29 @@ class OfferssCreateView(APIView):
         else:
             print('error', offerSerial.errors)
             return Response(offerSerial.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        print("FILTER " + self.kwargs['pk'])
+        Offers.objects.filter(course=self.kwargs['pk']).delete()
+        #courses = CourseHour.objects.filter(course=self.kwargs['pk'])
+        #serializer = OffersSerializer(off, many=True)
+        status = status.HTTP_204_NO_CONTENT
+        return Response(status)
+
+
+class OfferssDelView(APIView):
+    permission_classes = (IsGiver,)
+   # queryset = Course.objects.all()
+  #  serializer_class = CourseSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+    def delete(self, request, *args, **kwargs):
+        print("FILTER " + self.kwargs['pk'])
+        Offers.objects.filter(course=self.kwargs['pk']).delete()
+        #courses = CourseHour.objects.filter(course=self.kwargs['pk'])
+        #serializer = OffersSerializer(off, many=True)
+        status = status.HTTP_204_NO_CONTENT
+        return Response(status)
 
 
 class CourseHoursCreateView(APIView):

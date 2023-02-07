@@ -12,6 +12,7 @@ import { ConfigProvider } from "antd";
 //import frFR from "antd/lib/locale-provider/fr_FR";
 import MenuActivity from "./MenuActivity";
 import MenuKids from "./MenuKids";
+import MenuTeamBuilding from "./MenuTeamBuilding";
 import "moment/locale/fr";
 import board from "./board.png";
 import drill from "./drill.png";
@@ -80,6 +81,7 @@ import dayjs from "dayjs";
 const MenuBrowser = (props) => {
   const [categoryFinale, setCategoryFinale] = useState(null);
   const [kids, setKids] = useState(false);
+  const [team, setTeam] = useState(false);
   const [results, setResults] = useState([]);
   const [menuArt, setMenuArt] = useState(false);
   const [display, setDisplay] = useState(false);
@@ -104,6 +106,7 @@ const MenuBrowser = (props) => {
   useEffect(() => {
     console.log("Activité " + dayjs(props.date_max).format("DD/MM/YYYY"));
     setKids(props.kids);
+    setTeam(props.team);
     setActivity(props.activity);
     console.log("Activité " + props.activity);
     cat(props.activity);
@@ -704,7 +707,10 @@ const MenuBrowser = (props) => {
               </Menu.Item>
 
               <Menu.Item
-                //onClick={() => handleClick()}
+                onClick={() => {
+                  navigate("../team", { replace: true });
+                  setTeam(true);
+                }}
                 key="team"
               >
                 Team Building
@@ -972,7 +978,9 @@ const MenuBrowser = (props) => {
         </div>
       </div>
       <br />
-      {kids ? (
+      {team ? (
+        <MenuTeamBuilding />
+      ) : kids ? (
         <MenuKids activity={activity} date_max={datemax} city={city} />
       ) : (
         <MenuActivity activity={activity} date_max={datemax} city={city} />

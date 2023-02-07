@@ -119,6 +119,21 @@ class CourseForm extends React.Component {
     window.removeEventListener("resize", () => {});
   }
   componentDidMount() {
+    const idGiver = localStorage.getItem("ID");
+    axios
+      .get(`http://localhost:8000/api/giver/adress/${idGiver}`)
+      .then((res) => {
+        let mapArray = [];
+        console.log("RESULTS REQUEST" + JSON.stringify(res.data));
+        this.setState({ results: res.data });
+        this.state.results.map((res) =>
+          mapArray.push({ label: res.name, value: res.id })
+        );
+        //mapArray = JSON.stringify(mapArray);
+        this.setState({ mapResults: mapArray });
+        console.log("RESULTS ****" + JSON.stringify(mapArray));
+      });
+
     this.setState({ ID_user: localStorage.getItem("ID_user") });
 
     window.addEventListener("resize", () => {
@@ -141,6 +156,7 @@ class CourseForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSub = this.handleSub.bind(this);
     this.state = {
+      results: null,
       addLine: true,
       listAtt: [],
       addIdx: 0,
@@ -153,6 +169,7 @@ class CourseForm extends React.Component {
       is_terroir: false,
       isRemote: false,
       is_beginner: false,
+      lieu: null,
       is_advanced: false,
       is_intermediate: false,
       loading: false,
@@ -176,7 +193,7 @@ class CourseForm extends React.Component {
       list_seats: [],
       selectedValue: 0,
       width: window.innerWidth,
-      //creation_front: true,
+      mapResults: null,
 
       isAuthenficated: localStorage.getItem("isAuthenficated"),
     };
@@ -193,7 +210,7 @@ class CourseForm extends React.Component {
   };*/
   add = () => {
     console.log("hey");
-    if (this.state.addLine) {
+    if (this.state.addLine && this.state.mapResults) {
       return (
         <>
           <p>
@@ -958,12 +975,14 @@ class CourseForm extends React.Component {
     form_data.append("terroirActivity", convert(this.state.is_terroir));
     form_data.append("value", this.state.value);
     form_data.append("age", fieldsValue.cascader_age);
+
     form_data.append("category", category);
     form_data.append("sub_category", fieldsValue.autocomplete);
     form_data.append("owner", localStorage.getItem("ID_user"));
 
     form_data.append(" courseHourIsCreated", convert(true));
-    // console.log("***isIntermediate", convert(isIntermediate));
+
+    form_data.append(" lieu", this.state.lieu);
     //  console.log("****isBeginner", convert(isBeginner));
     // console.log("***isAdvanced", convert(isAdvanced));
     axios
@@ -1948,6 +1967,28 @@ class CourseForm extends React.Component {
                   style={{ width: 300 }}
                   options={options}
                   placeholder="Sélectionner le niveau"
+                />
+              </Form.Item>
+              <Form.Item
+                name="cascader_lieu"
+                rules={[
+                  {
+                    required: true,
+                    message: "Veuillez renseigner le lieu ",
+                  },
+                ]}
+                label="Lieu"
+              >
+                <Cascader
+                  // value={this.state.input}
+                  // onChange={(e) => this.level_selector(e)}
+                  style={{ width: 300 }}
+                  onChange={(e) => {
+                    console.log("LIEU" + e);
+                    this.setState({ lieu: e });
+                  }}
+                  options={this.state.mapResults}
+                  placeholder="Sélectionner le lieu"
                 />
               </Form.Item>
               <Form.Item
