@@ -16,6 +16,7 @@ urlpatterns = [
     path('cub/', CubList.as_view()),
     path('create/giver', GiverCreateView.as_view()),
     path('create/adress', AdressCreateView.as_view()),
+    path('update/adress/<pk>', AdressUpdateCreateView.as_view()),
     path('create/token/<email>', TokenCreateView.as_view()),
     path('token/<token>', TokenView.as_view()),
     path('token', TokenView.as_view()),

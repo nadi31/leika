@@ -180,7 +180,7 @@ class TokenCreateView(APIView):
 
 class AdressCreateView(APIView):
     parser_classes = (MultiPartParser, FormParser,)
-    permission_classes = (IsAdminOrSuperUser, )
+    permission_classes = (IsGiver, )
 
     def get(self, request, *args, **kwargs):
 
@@ -262,10 +262,10 @@ class GiverDetailView(APIView):
         return Response(res)
 
     def post(self, request, pk, format='json'):
-
+        print("RES = " + str(request.POST))
         myuser = MyUser.objects.get(username=request.data['email'])
        # myuser= MyUser.objects.get(user_id=self.kwargs['pk'])
-        if request.data['password']:
+        if request.POST.get('password'):
 
             print("RES = " + str(request.data))
             # request.data.pop('username')
@@ -407,6 +407,22 @@ class ObtainTokenPairWithColorView(TokenObtainPairView):
 #        user = MyUser.objects.all()
 #        serializer = MyUserSerializer(user, many=True)
 #        return Response(serializer.data)
+
+#
+class AdressUpdateCreateView(APIView):
+
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = (JSONParser,)
+
+    def delete(self, request, *args, **kwargs):
+        print("REQ", request.data)
+        print("FILTER " + self.kwargs['pk'])
+
+        Adress.objects.filter(giver=self.kwargs['pk']).delete()
+        #courses = CourseHour.objects.filter(course=self.kwargs['pk'])
+        #serializer = OffersSerializer(off, many=True)
+
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class CustomUserCreate(APIView):
