@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MenuBrowser from "./MenuBrowser";
-import { Form, Input, Upload, Button, message } from "antd";
+import { Form, Input, Image, Upload, Button, message } from "antd";
 import "./style/review.css";
 import Geocode from "react-geocode";
 import { UploadOutlined } from "@ant-design/icons";

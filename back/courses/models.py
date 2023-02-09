@@ -56,6 +56,8 @@ class Course(models.Model):
     isAdvanced = models.BooleanField(default=False)
     valOffers = models.IntegerField(null=True, blank=True)
     teamBuildingActivity = models.BooleanField(default=False)
+    free = models.BooleanField(default=False)
+    accessible = models.BooleanField(default=False)
     duoActivity = models.BooleanField(default=False)
     terroirActivity = models.BooleanField(default=False)
     language = models.CharField(max_length=30, null=True, blank=True)

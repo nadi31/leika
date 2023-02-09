@@ -162,6 +162,7 @@ class CourseForm extends React.Component {
       addIdx: 0,
       seats: 0,
       listRed: [],
+      accessible: false,
       disabled: true,
       is_remote: true,
       is_duo: false,
@@ -175,6 +176,7 @@ class CourseForm extends React.Component {
       loading: false,
       visible: false,
       visibl: false,
+      free: false,
       input: "",
       list2: [],
       disabled_upload: false,
@@ -938,6 +940,8 @@ class CourseForm extends React.Component {
     form_data.append("hour", time1);
     form_data.append("courseHourIsCreated", convert(true));
     form_data.append("isVerified", convert(false));
+    form_data.append("free", convert(this.state.free));
+    form_data.append("accessible", convert(this.state.accessible));
     form_data.append("isDiscounted", convert(!this.state.disabled));
     form_data.append("dateFin", date2);
     form_data.append("hourFin", time2);
@@ -1707,23 +1711,38 @@ class CourseForm extends React.Component {
                   }
                 />
               </Form.Item>
-              <Form.Item
-                name="input_price"
-                rules={[
-                  {
-                    required: true,
-                    message: "Veuillez renseigner le prix ",
-                  },
-                ]}
-                label="Prix Individuel"
-              >
-                <InputNumber
-                  //defaultValue={this.state.courses.price}
-                  // style={{ position: "absolute", marginLeft: 300 }}
-                  min={0}
-                  max={10000}
+              <Form.Item name="switch_accessible" label="Activité accessible">
+                <Switch
+                  onClick={() =>
+                    this.setState({ accessible: !this.state.accessible })
+                  }
                 />
               </Form.Item>
+              <Form.Item name="switch_free" label="Activité gratuite">
+                <Switch
+                  onClick={() => this.setState({ free: !this.state.free })}
+                />
+              </Form.Item>
+              {this.state.free ? null : (
+                <Form.Item
+                  name="input_price"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Veuillez renseigner le prix ",
+                    },
+                  ]}
+                  label="Prix Individuel"
+                >
+                  <InputNumber
+                    //defaultValue={this.state.courses.price}
+                    // style={{ position: "absolute", marginLeft: 300 }}
+                    min={0}
+                    max={10000}
+                  />
+                </Form.Item>
+              )}
+
               <span style={{ marginLeft: 150 }}>
                 {" "}
                 Offres de groupe:{" "}

@@ -425,6 +425,8 @@ const UpdateCourse = () => {
   const [imgs, setImgs] = useState([]);
   const [duoActivity, setDuoActivity] = useState(false);
   const [changeValue, setChangeValue] = useState(false);
+  const [free, setFree] = useState(courseDetails.free);
+  const [accessible, setAccessible] = useState(false);
   //offres
   const [modal_offre_visible, setModal_offre_visible] = useState(false);
   const [listAtt, setListAtt] = useState([]);
@@ -686,6 +688,8 @@ const UpdateCourse = () => {
     form_data.append("isDiscounted", convert(values.switch_discount));
     form_data.append("terroirActivity", convert(is_terroir));
     form_data.append("duoActivity", convert(duoActivity));
+    form_data.append("free", convert(free));
+    form_data.append("accessible", convert(accessible));
     form_data.append("teamBuildingActivity", convert(teamBuildingActivity));
     form_data.append("date", date1);
     form_data.append("dateFin", date2);
@@ -841,7 +845,6 @@ const UpdateCourse = () => {
                 placeholder="Ex: Ce cours ne peut être remboursé s'il n'est pas annulé au moins 24 heures avant."
               />
             </Form.Item>
-
             <Form.Item name="description_input" label="Description">
               <Input
                 rows={6}
@@ -896,7 +899,6 @@ const UpdateCourse = () => {
                 max={10000}
               />
             </Form.Item>
-
             <span style={{ marginLeft: 150 }}>
               {" "}
               Périodicité:{" "}
@@ -955,7 +957,6 @@ const UpdateCourse = () => {
                 defaultChecked={courseDetails.isDiscounted}
               />
             </Form.Item>
-
             {courseDetails.isDiscounted || disabled ? (
               <Form.Item valuePropName="input_discount">
                 <InputNumber
@@ -1139,7 +1140,6 @@ const UpdateCourse = () => {
                 ))}
               </Form>
             </Modal>
-
             <Form.Item name="switch_remote" label="Activité en ligne">
               <Switch defaultChecked={courseDetails.isRemote} />
             </Form.Item>
@@ -1161,13 +1161,27 @@ const UpdateCourse = () => {
                 onClick={() => setIs_terroir(!is_terroir)}
               />{" "}
             </Form.Item>
-            <Form.Item name="input_price" label="Prix">
-              <InputNumber
-                //defaultValue={this.state.courses.price}
-                // style={{ position: "absolute", marginLeft: 300 }}
-                min={0}
-                max={10000}
-              />
+            <Form.Item name="switch_accessible" label="Activité Accessible">
+              <Switch
+                defaultChecked={courseDetails.accessible}
+                onClick={() => setAccessible(!accessible)}
+              />{" "}
+            </Form.Item>{" "}
+            <Form.Item name="switch_free" label="Activité Gratuite">
+              <Switch
+                defaultChecked={courseDetails.free}
+                onClick={() => setFree(!free)}
+              />{" "}
+              {free ? null : (
+                <Form.Item name="input_price" label="Prix">
+                  <InputNumber
+                    //defaultValue={this.state.courses.price}
+                    // style={{ position: "absolute", marginLeft: 300 }}
+                    min={0}
+                    max={10000}
+                  />
+                </Form.Item>
+              )}
             </Form.Item>
             <Form.Item name="cascader_age" label="Age">
               <Cascader
