@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect, useRef, useCallback } from "react";
+
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useNavigate, withRouter } from "react-router-dom";
 import { BrowserView, MobileView } from "react-device-detect";
@@ -10,12 +12,16 @@ import {
 } from "@ant-design/icons";
 import Geocode from "react-geocode";
 import Map from "./Map"; // import the map here
-import Icon from "@ant-design/icons";
-import { RocketOutlined, ExperimentOutlined } from "@ant-design/icons";
+import euros from "./euros.png";
+import ageImage from "./age.png";
+import levelImage from "./level.png";
+import friends from "./friends.png";
+import handi from "./handi.png";
+import locationImage from "./locationImage.png";
+import Icon, { RocketOutlined, ExperimentOutlined } from "@ant-design/icons";
 import {
   Card,
   Slider,
-  DatePicker,
   Form,
   Menu,
   Tag,
@@ -34,7 +40,8 @@ import MenuMobile from "./MenuMobile";
 import axios from "axios";
 import Footer from "./Footer";
 import queryString from "query-string";
-const Results = (props) => {
+import { filter } from "lodash";
+const Results = () => {
   const [menuArt, setMenuArt] = useState(false);
   const [menuGames, setMenuGames] = useState(false);
   const [menuDrill, setMenuDrill] = useState(false);
@@ -46,16 +53,20 @@ const Results = (props) => {
   const [menuSports, setMenuSports] = useState(false);
   const [menuTheatre, setMenuTheatre] = useState(false);
   const [menuLanguage, setMenuLanguage] = useState(false);
-
+  const level = useRef("");
+  const filterAge = useRef("");
   const [results, setResults] = useState([]);
   const [req, setReq] = useState(null);
   const [range, setRange] = useState(null);
   const [resFilters, setResFilters] = useState(null);
   const [prix, setPrix] = useState(null);
-  const [seats, setSeats] = useState(1);
-  const [filters, setFilters] = useState(false);
-  const [prix_min, setPrix_min] = useState(null);
-  const [prix_max, setPrix_max] = useState(null);
+  const seats = useRef(1);
+  const [res, setRes] = useState([]);
+  const filters = useRef(res);
+  const isRemote = useRef(false);
+  const prix_min = useRef(0);
+  const classt = useRef(0);
+  const prix_max = useRef(600);
   const [resultForm, setResultForm] = useState(null);
   const [width, setWidth] = useState(window.innerWidth);
   const [display, setDisplay] = useState(false);
@@ -63,11 +74,13 @@ const Results = (props) => {
   const [city, setCity] = useState(null);
   const [datemax, setDatemax] = useState(null);
   const [markers, setMarkers] = useState([]);
-  const [res, setRes] = useState([]);
+  const [resultsMap, setResultsMap] = useState([]);
   const [value, setValue] = useState(false);
+
   const [years, setYears] = useState("");
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [isIntermediate, setIsIntermediate] = useState(false);
+  const accessible = useRef(false);
   const [isBeginner, setIsBeginner] = useState(false);
   const [price, setPrice] = useState([0, 600]);
   const shape = {
@@ -79,199 +92,18 @@ const Results = (props) => {
     lat: 37.42216,
     lng: -122.08427,
   }; // our location object from earlier
-
-  const image = {};
-  const filtering = (e, level, age) => {
-    console.log("IS BEGIN" + isBeginner, level);
-
-    if (age != null) {
-      console.log("AGE" + age);
-      switch (level) {
-        case "isBeginner":
-          setResults(
-            filters
-              .filter(
-                (course) => course.price <= price[1] && course.price >= price[0]
-              )
-              .filter((course) => course.seats >= seats)
-              .filter((course) => course.age.includes(age))
-              .filter((course) => course.isRemote === e)
-
-              .filter((course) => course.isBeginner === true)
-          );
-
-          console.log("IS BEGINNER");
-
-          break;
-        case "isIntermediate":
-          setResults(
-            filters
-              .filter(
-                (course) => course.price <= price[1] && course.price >= price[0]
-              )
-              .filter((course) => course.seats >= seats)
-              .filter((course) => course.age.includes(age))
-              .filter((course) => course.isRemote === e)
-
-              .filter((course) => course.isIntermediate === true)
-          );
-          break;
-        case "isAdvanced":
-          setResults(
-            filters
-              .filter(
-                (course) => course.price <= price[1] && course.price >= price[0]
-              )
-              .filter((course) => course.seats >= seats)
-              .filter((course) => course.age.includes(age))
-              .filter((course) => course.isRemote === e)
-              .filter((course) => course.isIntermediate === false)
-              .filter((course) => course.isBeginner === false)
-              .filter((course) => course.isAdvanced === true)
-          );
-          break;
-        default:
-          setResults(
-            filters
-              .filter(
-                (course) => course.price <= price[1] && course.price >= price[0]
-              )
-              .filter((course) => course.seats >= seats)
-              .filter((course) => course.age.includes(age))
-              .filter((course) => course.isRemote === e)
-            //.filter((course) => course.isAdvanced === true)
-          );
-          break;
-      }
-    } else {
-      switch (level) {
-        case "isBeginner":
-          setResults(
-            filters
-              .filter(
-                (course) => course.price <= price[1] && course.price >= price[0]
-              )
-              .filter((course) => course.seats >= seats)
-              //   .filter((course) => course.age.includes(years))
-              .filter((course) => course.isRemote === e)
-
-              .filter((course) => course.isBeginner === true)
-          );
-
-          console.log("IS BEGINNER");
-
-          break;
-        case "isIntermediate":
-          setResults(
-            filters
-              .filter(
-                (course) => course.price <= price[1] && course.price >= price[0]
-              )
-              .filter((course) => course.seats >= seats)
-              // .filter((course) => course.age.includes(years))
-              .filter((course) => course.isRemote === e)
-
-              .filter((course) => course.isIntermediate === true)
-          );
-          break;
-        case "isAdvanced":
-          setResults(
-            filters
-              .filter(
-                (course) => course.price <= price[1] && course.price >= price[0]
-              )
-              .filter((course) => course.seats >= seats)
-              // .filter((course) => course.age.includes(years))
-              .filter((course) => course.isRemote === e)
-              .filter((course) => course.isAdvanced === true)
-          );
-          break;
-        default:
-          setResults(
-            filters
-              .filter(
-                (course) => course.price <= price[1] && course.price >= price[0]
-              )
-              .filter((course) => course.seats >= seats)
-              // .filter((course) => course.age.includes(years))
-              .filter((course) => course.isRemote === e)
-            //.filter((course) => course.isAdvanced === true)
-          );
-          break;
-      }
-    }
+  const handleValue = () => {
+    setValue(!value);
+    filters.current = res;
+    console.log("FILTERS INIT " + filters);
+    console.log("VALUE FINALE!!!! " + value);
+    filtering();
   };
-
-  const onChangePrice = (price) => {
-    console.log("LOW" + price[0]);
-
-    console.log("HIGH" + price[1]);
-    //price[0];
-
-    setResults(
-      filters.filter(
-        (course) => course.price <= price[1] && course.price >= price[0]
-      )
-    );
-    setRes(
-      res.filter(
-        (course) => course.price <= price[1] && course.price >= price[0]
-      )
-    );
-  };
-
-  const onChangeAge = (age) => {
-    setResults(filters.filter((course) => course.age.includes(age)));
-    setRes(res.filter((course) => course.age.includes(age)));
-  };
-  const onChangeLevel = (level) => {
-    console.log(level[0]);
-    switch (level[0]) {
-      case "isBeginner":
-        setResults(filters.filter((course) => course.isBeginner === true));
-        setRes(res.filter((course) => course.isBeginner === true));
-        break;
-      case "isIntermediate":
-        setResults(filters.filter((course) => course.isIntermediate === true));
-        setRes(res.filter((course) => course.isIntermediate === true));
-        break;
-      case "isAdvanced":
-        setResults(filters.filter((course) => course.isAdvanced === true));
-        setRes(res.filter((course) => course.isAdvanced === true));
-        break;
-      default:
-        break;
-    }
-  };
-
-  const onChangeLevele = (level) => {
-    console.log(level[0]);
-    switch (level[0]) {
-      case "isBeginner":
-        setIsBeginner(true);
-        console.log("hey");
-        break;
-      case "isIntermediate":
-        setIsIntermediate(true);
-        break;
-      case "isAdvanced":
-        setIsAdvanced(true);
-        break;
-      default:
-        break;
-    }
-  };
-
-  const onChangeRemote = (value) => {
-    console.log(value);
-    setResults(results.filter((course) => course.isRemote == value));
-    setRes(res.filter((course) => course.isRemote == value));
-  };
-
-  const onChangeSeats = (seats) => {
-    setResults(filters.filter((course) => course.seats >= seats));
-    setRes(res.filter((course) => course.seats >= seats));
-  };
+  const classement = [
+    { value: 1, label: "Prix: du moins cher au plus cher" },
+    { value: 2, label: "Prix: du plus cher au moins cher " },
+    { value: 3, label: "Recommandés" },
+  ];
   const options = [
     { value: "isBeginner", label: "Débutant" },
 
@@ -284,7 +116,6 @@ const Results = (props) => {
     { value: "Ados", label: "Ados" },
     { value: "Enfants", label: "Enfants" },
   ];
-
   const { Meta } = Card;
   const location = useLocation();
   const category = (intCategory) => {
@@ -335,7 +166,6 @@ const Results = (props) => {
 
       default:
         return intCategory;
-        break;
     }
   };
   const useQuery = () => new URLSearchParams(useLocation().search);
@@ -361,45 +191,164 @@ const Results = (props) => {
       .get(`http://localhost:8000/api-course/search/?&${request}`)
       .then((res) => {
         console.log("RESULTS REQUEST" + JSON.stringify(res.data));
+        // setResults(res.data);
         setResults(res.data);
-        setFilters(res.data);
         setRes(res.data);
-        res.data.map((res) => console.log("" + res.lat));
+
+        // res.data.map((res) => console.log("" + res.lat));
       })
 
       .catch((err) => console.log(err));
   }, []);
+  console.log(results.length);
 
-  {
-    if (results !== null) {
-      return (
-        <BrowserView>
-          <div
-            key={activity}
-            style={{ width: "100%", display: "inline-block" }}
-          >
-            <MenuBrowser
-              width={width}
-              city={city}
-              datemax={datemax}
-              activity={activity}
-            />
-            <div style={{ width: "100%", display: "flex" }}>
-              <h5
+  const classer = () => {
+    //
+    filters.current = results;
+    //setResults(filters.current);
+    console.log("filters 1. " + classt.current);
+
+    if (classt.current > 0 && classt.current <= 2) {
+      classt.current === 1
+        ? (filters.current = filters.current.sort((a, b) => a.price - b.price))
+        : (filters.current = filters.current.sort((a, b) => b.price - a.price));
+    }
+
+    console.log("2.¨¨¨¨¨¨ " + JSON.stringify(filters.current));
+    setResults([...filters.current]);
+
+    // return filters.current;
+    console.log("filter 3. " + results.length);
+  };
+  const filtering = () => {
+    //value= isRemote, level=isIntermediate+ isBeginner+ isAdvanced, filterAge=age , accessible= accessible;
+    //
+    filters.current = res;
+
+    console.log("filters 1. " + filters);
+
+    if (prix_max.current < 600 || prix_min.current > 0) {
+      filters.current = filters.current.filter((data) => {
+        // console.log("WOW " + data.age);
+        return data.price > prix_max.current && data.price < prix_min.current;
+      });
+    }
+    if (seats.current > 1) {
+      filters.current = filters.current.filter((data) => {
+        // console.log("WOW " + data.age);
+        return data.seats > seats.current;
+      });
+    }
+    if (filterAge.current !== "") {
+      filters.current = filters.current.filter((data) => {
+        console.log("WOW " + data.age);
+        return data.age === filterAge.current;
+      });
+    }
+    if (isRemote.current === true) {
+      //  console.log("*** VALUE" + value);
+
+      filters.current = filters.current.filter((data) => {
+        return data.isRemote === true;
+      });
+
+      console.log("filter 3. " + results);
+    }
+
+    if (level.current !== "") {
+      console.log("level 2. " + level.current);
+
+      switch (level.current) {
+        case "isBeginner":
+          console.log("HERE**************** LEVEL1");
+          filters.current = filters.current.filter((data) => {
+            return data.isBeginner === true;
+          });
+          break;
+        case "isIntermediate":
+          filters.current = filters.current.filter((data) => {
+            return data.isIntermediate === true;
+          });
+          break;
+        case "isAvanced":
+          filters.current = filters.current.filter((data) => {
+            return data.isAdvanced === true;
+          });
+          break;
+        default:
+          break;
+      }
+    }
+
+    console.log("1. FILTERS" + res);
+    // let bouhou = res;
+    if (accessible.current === true) {
+      console.log("***CACCES" + JSON.stringify(res));
+
+      filters.current = filters.current.filter((data) => {
+        return data.accessible === true;
+
+        //return data.accessible === true;
+      });
+      // filters.current = bouhou;
+      console.log("TRUE" + filters.current);
+
+      //   accessible.current = false;
+      setResults(filters.current);
+      setValue(false);
+      console.log(
+        "filter 2. " + results + "=>" + JSON.stringify(filters.current)
+      );
+    }
+    setResults(filters.current);
+    //setResultsMap(filters.current);
+    console.log("filter 3. " + results);
+  };
+
+  if (results !== []) {
+    return (
+      <BrowserView>
+        <div key={activity} style={{ width: "100%", display: "inline-block" }}>
+          <MenuBrowser
+            width={width}
+            city={city}
+            datemax={datemax}
+            activity={activity}
+          />
+          <div style={{ width: "100%", display: "flex" }}>
+            <Form style={{ width: "23%", marginTop: "3%", marginLeft: "10%" }}>
+              <h3
                 style={{
                   color: "grey",
                   marginTop: "-1%",
-                  marginLeft: "1%",
+                  //marginLeft: "%",
                   textDecoration: "underline",
                 }}
               >
                 Filtres
-              </h5>
-              <Form
-                style={{ width: "14%", marginTop: "3%", marginLeft: "-2.5%" }}
-              >
-                <Form.Item label="Prix">
-                  {" "}
+              </h3>
+              <>
+                <> </>
+                <Form.Item
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={euros}
+                          />
+                        )}
+                      />
+                      {"  Prix  "}
+                    </>
+                  }
+                >
                   <Slider
                     range
                     max={600}
@@ -407,125 +356,255 @@ const Results = (props) => {
                     //style={{ color: "black" }}
                     defaultValue={[0, 600]}
                     onChange={(prix) => {
-                      setPrice(prix);
-                      filtering(value, "", "");
+                      prix_max.current = prix[0];
+                      prix_min.current = prix[1];
+                      filtering();
                     }}
                   />
                 </Form.Item>
+              </>
 
-                <Form.Item name="seats" label="Place(s)">
-                  <InputNumber
-                    defaultValue={1}
-                    style={{ width: "100%" }}
-                    onChange={(e) => {
-                      setSeats(e);
-                      filtering(value, "", "");
-                    }}
-                    min={0}
-                    max={1000}
-                  />
-                </Form.Item>
+              <Form.Item
+                name="seats"
+                label={
+                  <>
+                    <Icon
+                      style={{ width: "90%", height: "90%" }}
+                      component={() => (
+                        <img
+                          style={{
+                            width: "90%",
+                            height: "90%",
+                            marginRight: "50%",
+                          }}
+                          src={friends}
+                        />
+                      )}
+                    />
+                    {"  Places  "}
+                  </>
+                }
+              >
+                <InputNumber
+                  defaultValue={1}
+                  style={{ width: "100%" }}
+                  onChange={(e) => {
+                    seats.current = e;
+                    filtering();
+                  }}
+                  min={0}
+                  max={1000}
+                />
+              </Form.Item>
 
-                <Form.Item name="cascader_age" label="Age">
-                  <Cascader
-                    //defaultValue={"Tous les âges"}
-                    // value={this.state.input}
-                    onChange={(e) => {
-                      setYears(e);
-                      filtering(value, "", e[0]);
-                    }}
-                    //style={{ width: 300 }}
-                    options={age}
-                    placeholder="Sélectionner l'âge"
+              <Form.Item
+                name="cascader_age"
+                label={
+                  <>
+                    <Icon
+                      style={{ width: "90%", height: "90%" }}
+                      component={() => (
+                        <img
+                          style={{
+                            width: "90%",
+                            height: "90%",
+                            marginRight: "50%",
+                          }}
+                          src={ageImage}
+                        />
+                      )}
+                    />
+                    {"  Age  "}
+                  </>
+                }
+              >
+                <Cascader
+                  //defaultValue={"Tous les âges"}
+                  // value={this.state.input}
+                  onChange={(e) => {
+                    e !== undefined
+                      ? (filterAge.current = e[0])
+                      : (filterAge.current = "");
+                    filtering();
+                  }}
+                  //style={{ width: 300 }}
+                  options={age}
+                  placeholder="Sélectionner l'âge"
+                />
+              </Form.Item>
+              <Form.Item
+                name="cascader_level"
+                label={
+                  <>
+                    <Icon
+                      style={{ width: "90%", height: "90%" }}
+                      component={() => (
+                        <img
+                          style={{
+                            width: "90%",
+                            height: "90%",
+                            marginRight: "50%",
+                          }}
+                          src={levelImage}
+                        />
+                      )}
+                    />
+                    {"  Niveau  "}
+                  </>
+                }
+              >
+                <Cascader
+                  defaultValue={""}
+                  onChange={(e) => {
+                    e !== undefined
+                      ? (level.current = e[0])
+                      : (level.current = "");
+                    filtering();
+                  }}
+                  // style={{ width: 300 }}
+                  options={options}
+                  placeholder="Sélectionner le niveau"
+                />
+              </Form.Item>
+              <Form.Item
+                name="switch_remote"
+                label={
+                  <>
+                    <Icon
+                      style={{ width: "90%", height: "90%" }}
+                      component={() => (
+                        <img
+                          style={{
+                            width: "90%",
+                            height: "90%",
+                            marginRight: "50%",
+                          }}
+                          src={locationImage}
+                        />
+                      )}
+                    />
+                    {"  En ligne  "}
+                  </>
+                }
+              >
+                <Switch
+                  //defaultValue={true}
+                  onClick={() => {
+                    console.log("CLICK Remote");
+                    isRemote.current = !isRemote.current;
+                    console.log("remote   " + accessible.current);
+                    filtering();
+                  }}
+                />
+              </Form.Item>
+              <Form.Item
+                name="switch_handi"
+                label={
+                  <>
+                    <Icon
+                      style={{ width: "90%", height: "90%" }}
+                      component={() => (
+                        <img
+                          style={{
+                            width: "90%",
+                            height: "90%",
+                            marginRight: "50%",
+                          }}
+                          src={handi}
+                        />
+                      )}
+                    />
+                    {"  Handi-Accessible  "}
+                  </>
+                }
+              >
+                <Switch
+                  //defaultValue={true}
+                  onClick={() => {
+                    console.log("CLICK handi accessible");
+                    accessible.current = !accessible.current;
+                    console.log("acces   " + accessible.current);
+                    filtering();
+                  }}
+                />
+              </Form.Item>
+              <div style={{ width: "10%", height: "40%" }}>
+                {" "}
+                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
+                  <Map
+                    key={JSON.stringify(results.length)}
+                    locations={results}
                   />
-                </Form.Item>
-                <Form.Item name="cascader_level" label="Niveau">
+                </LoadScript>
+              </div>
+            </Form>
+
+            <div
+              className="top"
+              style={{
+                fontSize: "200%",
+                width: "70%",
+                // borderRightWidth: "thin",
+              }}
+            >
+              {results === [] ? (
+                <>Loading</>
+              ) : (
+                <>
                   <Cascader
                     defaultValue={""}
                     onChange={(e) => {
-                      filtering(value, e[0], "");
+                      e !== undefined
+                        ? (classt.current = e[0])
+                        : (classt.current = 0);
+                      classer();
                     }}
                     // style={{ width: 300 }}
-                    options={options}
-                    placeholder="Sélectionner le niveau"
+                    options={classement}
+                    placeholder="Trier"
                   />
-                </Form.Item>
-                <Form.Item name="switch_remote" label="En ligne">
-                  <Switch
-                    //defaultValue={true}
-                    onChange={(e) => {
-                      console.log("value" + e);
-                      setValue(e);
-                      console.log("value" + value);
-                      filtering(e, "", "");
-                    }}
-                  />
-                </Form.Item>
-              </Form>
-
-              <div
-                className="top"
-                style={{
-                  fontSize: "200%",
-                  width: "70%",
-                  // borderRightWidth: "thin",
-                }}
-              >
-                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
-                  <Map locations={results} />
-                </LoadScript>
-                <div
-                  style={{
-                    position: "flex",
-                    display: "inline",
-                    width: "100%",
-                    float: "left",
-                    marginRight: "10%",
-                  }}
-                >
-                  {results === [] ? (
-                    <>Loading</>
-                  ) : (
-                    results.map((res) => {
-                      return (
-                        <>
-                          <span
-                            style={{
-                              position: "flex",
-                              display: "inline",
-                              width: "30%",
-                              float: "left",
-                              marginRight: "3%",
-                            }}
-                            key={res.id}
-                          >
-                            <a href={"/product/" + res.id}>
-                              <Card
-                                hoverable
-                                style={{ border: "none", width: "100%" }}
-                                cover={<img alt="example" src={res.img1} />}
-                              >
-                                <Meta
-                                  id="button_giver"
-                                  style={{ marginTop: "-2%", border: "none" }}
-                                  title={res.title}
-                                  description={res.price + "€"}
-                                />
-                              </Card>
-                            </a>
-                          </span>
-                        </>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
+                  {results.map((res, i) => {
+                    return (
+                      <div key={"KEY" + i}>
+                        <span
+                          style={{
+                            position: "flex",
+                            display: "inline",
+                            width: "40%",
+                            float: "left",
+                            marginRight: "3%",
+                          }}
+                          key={res.id}
+                        >
+                          <a href={"/product/" + res.id}>
+                            <Card
+                              key={"HEY" + res.id}
+                              hoverable
+                              style={{ border: "none", width: "100%" }}
+                              cover={<img alt="example" src={res.img1} />}
+                            >
+                              <Meta
+                                id="button_giver"
+                                style={{ marginTop: "-2%", border: "none" }}
+                                title={res.title}
+                                description={res.price + "€"}
+                              />
+                            </Card>
+                          </a>
+                        </span>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
             </div>
-            <Footer width={width} />{" "}
           </div>
-        </BrowserView>
-      );
-    }
+          <Footer width={width} />{" "}
+        </div>
+      </BrowserView>
+    );
+  } else {
+    return <>Loading</>;
   }
 };
 export default Results;

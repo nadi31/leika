@@ -28,8 +28,8 @@ import mom from "./mom.png";
 import { forEach } from "lodash";
 
 const containerStyle = {
-  width: "500px",
-  height: "1000px",
+  width: "400px",
+  height: "900px",
 };
 
 const divStyle = {

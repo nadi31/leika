@@ -22,7 +22,7 @@ class ResearchCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ["id", "title", "accroche", "aSavoir", "content", "annulation",
-                  "date", "hour", "isVerified", "price", "img1", "img2", "img2", "isDiscounted", "discount", "isRemote", "points", "seats", "needCertificate", "dateFin", "hourFin", "thumbnail1", "thumbnail2", "thumbnail3", "isIntermediate", "isBeginner", "isAdvanced", "valOffers", "teamBuildingActivity", "duoActivity", "terroirActivity", "language", "city", "country", "adress", "lat", "lng"]
+                  "date", "hour", "isVerified", "price", "img1", "img2", "img2", "isDiscounted", "discount", "isRemote", "points", "seats", "needCertificate", "dateFin", "hourFin", "thumbnail1", "thumbnail2", "thumbnail3", "isIntermediate", "isBeginner", "isAdvanced", "valOffers", "teamBuildingActivity", "duoActivity", "terroirActivity", "language", "city", "country", "adress", "lat", "lng", "accessible", "age"]
 
   #  def get_field_names(self, declared_fields, info):
   #      expanded_fields = super(CourseSerializer, self).get_field_names(
@@ -61,7 +61,7 @@ class CourseUpdateSerializer(serializers.ModelSerializer):
         model = Course
         fields = ("title",)
         optional_fields = ["content", "date", "hour", "isVerified", "price", "isDiscounted", "discount", "isRemote", "seats", "dateFin",
-                           "hourFin", "isIntermediate", "isBeginner", "isAdvanced", "category", "sub_category", "age", "value", "date_fin", "courseHourIsCreated"]
+                           "hourFin", "isIntermediate", "isBeginner", "isAdvanced", "category", "sub_category", "age", "value", "date_fin", "courseHourIsCreated", "adress", "lat", "lng", "accessible"]
 
 
 class CourseHoursSerializer(serializers.ModelSerializer):

@@ -103,11 +103,12 @@ class researchCourseList(ListCreateAPIView):
             myjson["duoActivity"] = course.duoActivity
             myjson["terroirActivity"] = course.terroirActivity
             myjson["language"] = course.language
-
+            myjson["age"] = course.age
+            myjson["accessible"] = course.accessible
             print("OWNER*** " + str(course.owner))
             myuser = MyUser.objects.get(email=course.owner)
             giver = Giver.objects.get(user_id=myuser.user_id)
-            adress = Adress.objects.get(name=giver.adress)
+            adress = Adress.objects.get(id=course.lieu)
             print("**********lat" + str(adress.lat))
             myjson["lat"] = adress.lat
             myjson["lng"] = adress.lng
@@ -459,6 +460,10 @@ class CourseDetailView(RetrieveAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
+    def get(self, request, *args, **kwargs):
+        course = Course.objects.all
+        serializer = CourseSerializer(course, many=True)
+        return Response(serializer.data)
 
 # class CourseComplete(RetrieveAPIView):
 #     permission_classes = (permissions.AllowAny,)

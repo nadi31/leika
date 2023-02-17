@@ -35,6 +35,7 @@ const BaseRouter = () => (
       element={<Results />}
       key={window.location.pathname}
     />
+
     <Route exact path="/kids" element={<Kids />} />
     <Route exact path="/team" element={<TeamBuilding />} />
     <Route exact path="/profil" element={<ProfilCub />} />
