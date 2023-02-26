@@ -969,7 +969,10 @@ class CourseForm extends React.Component {
     form_data.append("isTeam", convert(this.is_team));
     form_data.append("isTerroir", convert(this.is_terroir));
     form_data.append("isDuo", convert(this.is_duo));
-    form_data.append("price", parseFloat(fieldsValue.input_price));
+    form_data.append(
+      "price",
+      this.state.free ? parseFloat(0.0) : parseFloat(fieldsValue.input_price)
+    );
     form_data.append("isIntermediate", convert(this.state.is_intermediate));
     form_data.append("isBeginner", convert(this.state.is_beginner));
     form_data.append("isAdvanced", convert(this.state.is_advanced));

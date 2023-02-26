@@ -17,6 +17,7 @@ import ageImage from "./age.png";
 import levelImage from "./level.png";
 import friends from "./friends.png";
 import handi from "./handi.png";
+import free from "./fre.png";
 import locationImage from "./locationImage.png";
 import Icon, { RocketOutlined, ExperimentOutlined } from "@ant-design/icons";
 import {
@@ -67,6 +68,7 @@ const Results = () => {
   const prix_min = useRef(0);
   const classt = useRef(0);
   const prix_max = useRef(600);
+  const isFree = useRef(false);
   const [resultForm, setResultForm] = useState(null);
   const [width, setWidth] = useState(window.innerWidth);
   const [display, setDisplay] = useState(false);
@@ -221,8 +223,6 @@ const Results = () => {
     console.log("filter 3. " + results.length);
   };
   const filtering = () => {
-    //value= isRemote, level=isIntermediate+ isBeginner+ isAdvanced, filterAge=age , accessible= accessible;
-    //
     filters.current = res;
 
     console.log("filters 1. " + filters);
@@ -252,7 +252,7 @@ const Results = () => {
         return data.isRemote === true;
       });
 
-      console.log("filter 3. " + results);
+      console.log("filter 3. " + filters);
     }
 
     if (level.current !== "") {
@@ -280,7 +280,7 @@ const Results = () => {
       }
     }
 
-    console.log("1. FILTERS" + res);
+    //   console.log("1. FILTERS" + res);
     // let bouhou = res;
     if (accessible.current === true) {
       console.log("***CACCES" + JSON.stringify(res));
@@ -294,8 +294,26 @@ const Results = () => {
       console.log("TRUE" + filters.current);
 
       //   accessible.current = false;
-      setResults(filters.current);
-      setValue(false);
+      // setResults(filters.current);
+      //setValue(false);
+      console.log(
+        "filter 2. " + results + "=>" + JSON.stringify(filters.current)
+      );
+    }
+    if (isFree.current === true) {
+      console.log("***");
+
+      filters.current = filters.current.filter((data) => {
+        return data.price === 0.0;
+
+        //return data.accessible === true;
+      });
+      // filters.current = bouhou;
+      console.log("TRUE" + filters.current);
+
+      //   accessible.current = false;
+      // setResults(filters.current);
+      //setValue(false);
       console.log(
         "filter 2. " + results + "=>" + JSON.stringify(filters.current)
       );
@@ -492,11 +510,12 @@ const Results = () => {
                   onClick={() => {
                     console.log("CLICK Remote");
                     isRemote.current = !isRemote.current;
-                    console.log("remote   " + accessible.current);
+                    console.log("remote   " + isRemote.current);
                     filtering();
                   }}
                 />
               </Form.Item>
+
               <Form.Item
                 name="switch_handi"
                 label={
@@ -528,14 +547,46 @@ const Results = () => {
                   }}
                 />
               </Form.Item>
+
+              <Form.Item
+                name="switch_free"
+                label={
+                  <>
+                    <Icon
+                      style={{ width: "90%", height: "90%" }}
+                      component={() => (
+                        <img
+                          style={{
+                            width: "90%",
+                            height: "90%",
+                            marginRight: "50%",
+                          }}
+                          src={free}
+                        />
+                      )}
+                    />
+                    {"  Gratuit  "}
+                  </>
+                }
+              >
+                <Switch
+                  //defaultValue={true}
+                  onClick={() => {
+                    isFree.current = !isFree.current;
+                    console.log("free   " + isFree.current);
+                    filtering();
+                  }}
+                />
+              </Form.Item>
               <div style={{ width: "10%", height: "40%" }}>
-                {" "}
-                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
-                  <Map
-                    key={JSON.stringify(results.length)}
-                    locations={results}
-                  />
-                </LoadScript>
+                {results.length > 0 ? (
+                  <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
+                    <Map
+                      key={JSON.stringify(results.length)}
+                      locations={results}
+                    />
+                  </LoadScript>
+                ) : null}
               </div>
             </Form>
 
@@ -585,9 +636,40 @@ const Results = () => {
                             >
                               <Meta
                                 id="button_giver"
-                                style={{ marginTop: "-2%", border: "none" }}
+                                style={{
+                                  marginTop: "-2%",
+                                  height: "160%",
+                                  border: "none",
+                                  //  width: "60%",
+                                }}
                                 title={res.title}
-                                description={res.price + "€"}
+                                description={res.accroche}
+                              />
+                              <Meta
+                                id="button_giver"
+                                style={{
+                                  marginTop: "-2%",
+                                  height: "160%",
+                                  border: "none",
+                                  textDecoration: "none",
+                                }}
+                                title={
+                                  res.isDiscounted ? (
+                                    <>
+                                      <p
+                                        style={{
+                                          textDecoration: "line-through",
+                                        }}
+                                      >
+                                        {res.price + "€"}
+                                      </p>
+                                      <p>{res.discount + "€"}</p>{" "}
+                                    </>
+                                  ) : (
+                                    res.price + "€"
+                                  )
+                                }
+                                // description={}
                               />
                             </Card>
                           </a>

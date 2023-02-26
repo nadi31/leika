@@ -128,23 +128,25 @@
   top: "10%";
   right: 70%;
   /* margin-left: 90%; */
-  font-weight: 1000;
+  font-weight: 1300;
+  text-decoration: none;
   color: black;
-  width: 10%;
+  width: 100%;
 }
 .ant-card-meta-title {
   overflow: hidden;
-  color: rgba(0, 0, 0, 0.85);
-  font-weight: 500;
+  color: black;
+  font-weight: 600;
   font-size: 16px;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 90%;
+  width: 100%;
   margin: 0;
   /* display: flex; */
 }
 .ant-card-meta-detail {
   overflow: hidden;
+  color: black;
   display: inline-block;
   display: flex;
   flex-direction: row;

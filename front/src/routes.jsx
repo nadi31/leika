@@ -20,6 +20,7 @@ import EmailVerifyGiver from "./EmailVerifyGiver";
 import Kids from "./Kids";
 import GiverView from "./GiverView";
 import TeamBuilding from "./TeamBuilding";
+import GiftCard from "./GiftCard";
 
 import Map from "./Map";
 const BaseRouter = () => (
@@ -48,6 +49,7 @@ const BaseRouter = () => (
     <Route exact path="/email-verify/:token" element={<EmailVerify />} />
     <Route exact path="/giver/:giverID" element={<GiverView />} />
     <Route exact path="/map" element={<Map />} />
+    <Route exact path="/gift" element={<GiftCard />} />
     <Route
       exact
       path="/email-verify-giver/:token"

@@ -460,10 +460,6 @@ class CourseDetailView(RetrieveAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
-    def get(self, request, *args, **kwargs):
-        course = Course.objects.all
-        serializer = CourseSerializer(course, many=True)
-        return Response(serializer.data)
 
 # class CourseComplete(RetrieveAPIView):
 #     permission_classes = (permissions.AllowAny,)
