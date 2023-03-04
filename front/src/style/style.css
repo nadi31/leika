@@ -4,6 +4,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Annie+Use+Your+Telescope&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Dosis:wght@300&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
 .ant-table-thead > tr > th {
   color: #616055;
@@ -12,7 +13,9 @@
 .ant-carousel > .slick-slider > .slick-list {
   overflow: visible;
 }
-
+.pres {
+  font-family: "Montserrat", sans-serif;
+}
 .ant-carousel {
   width: 70%;
   overflow: visible;

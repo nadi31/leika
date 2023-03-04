@@ -5,6 +5,7 @@ import "./style/review.css";
 import Geocode from "react-geocode";
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
+import Footer from "./Footer";
 import { UserOutlined } from "@ant-design/icons";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
@@ -349,6 +350,7 @@ upload: */
             Modifier
           </Button>
         </Form>
+        <Footer width={width} />
       </div>
     </>
   ) : (

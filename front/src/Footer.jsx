@@ -98,7 +98,7 @@ const Footer = (props) => {
               </a>
               <br />
               <br />
-              <a href="">Fondatrices</a>
+              <a href="http://localhost:3000/founders">Fondatrices</a>
               <br />
               <br />
               <a href="">Mention Légales</a>
