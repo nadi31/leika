@@ -314,6 +314,7 @@ const ProductDetail = (props) => {
                 img: course.img1,
                 maxSeats: maxSeats,
                 hourSelected: hourSelected,
+                currency: "€",
               });
               let itemsOrdered = refactorizedData(items, init_cart);
               localStorage.setItem("cart", JSON.stringify(itemsOrdered));

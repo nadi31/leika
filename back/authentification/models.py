@@ -135,6 +135,14 @@ class Giver(models.Model):
         return self.user.email
 
 
+class Prospect(models.Model):
+
+    email = models.EmailField(unique=True)
+
+    class Meta:
+        db_table = 'Prospect'
+
+
 class Adress(models.Model):
     name = models.CharField(max_length=200, null=True, blank=True)
     zip_code = models.CharField(max_length=10, null=True, blank=True)

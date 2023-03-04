@@ -1,7 +1,8 @@
-import React from "react";
-import { Image, Button, Modal, InputNumber, Input } from "antd";
+import React, { useState } from "react";
+import { Image, Button, Modal, InputNumber, message, Input } from "antd";
 //import "antd/dist/antd.css";
 import "./style/footer.css";
+import axios from "axios";
 import ParticleComponent from "./particules";
 import {
   MailOutlined,
@@ -14,6 +15,26 @@ import { Table, Typography } from "antd";
 //Panier shopping
 
 const Footer = (props) => {
+  const [email, setEmail] = useState("");
+
+  const addEmail = () => {
+    console.log("" + email);
+    axios
+      .post(
+        `http://localhost:8000/api/pros/add`,
+
+        {
+          email: email,
+        }
+      )
+      .then((res) => {
+        message.success("Ajouté(e) à la mailist avec succès");
+      })
+      .catch((err) => {
+        message.error("Erreur");
+      });
+  };
+
   return (
     <div
       className="container"
@@ -151,9 +172,13 @@ const Footer = (props) => {
           <h1>Restez au courant de notre actualité !</h1>
           <br />
           <Input
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
             style={{ height: "30%" }}
             placeholder="e-mail"
             prefix={<MailOutlined />}
+            suffix={<Button onClick={addEmail}>OK</Button>}
           />
         </div>
       </div>

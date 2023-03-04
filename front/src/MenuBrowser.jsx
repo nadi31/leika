@@ -724,7 +724,9 @@ const MenuBrowser = (props) => {
                 Activités en duo
               </Menu.Item>
               <Menu.Item
-                //onClick={() => handleClick()}
+                onClick={() => {
+                  navigate("../gift", { replace: true });
+                }}
                 key="gift"
                 icon={
                   <Icon

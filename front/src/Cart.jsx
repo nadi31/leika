@@ -136,6 +136,12 @@ const Cart = (props) => {
       dataIndex: "price",
     },
     {
+      width: "35%",
+
+      dataIndex: "currency",
+    },
+
+    {
       width: "70%",
 
       dataIndex: "seats",
@@ -292,26 +298,26 @@ const Cart = (props) => {
                   dataSource={data}
                   pagination={false}
                   scroll={{ x: 400, y: 500 }}
-                  /*summary={(pageData) => {
-                let totalPrice = 0;
+                  summary={(pageData) => {
+                    let totalPrice = 0;
 
-                pageData.forEach(({ price }) => {
-                  totalPrice += price;
-                });
+                    pageData.forEach(({ price, seats }) => {
+                      totalPrice += price * seats;
+                    });
 
-                return (
-                  <>
-                    <Table.Summary.Row id="summary">
-                      <Table.Summary.Cell>Total</Table.Summary.Cell>
-                      <Table.Summary.Cell></Table.Summary.Cell>
-                      <Table.Summary.Cell></Table.Summary.Cell>
-                      <Table.Summary.Cell>
-                        <Text>{totalPrice}</Text>
-                      </Table.Summary.Cell>
-                    </Table.Summary.Row>
-                  </>
-                );
-              }}*/
+                    return (
+                      <>
+                        <Table.Summary.Row id="summary">
+                          <Table.Summary.Cell>Total</Table.Summary.Cell>
+                          <Table.Summary.Cell></Table.Summary.Cell>
+                          <Table.Summary.Cell></Table.Summary.Cell>
+                          <Table.Summary.Cell>
+                            <Text>{totalPrice + "€"}</Text>
+                          </Table.Summary.Cell>
+                        </Table.Summary.Row>
+                      </>
+                    );
+                  }}
                 />{" "}
                 <br />
                 <Button

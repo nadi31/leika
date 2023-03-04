@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'allauth.socialaccount',
     'authentification',
-    'mgt_prospects',
+
 
 ]
 SITE_ID = 1

@@ -22,6 +22,9 @@ urlpatterns = [
     path('token', TokenView.as_view()),
     path('mdp/<pk>', UserMdpOublieView.as_view()),
     path('mdp', UserMdpOublieView.as_view()),
+
+    path('prospects', ProspView.as_view()),
+    path('pros/add', ProspectView.as_view()),
     path('user', UserOublieView.as_view()),
     path('giver/adress/<pk>', AdressesGiverView.as_view()),
     #

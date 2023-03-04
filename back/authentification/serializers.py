@@ -2,7 +2,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from rest_framework import serializers
-from .models import MyUser, Giver, Adress, Cub, Administrator
+from .models import MyUser, Giver, Adress, Cub, Administrator, Prospect
 import datetime
 from rest_framework.generics import ListAPIView
 from rest_framework.authtoken.models import Token
@@ -119,6 +119,12 @@ class CustomUserSerializer(serializers.ModelSerializer):
             user.set_password(password)
             user.save()
         return user
+
+
+class ProspectsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Prospect
+        fields = '__all__'
 
 
 class GiverSerializer(serializers.ModelSerializer):

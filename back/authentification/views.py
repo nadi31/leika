@@ -5,7 +5,7 @@ from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_MET
 import json
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import authentication_classes
-from .models import MyUser, Giver, Adress, Cub
+from .models import MyUser, Giver, Adress, Cub, Prospect
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import status, permissions
 from .serializers import MyTokenObtainPairSerializer, CustomUserSerializer
@@ -533,6 +533,36 @@ class CubPhoneView(APIView):
         user = Cub.objects.filter(user=self.kwargs['pk'])
         serializer = CubSerializer(user, many=True)
         # cub = user.cub_set.all()
+        return Response(serializer.data)
+
+
+class ProspectView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = [JSONParser]
+
+    queryset = Prospect.objects.all()
+    serializer_class = ProspectsSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = ProspectsSerializer(data=request.data)
+        print("REQ", request.data)
+        if serializer.is_valid():
+           # if request.POST['creation_front'] != True:
+            serializer.save()
+            # course = Course.objects.filter(id=request.data.get("coursesID"))
+            # createCourseHour(course_serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print('error', serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProspView(APIView):
+    permission_classes = (IsAdminOrSuperUser,)
+
+    def get(self, request, *args, **kwargs):
+        pros = Prospect.objects.all()
+        serializer = ProspectsSerializer(pros, many=True)
         return Response(serializer.data)
 
 
