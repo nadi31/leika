@@ -2,7 +2,7 @@ import MenuBrowser from "./MenuBrowser";
 import Bloc from "./Bloc";
 
 import { useParams } from "react-router-dom";
-import * as moment from "moment";
+import dayjs from "dayjs";
 import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
 import {
   Rate,
@@ -226,9 +226,7 @@ const Giver = () => {
                           prenom={comment.prenom}
                           titre={comment.titre}
                           content={comment.comment_cub}
-                          date={moment(comment.dateHour).format(
-                            "Do MMMM  YYYY"
-                          )}
+                          date={dayjs(comment.dateHour).format("Do MMMM  YYYY")}
                           rating={comment.note}
                           statut={"GOLD"}
                         />

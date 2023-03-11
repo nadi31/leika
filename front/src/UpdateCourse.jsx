@@ -6,7 +6,6 @@ import { useParams } from "react-router-dom";
 import MenuBrowser from "./MenuBrowser";
 import MenuMobile from "./MenuMobile";
 import * as dayjs from "dayjs";
-import moment from "moment";
 
 import Footer from "./Footer";
 import { BrowserView, MobileView } from "react-device-detect";

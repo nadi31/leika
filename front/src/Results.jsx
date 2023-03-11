@@ -12,6 +12,8 @@ import {
 } from "@ant-design/icons";
 import Geocode from "react-geocode";
 import Map from "./Map"; // import the map here
+
+import Maps from "./Maps"; // import the map here
 import euros from "./euros.png";
 import ageImage from "./age.png";
 import levelImage from "./level.png";
@@ -35,7 +37,7 @@ import {
 import dancee from "./star.png";
 import experience from "./experience.png";
 import dayjs from "dayjs";
-import * as moment from "moment";
+
 import MenuBrowser from "./MenuBrowser";
 import MenuMobile from "./MenuMobile";
 import axios from "axios";
@@ -187,21 +189,74 @@ const Results = () => {
     console.log("REQUEST1 " + request);
 
     //console.log("REQUEST " + JSON.stringify(values));
-    // axios.get(`http://localhost:8000/api-course/search/?&sub_category=Dessin&city=`).then((res) => {
-
     axios
-      .get(`http://localhost:8000/api-course/search/?&${request}`)
+      .get(
+        `http://localhost:8000/api-course/search/?&sub_category=Dessin&city=`
+      )
       .then((res) => {
-        console.log("RESULTS REQUEST" + JSON.stringify(res.data));
-        // setResults(res.data);
-        setResults(res.data);
-        setRes(res.data);
+        axios
+          .get(`http://localhost:8000/api-course/search/?&${request}`)
+          .then((res) => {
+            console.log("RESULTS REQUEST" + JSON.stringify(res.data));
+            // setResults(res.data);
+            setResults(res.data);
 
-        // res.data.map((res) => console.log("" + res.lat));
+            if (city !== null && res.data !== null) {
+              var requestOptions = {
+                method: "GET",
+              };
+
+              fetch(
+                `https://api.geoapify.com/v1/geocode/search?text=${city}&apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44`,
+                requestOptions
+              )
+                .then((response) => response.json())
+                .then((result) => console.log(result))
+                .catch((error) => console.log("error", error));
+
+              var myHeaders = new Headers();
+              let raw;
+              results.map((location) => {
+                raw = JSON.stringify({
+                  mode: "drive",
+                  sources: [{ location: [location.lat, location.lng] }],
+                  targets: [
+                    { location: [8.73784862216246, 48.543061473317266] },
+                    { location: [9.305536080205002, 48.56743450655594] },
+                    { location: [9.182792846033067, 48.09414029055267] },
+                  ],
+                });
+
+                var requestOptions = {
+                  method: "POST",
+                  headers: myHeaders,
+                  body: raw,
+                };
+
+                fetch(
+                  "https://api.geoapify.com/v1/routematrix?apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44",
+                  requestOptions
+                )
+                  .then((response) => response.json())
+                  .then((result) => console.log(result))
+                  .catch((error) => console.log("error", error));
+              });
+            }
+
+            // get location of base
+
+            //const key = "AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4";
+            // prepare final API call
+
+            setRes(res.data);
+
+            // res.data.map((res) => console.log("" + res.lat));
+          });
       })
 
       .catch((err) => console.log(err));
   }, []);
+
   console.log(results.length);
 
   const classer = () => {
@@ -333,7 +388,9 @@ const Results = () => {
             datemax={datemax}
             activity={activity}
           />
-          <div style={{ width: "100%", display: "flex" }}>
+
+          <div style={{ display: "flex" }}>
+            {" "}
             <Form style={{ width: "23%", marginTop: "3%", marginLeft: "10%" }}>
               <h3
                 style={{
@@ -578,18 +635,25 @@ const Results = () => {
                   }}
                 />
               </Form.Item>
-              <div style={{ width: "10%", height: "40%" }}>
+              {/*   <div style={{ width: "10%", height: "40%" }}>
+              {results.length > 0 ? (
+                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
+                  <Maps
+                    key={JSON.stringify(results.length)}
+                    locations={results}
+                  />
+                </LoadScript>
+              ) : null}
+            </div>*/}
+              <div style={{ width: "50%", height: "50%" }}>
                 {results.length > 0 ? (
-                  <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
-                    <Map
-                      key={JSON.stringify(results.length)}
-                      locations={results}
-                    />
-                  </LoadScript>
+                  <Map
+                    key={JSON.stringify(results.length)}
+                    locations={results}
+                  />
                 ) : null}
               </div>
             </Form>
-
             <div
               className="top"
               style={{
@@ -614,6 +678,8 @@ const Results = () => {
                     options={classement}
                     placeholder="Trier"
                   />
+                  <br />
+                  <br />
                   {results.map((res, i) => {
                     return (
                       <div key={"KEY" + i}>
@@ -681,8 +747,8 @@ const Results = () => {
               )}
             </div>
           </div>
-          <Footer width={width} />{" "}
         </div>
+        <Footer width={width} />{" "}
       </BrowserView>
     );
   } else {

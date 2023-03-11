@@ -12,7 +12,7 @@ import {
   Switch,
   Button,
 } from "antd";
-import * as moment from "moment";
+
 import MenuBrowser from "./MenuBrowser";
 import MenuMobile from "./MenuMobile";
 import axios from "axios";

@@ -1,7 +1,7 @@
 import MenuBrowser from "./MenuBrowser";
 import Bloc from "./Bloc";
 import { useParams } from "react-router-dom";
-import * as moment from "moment";
+
 import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
 import {
   Rate,
@@ -175,17 +175,9 @@ const ProductDetail = (props) => {
             style={{ overflow: "auto", width: "70%", height: "100px" }}
           >
             <div ref={myRef}>
-              <Timeline style={{ marginTop: "5%", marginLeft: "1%" }}>
-                {hours
-                  ? hours.map((h) =>
-                      timeMenu(
-                        moment(h.date).format("DD/MM/YYYY"),
-                        h.hour.slice(0, -3),
-                        h.seats
-                      )
-                    )
-                  : null}
-              </Timeline>
+              <Timeline
+                style={{ marginTop: "5%", marginLeft: "1%" }}
+              ></Timeline>
             </div>
           </div>{" "}
           {hours && hours.length > 2 ? (
@@ -938,7 +930,7 @@ const ProductDetail = (props) => {
                         prenom={comment.prenom}
                         titre={comment.titre}
                         content={comment.comment_cub}
-                        date={moment(comment.dateHour).format("Do MMMM  YYYY")}
+                        date={comment.dateHour.format("Do MMMM  YYYY")}
                         rating={comment.note}
                         statut={"GOLD"}
                       />

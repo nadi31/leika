@@ -6,14 +6,14 @@ import React, {
   useRef,
 } from "react";
 import axios from "axios";
-import moment from "moment";
+
 import locale from "antd/es/date-picker/locale/fr_FR";
 import { ConfigProvider } from "antd";
 //import frFR from "antd/lib/locale-provider/fr_FR";
 import MenuActivity from "./MenuActivity";
 import MenuKids from "./MenuKids";
 import MenuTeamBuilding from "./MenuTeamBuilding";
-import "moment/locale/fr";
+
 import board from "./board.png";
 import drill from "./drill.png";
 import eiffel from "./eiffel.png";

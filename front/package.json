@@ -6,34 +6,42 @@
   "dependencies": {
     "@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining": "^7.14.5",
     "@emailjs/browser": "^3.9.1",
+    "@geoapify/geocoder-autocomplete": "^1.5.1",
+    "@geoapify/react-geocoder-autocomplete": "^1.5.0",
     "@googlemaps/google-maps-services-js": "^3.3.26",
     "@googlemaps/js-api-loader": "^1.15.1",
     "@googlemaps/react-wrapper": "^1.1.35",
     "@iconify/icons-mdi": "^1.2.39",
     "@iconify/react": "^4.0.1",
+    "@ionic/react": "^6.6.0",
     "@react-google-maps/api": "^2.17.1",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
-    "antd": "^5.0.0",
+    "antd": "^5.3.0",
     "axios": "^0.21.1",
     "babel-core": "^6.26.3",
     "browser-sync": "^2.27.11",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.6",
+    "distance-matrix-api": "^1.0.0",
     "emailjs-com": "^3.2.0",
     "google-map-react": "^2.2.0",
     "jwt-decode": "^3.1.2",
+    "leaflet": "^1.9.3",
     "lodash": "^4.17.21",
     "lodash.isempty": "^4.4.0",
+    "mapbox-gl": "^2.13.0",
     "prop-types": "^15.8.1",
-    "react": "^17.0.2",
+    "react": "^18.2.0",
     "react-cookie": "^4.1.1",
     "react-device-detect": "^1.17.0",
     "react-device-emulator": "^1.1.0",
-    "react-dom": "^17.0.2",
+    "react-dom": "^18.2.0",
     "react-geocode": "^0.2.3",
     "react-google-places-autocomplete": "^3.4.0",
+    "react-leaflet": "^4.2.1",
+    "react-mapbox-autocomplete": "^0.2.3",
     "react-modal": "^3.14.3",
     "react-responsive": "^8.2.0",
     "react-router-dom": "^6.3.0",
@@ -46,7 +54,7 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -57,16 +65,9 @@
       "react-app/jest"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ]
 }

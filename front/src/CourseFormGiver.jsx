@@ -34,8 +34,6 @@ import {
   PoundOutlined,
 } from "@ant-design/icons";
 
-import * as moment from "moment";
-
 //import Password from "antd/lib/input/Password";
 
 const { RangePicker } = DatePicker;
@@ -1610,7 +1608,7 @@ class CourseForm extends React.Component {
                                   //defaultValue={this.state.selectedValue}
                                   onChange={(e) => {
                                     this.state.list_seats[
-                                      moment(date1).format("DD/MM/YYYY")
+                                      dayjs(date1).format("DD/MM/YYYY")
                                     ] = e.target.value;
                                     //obj.key3 = "value3";
                                     //this.setState(

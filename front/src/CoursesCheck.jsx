@@ -5,7 +5,7 @@ import { useState, useEffect, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import MenuBrowser from "./MenuBrowser";
 import MenuMobile from "./MenuMobile";
-import * as moment from "moment";
+
 import Footer from "./Footer";
 import { BrowserView, MobileView } from "react-device-detect";
 import {
@@ -33,6 +33,7 @@ import {
   message,
 } from "antd";
 import { isBreakOrContinueStatement, parseJsonText } from "typescript";
+import dayjs from "dayjs";
 const CoursesCheck = () => {
   const toggle = () => {
     setDisabled(!disabled);
@@ -70,12 +71,12 @@ const CoursesCheck = () => {
       case 1:
         console.log("DATE MIN " + date_min._d);
         console.log("DATE MAX " + date_max._d);
-        let d1 = moment(date_max._d).diff(date_min._d, "days");
-        diff_date = moment(date_min._d).diff(date_min._d, "days");
+        let d1 = dayjs(date_max._d).diff(date_min._d, "days");
+        diff_date = dayjs(date_min._d).diff(date_min._d, "days");
         console.log("d1", d1);
         for (let i = 1; i <= d1; i++) {
-          date_inter = moment(date_min._d).add(i, "days");
-          date_fin = moment(date_inter).add(diff_date, "days");
+          date_inter = dayjs(date_min._d).add(i, "days");
+          date_fin = dayjs(date_inter).add(diff_date, "days");
           console.log("DATES 1: " + date_inter._d + "2: " + date_fin._d);
           list_d1.push(date_inter._d);
           list_d2.push(date_fin._d);
@@ -93,13 +94,13 @@ const CoursesCheck = () => {
         break;
       case 2:
         console.log("2");
-        let d2 = moment(date_max._d).diff(date_min._d, "weeks");
-        diff_date = moment(date_min._d).diff(date_min._d, "days");
+        let d2 = dayjs(date_max._d).diff(date_min._d, "weeks");
+        diff_date = dayjs(date_min._d).diff(date_min._d, "days");
         console.log("diff", diff_date);
         console.log("d2", d2);
         for (let i = 1; i <= d2; i++) {
-          date_inter = moment(date_min._d).add(i, "weeks");
-          date_fin = moment(date_inter).add(diff_date, "days");
+          date_inter = dayjs(date_min._d).add(i, "weeks");
+          date_fin = dayjs(date_inter).add(diff_date, "days");
           list_d1.push(date_inter._d);
           list_d2.push(date_fin._d);
           console.log("i", i);
@@ -112,11 +113,11 @@ const CoursesCheck = () => {
         setListe_finale(list_finale);
         break;
       case 3:
-        let d3 = moment(date_max._d).diff(date_min._d, "months");
-        diff_date = moment(date_min._d).diff(date_min._d, "days");
+        let d3 = dayjs(date_max._d).diff(date_min._d, "months");
+        diff_date = dayjs(date_min._d).diff(date_min._d, "days");
         for (let i = 1; i <= d3; i++) {
-          date_inter = moment(date_min._d).add(i, "months");
-          date_fin = moment(date_inter).add(diff_date, "days");
+          date_inter = dayjs(date_min._d).add(i, "months");
+          date_fin = dayjs(date_inter).add(diff_date, "days");
           list_d1.push(date_inter._d);
           list_d2.push(date_fin._d);
           console.log("i", i);
@@ -498,9 +499,9 @@ const CoursesCheck = () => {
       const res2 = await axios.get(
         `http://localhost:8000/api-course/hours/${courseID}`
       );
-      setDate_selected(res.data.value !== 0 ? moment(res.data.date_fin) : "");
-      setDate(moment(res.data.date));
-      setDateFin(moment(res.data.dateFin));
+      setDate_selected(res.data.value !== 0 ? dayjs(res.data.date_fin) : "");
+      setDate(dayjs(res.data.date));
+      setDateFin(dayjs(res.data.dateFin));
       setValue(res.data.value);
       setCourseDetails(res.data);
       setCategoryFinale(res.data.category);
@@ -562,10 +563,10 @@ const CoursesCheck = () => {
 
     console.log("SET ACTIVITE FINALE" + categoryFinale);
 
-    const date1 = moment(values.range_date_debut._d, "DD-MM-YYYY").format(
+    const date1 = dayjs(values.range_date_debut._d, "DD-MM-YYYY").format(
       "YYYY-MM-DD"
     );
-    const date2 = moment(values.range_date_fin._d, "DD-MM-YYYY").format(
+    const date2 = dayjs(values.range_date_fin._d, "DD-MM-YYYY").format(
       "YYYY-MM-DD"
     );
     const date3 = (date2, date_selected) => {
@@ -574,7 +575,7 @@ const CoursesCheck = () => {
         return date2;
       } else {
         console.log("DATE3", typeof date_selected);
-        return moment(date_selected, "DD-MM-YYYY").format("YYYY-MM-DD");
+        return dayjs(date_selected, "DD-MM-YYYY").format("YYYY-MM-DD");
       }
     };
 
@@ -596,11 +597,11 @@ const CoursesCheck = () => {
       //data= [...state.addedItems,{course:  action.course, quantity: 1, date: action.date}]
       liste_finale[0].map((date_debut, index1) =>
         Object.entries(list_seats).map(([key, value]) =>
-          moment(date_debut).format("DD/MM/YYYY") === key
+          dayjs(date_debut).format("DD/MM/YYYY") === key
             ? (list[index1] = value)
             : console.log(
                 "AFFICHER LA DATE 1: " +
-                  moment(date_debut).format("DD/MM/YYYY") +
+                  dayjs(date_debut).format("DD/MM/YYYY") +
                   "DATE 2: " +
                   key
               )
@@ -617,17 +618,17 @@ const CoursesCheck = () => {
 
     console.log(
       "time",
-      moment(values.time_picker_b._d.toLocaleTimeString())
+      dayjs(values.time_picker_b._d.toLocaleTimeString())
         ._i.split(":")
         .slice(0, -1)
     );
     console.log("PRICE", parseFloat(values.input_price));
     console.log("DISOCUNT");
-    const time1 = moment(values.time_picker_b._d.toLocaleTimeString())
+    const time1 = dayjs(values.time_picker_b._d.toLocaleTimeString())
       ._i.split(":")
       .slice(0, -1)
       .join(":");
-    const time2 = moment(values.time_picker_e._d.toLocaleTimeString())
+    const time2 = dayjs(values.time_picker_e._d.toLocaleTimeString())
       ._i.split(":")
       .slice(0, -1)
       .join(":");
@@ -640,12 +641,12 @@ const CoursesCheck = () => {
     //console.log(values.upload.fileList[0].originFileObj.name);
     console.log(
       "HOUR " +
-        moment(values.time_picker_b._d.toLocaleTimeString())
+        dayjs(values.time_picker_b._d.toLocaleTimeString())
           ._i.split(":")
           .slice(0, -1)
           .join(":")
     );
-    console.log(moment(values.range_date_debut._d).format("DD/MM/YYYY"));
+    console.log(dayjs(values.range_date_debut._d).format("DD/MM/YYYY"));
     console.log(values.autocomplete);
     let form_data = new FormData();
     form_data.append("accroche", values.accroche_input);
@@ -655,7 +656,7 @@ const CoursesCheck = () => {
     form_data.append("date", date1);
     form_data.append(
       "hour",
-      moment(values.time_picker_b._d.toLocaleTimeString())
+      dayjs(values.time_picker_b._d.toLocaleTimeString())
         ._i.split(":")
         .slice(0, -1)
         .join(":")
@@ -667,7 +668,7 @@ const CoursesCheck = () => {
     form_data.append("dateFin", date2);
     form_data.append(
       "hourFin",
-      moment(values.time_picker_e._d.toLocaleTimeString())
+      dayjs(values.time_picker_e._d.toLocaleTimeString())
         ._i.split(":")
         .slice(0, -1)
         .join(":")
@@ -746,13 +747,13 @@ const CoursesCheck = () => {
             form.append("course", params["courseID"]);
             form.append(
               "date",
-              moment(list2[0][iteration_list1], "DD-MM-YYYY").format(
+              dayjs(list2[0][iteration_list1], "DD-MM-YYYY").format(
                 "YYYY-MM-DD"
               )
             );
             form.append(
               "dateFin",
-              moment(list2[1][iteration_list1], "DD-MM-YYYY").format(
+              dayjs(list2[1][iteration_list1], "DD-MM-YYYY").format(
                 "YYYY-MM-DD"
               )
             );
@@ -801,10 +802,10 @@ const CoursesCheck = () => {
               description_input: courseDetails.content,
               input_seats: courseDetails.seats,
               input_price: courseDetails.price,
-              range_date_debut: moment(courseDetails.date),
-              range_date_fin: moment(courseDetails.dateFin),
-              time_picker_b: moment(courseDetails.hour, "HH:mm"),
-              time_picker_e: moment(courseDetails.hourFin, "HH:mm"),
+              range_date_debut: dayjs(courseDetails.date),
+              range_date_fin: dayjs(courseDetails.dateFin),
+              time_picker_b: dayjs(courseDetails.hour, "HH:mm"),
+              time_picker_e: dayjs(courseDetails.hourFin, "HH:mm"),
               cascader_age: [courseDetails.age],
               cascader_level: courseDetails.isAdvanced
                 ? ["isAdvanced"]
@@ -1065,7 +1066,7 @@ const CoursesCheck = () => {
                   format="DD-MM-YYYY "
                   defaultValue={
                     courseDetails.value === 1
-                      ? moment(courseDetails.date_fin)
+                      ? dayjs(courseDetails.date_fin)
                       : null
                   }
                   name="date_max"
@@ -1086,7 +1087,7 @@ const CoursesCheck = () => {
                   // }
                   defaultValue={
                     courseDetails.value === 2
-                      ? moment(courseDetails.date_fin)
+                      ? dayjs(courseDetails.date_fin)
                       : null
                   }
                   onChange={(newDate) => setDate_selected(newDate)}
@@ -1099,7 +1100,7 @@ const CoursesCheck = () => {
                   format="DD-MM-YYYY "
                   defaultValue={
                     courseDetails.value === 3
-                      ? moment(courseDetails.date_fin)
+                      ? dayjs(courseDetails.date_fin)
                       : null
                   }
                   onChange={(newDate) => setDate_selected(newDate)}
@@ -1122,7 +1123,7 @@ const CoursesCheck = () => {
               <div>
                 {liste_finale[0].map(
                   (date1, index1) => (
-                    (list_seats[moment(date1).format("DD/MM/YYYY")] =
+                    (list_seats[dayjs(date1).format("DD/MM/YYYY")] =
                       selectedValue),
                     (
                       //this.state.liste_finale[1].map((date2, index2) => (
@@ -1139,18 +1140,16 @@ const CoursesCheck = () => {
                           }}
                         >
                           {"Du " +
-                            moment(date1).format("DD/MM/YYYY") +
+                            dayjs(date1).format("DD/MM/YYYY") +
                             " au " +
-                            moment(liste_finale[1][index1]).format(
-                              "DD/MM/YYYY"
-                            )}
+                            dayjs(liste_finale[1][index1]).format("DD/MM/YYYY")}
 
                           <Form.Item key={index1} name="names" label="Place(s)">
                             <Input
                               id={index1}
                               //defaultValue={}
                               onChange={(e) => {
-                                list_seats[moment(date1).format("DD/MM/YYYY")] =
+                                list_seats[dayjs(date1).format("DD/MM/YYYY")] =
                                   e.target.value;
                                 //obj.key3 = "value3";
                                 //this.setState(

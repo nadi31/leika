@@ -2,8 +2,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useNavigate, withRouter } from "react-router-dom";
+import "@geoapify/geocoder-autocomplete/styles/minimal.css";
 import { BrowserView, MobileView } from "react-device-detect";
-import Geocode from "react-geocode";
+import {
+  GeoapifyGeocoderAutocomplete,
+  GeoapifyContext,
+} from "@geoapify/react-geocoder-autocomplete";
+
 import { UploadOutlined } from "@ant-design/icons";
 import {
   Card,
@@ -18,13 +23,15 @@ import {
   Switch,
   Button,
 } from "antd";
-import * as moment from "moment";
+
 import MenuBrowser from "./MenuBrowser";
 import MenuMobile from "./MenuMobile";
 import axios from "axios";
 import Footer from "./Footer";
 import queryString from "query-string";
+
 const GiverForm = (props) => {
+  const [response, setResponse] = useState();
   const [results, setResults] = useState([]);
   const [password, setPassword] = useState(null);
   const [lat, setLat] = useState(null);
@@ -32,7 +39,17 @@ const GiverForm = (props) => {
   const [adresses, setAdresses] = useState(0);
   const [arrayAdresses, setArrayAdresses] = useState([]);
   const [arrayAdd_ons, setArrayAdd_ons] = useState([]);
-  //
+  const onPlaceSelect = (value) => {
+    console.log(JSON.stringify(value));
+    setArrayAdresses([...arrayAdresses, value]);
+    console.log(JSON.stringify(arrayAdresses));
+  };
+
+  const getResponse = (value) => {
+    console.log(value);
+    setResponse(value);
+  };
+
   const [width, setWidth] = useState(window.innerWidth);
   const [value, setValue] = useState(null);
   useEffect(() => {
@@ -94,21 +111,26 @@ const GiverForm = (props) => {
           console.log("GIVER" + JSON.stringify(res));
           //console.log("ADRESS" + value);
           console.log(password);
-          Geocode.setApiKey("AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4");
+          const lat = adress.lat;
+          const lng = adress.lon;
+          setLat(lat);
+          setLng(lng);
+          //const keyGeo = "ea16b50fa61c47faa5c3cd8fc43eeb44";
+          //const url = `https://api.geoapify.com/v1/geocode/search?text=1214-1224${adress}&format=json&apiKey=${keyGeo}`;
+          form.append("lat", lat);
+          form.append("lng", lng);
+          form.append("name", adress.formatted);
+          form.append("giver", res.data[0]);
+          form.append("city", adress.city);
+          //form.append("apartment_number", values.input_adress_apt_number);
+          form.append("country", adress.country);
+          form.append("add_ons", arrayAdd_ons[idx]);
+          /*  Geocode.setApiKey("AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4");
           Geocode.fromAddress(adress.value.description).then(
             (response) => {
-              const { lat, lng } = response.results[0].geometry.location;
-              setLat(lat);
-              setLng(lng);
+             
               console.log("lat : " + lat + "long " + lng);
-              form.append("lat", lat);
-              form.append("lng", lng);
-              form.append("name", adress.value.description.split(",")[0]);
-              form.append("giver", res.data[0]);
-              form.append("city", adress.value.description.split(",")[1]);
-              //form.append("apartment_number", values.input_adress_apt_number);
-              form.append("country", adress.value.description.split(",")[2]);
-              form.append("add_ons", arrayAdd_ons[idx]);
+              
               //OULA
               console.log(values);
               axios
@@ -129,7 +151,7 @@ const GiverForm = (props) => {
             (error) => {
               console.error(error);
             }
-          );
+          );*/
         });
       });
   };
@@ -178,17 +200,12 @@ const GiverForm = (props) => {
             <Input placeholder="email" />
           </Form.Item>
           <Form.Item name="input_adress_rue" label="Adresse ">
-            <GooglePlacesAutocomplete
-              selectProps={{
-                onChange: (e) => {
-                  // setValue(e);
-                  console.log(JSON.stringify(e));
-                  setArrayAdresses([...arrayAdresses, e]);
-                  console.log(JSON.stringify(arrayAdresses));
-                },
-              }}
-              apiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4"
-            />
+            <GeoapifyContext apiKey="ea16b50fa61c47faa5c3cd8fc43eeb44">
+              <GeoapifyGeocoderAutocomplete
+                placeSelect={onPlaceSelect}
+                placeholder="Adresse"
+              />
+            </GeoapifyContext>
             <Form.Item name="input_adress_add_ons" label="Compléments ">
               <Input
                 onBlur={(e) => {
@@ -210,20 +227,16 @@ const GiverForm = (props) => {
             </p>
             {Array.from({ length: adresses }).map((idx) => (
               <>
-                <GooglePlacesAutocomplete
-                  selectProps={{
-                    onChange: (e) => {
-                      console.log(JSON.stringify(e));
-                      setArrayAdresses([...arrayAdresses, e]);
-                      console.log(JSON.stringify(arrayAdresses));
-                    },
-                  }}
-                  apiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4"
-                />
                 <Form.Item
                   name={"input_adress_add_ons" + idx}
                   label="Compléments "
                 >
+                  <GeoapifyContext apiKey="YOUR_API_KEY_HERE">
+                    <GeoapifyGeocoderAutocomplete
+                      placeSelect={onPlaceSelect}
+                      placeholder=" Adresse"
+                    />
+                  </GeoapifyContext>
                   <Input
                     onBlur={(e) => {
                       setArrayAdd_ons([...arrayAdd_ons, e.target.value]);

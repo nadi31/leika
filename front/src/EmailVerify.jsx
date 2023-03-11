@@ -2,7 +2,7 @@ import MenuBrowser from "./MenuBrowser";
 import Bloc from "./Bloc";
 
 import { useParams } from "react-router-dom";
-import * as moment from "moment";
+
 import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
 import {
   Rate,

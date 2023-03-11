@@ -3,6 +3,11 @@ import MenuBrowser from "./MenuBrowser";
 import { Form, Input, Image, Upload, Button, message } from "antd";
 import "./style/review.css";
 import Geocode from "react-geocode";
+import "@geoapify/geocoder-autocomplete/styles/minimal.css";
+import {
+  GeoapifyGeocoderAutocomplete,
+  GeoapifyContext,
+} from "@geoapify/react-geocoder-autocomplete";
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import Footer from "./Footer";
@@ -60,36 +65,22 @@ const GiverProfil = (props) => {
             //console.log("ADRESS" + value);
             // console.log(password);
             if (adress.value) {
-              Geocode.setApiKey("AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4");
+              console.log("GIVER" + JSON.stringify(res));
+              //console.log("ADRESS" + value);
+              //console.log(password);
+              const lat = adress.lat;
+              const lng = adress.lon;
 
-              Geocode.fromAddress(adress.value.description).then((response) => {
-                const { lat, lng } = response.results[0].geometry.location;
-
-                console.log("lat : " + lat + "long " + lng);
-                form.append("lat", lat);
-                form.append("lng", lng);
-                form.append("name", adress.value.description.split(",")[0]);
-                form.append("giver", localStorage.getItem("ID"));
-                form.append("city", adress.value.description.split(",")[1]);
-                //form.append("apartment_number", values.input_adress_apt_number);
-                form.append("country", adress.value.description.split(",")[2]);
-                form.append("add_ons", arrayAdd_ons[idx]);
-                //OULA
-                console.log(values);
-                axios
-                  .post(`http://localhost:8000/api/create/adress`, form, {
-                    headers: {
-                      Authorization: "Bearer " + localStorage.getItem("token"),
-                    },
-                  })
-                  .then(() => {
-                    message.success("Adresses modifiées avec succès", 10);
-                  })
-                  .catch((err) => {
-                    message.error("Erreur Adresses non modifiées", 10);
-                    console.log(err);
-                  });
-              });
+              //const keyGeo = "ea16b50fa61c47faa5c3cd8fc43eeb44";
+              //const url = `https://api.geoapify.com/v1/geocode/search?text=1214-1224${adress}&format=json&apiKey=${keyGeo}`;
+              form.append("lat", lat);
+              form.append("lng", lng);
+              form.append("name", adress.formatted);
+              form.append("giver", res.data[0]);
+              form.append("city", adress.city);
+              //form.append("apartment_number", values.input_adress_apt_number);
+              form.append("country", adress.country);
+              form.append("add_ons", arrayAdd_ons[idx]);
             } else {
               console.log("ANCIENNE : " + JSON.stringify(adress));
               form.append("lat", adress.lat);
@@ -281,22 +272,24 @@ upload: */
           <Form.Item name="input_adress_rue" label="Adresse ">
             {Array.from({ length: adresses }).map((val, idx) => (
               <>
-                <GooglePlacesAutocomplete
-                  selectProps={{
-                    defaultInputValue:
-                      arrayAdresses[idx] !== undefined
-                        ? arrayAdresses[idx].name
-                        : null, //set default value
-                    onChange: (e) => {
+                <GeoapifyContext apiKey="ea16b50fa61c47faa5c3cd8fc43eeb44">
+                  <GeoapifyGeocoderAutocomplete
+                    placeSelect={(e) => {
                       console.log(JSON.stringify(e));
                       arrayAdresses[idx] = e;
                       setArrayAdresses([...arrayAdresses]);
                       console.log(JSON.stringify(arrayAdresses));
                       setChangeDetected(true);
-                    },
-                  }}
-                  apiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4"
-                />
+                    }}
+                    value={
+                      arrayAdresses[idx] !== undefined
+                        ? arrayAdresses[idx].name
+                        : null
+                    }
+                    placeholder="Adresse"
+                  />
+                </GeoapifyContext>
+
                 <Form.Item
                   name={"input_adress_add_ons" + idx}
                   label="Compléments "

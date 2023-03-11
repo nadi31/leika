@@ -32,7 +32,7 @@ import {
 import dancee from "./star.png";
 import gift from "./giftCard.png";
 import dayjs from "dayjs";
-import * as moment from "moment";
+
 import MenuBrowser from "./MenuBrowser";
 import MenuMobile from "./MenuMobile";
 import axios from "axios";
