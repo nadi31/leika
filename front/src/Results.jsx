@@ -68,6 +68,8 @@ const Results = () => {
   const filters = useRef(res);
   const isRemote = useRef(false);
   const prix_min = useRef(0);
+  const lonCity = useRef(null);
+  const latCity = useRef(0);
   const classt = useRef(0);
   const prix_max = useRef(600);
   const isFree = useRef(false);
@@ -175,85 +177,77 @@ const Results = () => {
   const useQuery = () => new URLSearchParams(useLocation().search);
 
   const request = useQuery();
-  useEffect(() => {
+  useEffect(async () => {
     if (request.get("category") == null) {
       setActivity(request.get("sub_category"));
     } else {
       setActivity(category(request.get("category")));
     }
     //const category = searchParams.get("category");
+
     setCity(request.get("city"));
     setDatemax(request.get("date_max"));
     //setState(JSON.stringify(props.location.state));
     //console.log("STATE " + state);
     console.log("REQUEST1 " + request);
 
+    const cit = request.get("city");
+
+    const url = `https://api.geoapify.com/v1/geocode/search?text=${
+      cit + " France"
+    }&apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44`;
+
+    await axios.get(url).then((res) => {
+      lonCity.current = res.data.features[0].properties.lon;
+      latCity.current = res.data.features[0].properties.lat;
+    });
+
     //console.log("REQUEST " + JSON.stringify(values));
-    axios
-      .get(
-        `http://localhost:8000/api-course/search/?&sub_category=Dessin&city=`
-      )
-      .then((res) => {
-        axios
-          .get(`http://localhost:8000/api-course/search/?&${request}`)
-          .then((res) => {
-            console.log("RESULTS REQUEST" + JSON.stringify(res.data));
-            // setResults(res.data);
-            setResults(res.data);
 
-            if (city !== null && res.data !== null) {
-              var requestOptions = {
-                method: "GET",
-              };
+    await axios
+      .get(`http://localhost:8000/api-course/search/?&${request}`)
+      .then((res2) => {
+        console.log("RESULTS REQUEST" + JSON.stringify(res2.data));
+        // setResults(res.data);
 
-              fetch(
-                `https://api.geoapify.com/v1/geocode/search?text=${city}&apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44`,
-                requestOptions
-              )
-                .then((response) => response.json())
-                .then((result) => console.log(result))
-                .catch((error) => console.log("error", error));
+        res2.data.map(async (location) => {
+          var axios = require("axios");
+          console.log("213 " + latCity);
+          console.log("214" + location.lng + " " + location.lat);
 
-              var myHeaders = new Headers();
-              let raw;
-              results.map((location) => {
-                raw = JSON.stringify({
-                  mode: "drive",
-                  sources: [{ location: [location.lat, location.lng] }],
-                  targets: [
-                    { location: [8.73784862216246, 48.543061473317266] },
-                    { location: [9.305536080205002, 48.56743450655594] },
-                    { location: [9.182792846033067, 48.09414029055267] },
-                  ],
-                });
-
-                var requestOptions = {
-                  method: "POST",
-                  headers: myHeaders,
-                  body: raw,
-                };
-
-                fetch(
-                  "https://api.geoapify.com/v1/routematrix?apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44",
-                  requestOptions
-                )
-                  .then((response) => response.json())
-                  .then((result) => console.log(result))
-                  .catch((error) => console.log("error", error));
-              });
-            }
-
-            // get location of base
-
-            //const key = "AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4";
-            // prepare final API call
-
-            setRes(res.data);
-
-            // res.data.map((res) => console.log("" + res.lat));
+          var data = JSON.stringify({
+            mode: "drive",
+            sources: [{ location: [location.lng, location.lat] }],
+            targets: [
+              {
+                location: [lonCity.current, latCity.current],
+              },
+            ],
           });
-      })
 
+          var config = {
+            method: "post",
+            url: "https://api.geoapify.com/v1/routematrix?apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            data: data,
+          };
+
+          axios(config)
+            .then(function (response) {
+              console.log(response.data.sources_to_targets[0][0].distance);
+              if (response.data.sources_to_targets[0][0].distance < 20000) {
+                setResults((res) => [...res, location]);
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+
+          // res.data.map((res) => console.log("" + res.lat));
+        });
+      })
       .catch((err) => console.log(err));
   }, []);
 
