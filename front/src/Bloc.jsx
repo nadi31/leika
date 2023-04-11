@@ -7,32 +7,34 @@ const Bloc = (props) => {
   const [content, setContent] = useState(props.content);
   const [titre, setTitre] = useState(props.titre);
   const [icone, setIcone] = useState(props.icone);
-const width= props.width;
-const height=props.height;
-const yellow=props.yellow;
-
+  const width = props.width;
+  const height = props.height;
+  const yellow = props.yellow;
 
   return (
     <>
       <div
         style={{
           height: height,
-          display: width==="40%"?"flex:":"" ,
+          display: width === "40%" ? "flex:" : "",
           justifyContent: "center",
           margin: "auto",
-          width:width
+          width: width,
         }}
       >
-        <div className="container" style={{ height: "100%", marginRight: "5%" }}>
+        <div
+          className="container"
+          style={{ height: "100%", marginRight: "5%" }}
+        >
           <div
             className="header"
             style={{
-             display: "flex",
-              height: "10%",
-              backgroundColor: yellow?"#fff7e6":"",
+              display: "flex",
+              height: "20%",
+              backgroundColor: yellow ? "#fff7e6" : "",
               borderRadius: "40px",
               marginBottom: "10px",
-              justifyContent: "center"
+              justifyContent: "center",
             }}
           >
             <div
@@ -40,10 +42,9 @@ const yellow=props.yellow;
               id="nav"
               style={{
                 marginTop: "4%",
-            
+
                 color: "#ffa940",
                 position: "relative",
-            
               }}
             >
               {icone}

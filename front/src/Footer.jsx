@@ -71,7 +71,7 @@ const Footer = (props) => {
             display: props.width <= 1200 ? "block" : "flex",
             justifyContent: "center",
             zIndex: "1",
-            width: "80%",
+            width: props.width <= 900 ? "100%" : "80%",
             margin: "auto",
           }}
         >
@@ -81,7 +81,7 @@ const Footer = (props) => {
               zIndex: "1",
               margin: "auto",
               justifyContent: "center",
-              width: "20%",
+              width: props.width <= 900 ? "70%" : "20%",
               height: "10%",
             }}
           >
@@ -111,7 +111,7 @@ const Footer = (props) => {
               zIndex: "1",
               margin: "5% auto ",
               justifyContent: "center",
-              width: "20%",
+              width: props.width <= 900 ? "70%" : "20%",
               height: "10%",
             }}
           >
@@ -137,7 +137,7 @@ const Footer = (props) => {
               zIndex: "1",
               margin: "5% auto ",
               justifyContent: "center",
-              width: "20%",
+              width: props.width <= 900 ? "70%" : "20%",
               height: "10%",
             }}
           >
@@ -164,7 +164,7 @@ const Footer = (props) => {
             zIndex: "1",
             margin: "5% auto ",
             justifyContent: "center",
-            width: "30%",
+            width: props.width <= 900 ? "70%" : "30%",
             height: "10%",
             opacity: "1",
           }}

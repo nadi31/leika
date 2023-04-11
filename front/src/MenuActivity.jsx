@@ -32,6 +32,7 @@ const MenuActivity = (props) => {
   const [menuLanguage, setMenuLanguage] = useState(false);
   const [activity, setActivity] = useState("");
   const [menuArt, setMenuArt] = useState(false);
+  const [width, setWidth] = useState(window.innerWidth);
   const [city, setCity] = useState("");
   const [datemax, setDatemax] = useState(null);
   const navigate = useNavigate();
@@ -253,13 +254,14 @@ const MenuActivity = (props) => {
   };
   return (
     <>
-      <Affix offsetTop={-26}>
+      <Affix offsetTop={-35}>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <div
             style={{
               textAlign: "center",
               display: "flex",
-              width: "80%",
+              marginLeft: "10%",
+
               // height: "110%",
               //varies depending on weither phone, tablet...:
               //marginLeft: "10%",
@@ -269,12 +271,14 @@ const MenuActivity = (props) => {
           >
             {" "}
             <Menu
+              disabledOverflow={true}
               mode="horizontal"
               style={{
-                width: "100%",
+                //width: "100%",
                 marginTop: "2%",
                 justifyContent: "center",
                 fontFamily: "Dosis",
+                maxWidth: "100vh",
               }}
             >
               <Menu.Item

@@ -265,13 +265,13 @@ const Cart = (props) => {
         onOk={() => props.setCart(false)}
         onCancel={() => props.setCart(false)}
         width={
-          props.width <= 1500
+          props.width >= 1500
             ? "45%"
-            : props.width <= 1000
-            ? props.width <= 400
+            : props.width >= 1000
+            ? props.width >= 400
               ? "90%"
               : "70%"
-            : "35%"
+            : "70%"
         }
         footer={null}
         //onAfterOpen={afterOpenModal}
@@ -283,7 +283,7 @@ const Cart = (props) => {
           <h2 id="titreCart">
             Panier{" "}
             <ShoppingCartOutlined
-              style={{ color: "#eb0a0c", fontSize: "bold" }}
+              style={{ color: "#FFDD83", fontSize: "bold" }}
             />
             <div style={{ height: "1px", backgroundColor: "grey" }}></div>
           </h2>

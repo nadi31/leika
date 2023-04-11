@@ -4,7 +4,7 @@ import axios from "axios";
 import { useState, useLayoutEffect, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import MenuBrowser from "./MenuBrowser";
-import MenuMobile from "./MenuMobile";
+
 import Footer from "./Footer";
 import { BrowserView, MobileView } from "react-device-detect";
 
@@ -915,9 +915,6 @@ const CourseUpdateGiver = (props) => {
         <BrowserView>
           <MenuBrowser width={width} />
         </BrowserView>
-        <MobileView>
-          <MenuMobile />
-        </MobileView>
         <div
           style={{
             diplay: "flex",

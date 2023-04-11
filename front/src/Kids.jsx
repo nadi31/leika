@@ -22,7 +22,7 @@ import kart from "./kart.jpg";
 import loop from "./loop.mp4";
 import kids from "./kids.png";
 import MenuBrowser from "./MenuBrowser";
-import MenuMobile from "./MenuMobile";
+
 import Results from "./Results";
 const Kids = () => {
   const [courseList, setCourseList] = useState([]);
@@ -164,7 +164,6 @@ const Kids = () => {
         <ConfigProvider>
           <MobileView>
             {" "}
-            <MenuMobile />
             <div
               className="top"
               style={{

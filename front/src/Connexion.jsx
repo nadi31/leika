@@ -16,7 +16,7 @@ import {
   notification,
   Space,
 } from "antd";
-import logo from "./logo2.png";
+import logo from "./leika_logo2.png";
 
 import {
   useNavigate,
@@ -529,7 +529,7 @@ const Connexion = (props) => {
               >
                 <Button
                   onClick={() => {
-                    console.log("I GOT TO BE RIGHT NOW");
+                    //console.log("I GOT TO BE RIGHT NOW");
                     setOublie(true);
                     //modalOublie();
                   }}
@@ -537,22 +537,34 @@ const Connexion = (props) => {
                   Mot de passe oublié
                 </Button>
               </Form.Item>
-              <div
+              <span
                 style={{
                   position: "flex",
-                  display: "inline",
-                  justifyContent: "center",
                   width: "100%",
-
-                  marginLeft: "20%",
+                  display: "flex",
+                  justifyContent: "center",
                 }}
               >
                 <Button
-                  type="button"
                   style={{
                     borderRadius: "25px",
                     color: "black",
                     marginRight: "30px",
+                  }}
+                  onClick={() => {
+                    //authLogin(email, password);
+                    setSubcribe((current) => !current);
+                  }}
+                >
+                  S'inscrire
+                </Button>
+
+                <Button
+                  style={{
+                    backgroundColor: "white",
+                    color: "black",
+
+                    borderRadius: "25px",
                   }}
                   htmlType="submit"
                   onClick={() => {
@@ -562,23 +574,7 @@ const Connexion = (props) => {
                 >
                   Se connecter
                 </Button>
-
-                <Button
-                  type="button"
-                  style={{
-                    backgroundColor: "white",
-                    color: "black",
-
-                    borderRadius: "25px",
-                  }}
-                  onClick={() => {
-                    //authLogin(email, password);
-                    setSubcribe((current) => !current);
-                  }}
-                >
-                  S'inscrire
-                </Button>
-              </div>
+              </span>
             </Form>
           </div>
         )}
@@ -596,68 +592,61 @@ const Connexion = (props) => {
         width={500}
       >
         {" "}
-        <div className="border" style={{ width: "95%" }}></div>
         <div
           className="crop"
           style={{
-            position: "flex",
             display: "flex",
-            justifyContent: "center",
             width: "100%",
+            top: "-100%",
+            justifyContent: "center",
           }}
         >
-          <img style={{ width: "40%" }} src={logo} alt="logo"></img>
+          <div style={{ width: "80%" }}>
+            <h1 style={{}}>Mot de passe oublié</h1>
 
-          <Form
-            name="form_oublie"
+            <br />
+            <div style={{ width: "100%" }}>
+              {" "}
+              <Form
+                name="form_oublie"
 
-            // onFinish={onFinish}
-            //onFinishFailed={onFinishFailed}
-          >
-            <Form.Item
-              label="Email"
-              name="email"
-              rules={[
-                {
-                  required: true,
-                  message: "Veuillez renseigner votre email",
-                },
-              ]}
-            >
-              <Input
-                onChange={(e) => {
-                  setEmailOublie(e.target.value);
-                }}
-              />
-            </Form.Item>
-
-            <div
-              style={{
-                position: "flex",
-                display: "inline",
-                justifyContent: "center",
-                width: "100%",
-
-                marginLeft: "20%",
-              }}
-            >
-              <Button
-                type="button"
-                style={{
-                  borderRadius: "25px",
-                  color: "black",
-                  marginRight: "30px",
-                }}
-                htmlType="submit"
-                onClick={() => {
-                  onOublie(emailOublie);
-                  setOublie(false);
-                }}
+                // onFinish={onFinish}
+                //onFinishFailed={onFinishFailed}
               >
-                Valider
-              </Button>
+                <Form.Item
+                  label="Veuillez entrer votre email:"
+                  name="email"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Veuillez renseigner votre email",
+                    },
+                  ]}
+                >
+                  <Input
+                    onChange={(e) => {
+                      setEmailOublie(e.target.value);
+                    }}
+                  />
+                </Form.Item>
+                <Button
+                  style={{
+                    backgroundColor: "white",
+                    color: "black",
+
+                    borderRadius: "25px",
+                  }}
+                  htmlType="submit"
+                  onClick={() => {
+                    onOublie(emailOublie);
+                    setOublie(false);
+                  }}
+                >
+                  Valider
+                </Button>
+              </Form>
             </div>
-          </Form>
+          </div>{" "}
         </div>
       </Modal>
       ;

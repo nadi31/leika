@@ -25,7 +25,7 @@ import para from "./para.jpg";
 import couture from "./couture.jpg";
 import logo2 from "./logo2.png";
 import { BrowserView, MobileView } from "react-device-detect";
-import MenuMobile from "./MenuMobile";
+
 import Review from "./Review";
 import Footer from "./Footer";
 import axios from "axios";
@@ -50,6 +50,7 @@ import { isArrayLiteralExpression } from "typescript";
 const Giver = () => {
   const id = useParams();
   const idGiver = id["giverID"];
+
   const [adress, setAdress] = useState(null);
   const [giver, setGiver] = useState(null);
   const [width, setWidth] = useState(window.innerWidth);
@@ -70,7 +71,7 @@ const Giver = () => {
       console.log("GIVER " + giver);
 
       const res2 = await axios.get(
-        `http://localhost:8000/api/adress/${res.data[0].adress}`
+        `http://localhost:8000/api/giver/adress/${res.data[0].user}`
       );
 
       setAdress(res2.data[0]);
@@ -119,9 +120,6 @@ const Giver = () => {
   } else {
     return (
       <div style={{ marginLeft: "10%" }}>
-        <MobileView>
-          <MenuMobile />
-        </MobileView>
         <BrowserView>
           <MenuBrowser width={width} />
         </BrowserView>
@@ -142,7 +140,7 @@ const Giver = () => {
                 {adress.name + "  "}
                 {adress.add_ons ? adress.add_ons + "  " : "  "}
                 {adress.apartment_number ? adress.apartment_number : "  "}
-                {adress.zip_code + "  "}
+
                 {adress.city}
               </p>
             </div>

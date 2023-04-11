@@ -3,7 +3,7 @@ import React from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import MenuBrowser from "./MenuBrowser";
-import MenuMobile from "./MenuMobile";
+
 import Footer from "./Footer";
 import { BrowserView, MobileView } from "react-device-detect";
 
@@ -1304,9 +1304,6 @@ class CourseForm extends React.Component {
         <BrowserView>
           <MenuBrowser width={this.state.width} />
         </BrowserView>
-        <MobileView>
-          <MenuMobile />
-        </MobileView>
         <div
           style={{
             diplay: "flex",

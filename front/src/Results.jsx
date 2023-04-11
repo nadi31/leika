@@ -33,17 +33,20 @@ import {
   Cascader,
   Switch,
   Button,
+  Modal,
 } from "antd";
 import dancee from "./star.png";
 import experience from "./experience.png";
 import dayjs from "dayjs";
 
 import MenuBrowser from "./MenuBrowser";
-import MenuMobile from "./MenuMobile";
+
 import axios from "axios";
 import Footer from "./Footer";
 import queryString from "query-string";
 import { filter } from "lodash";
+import MenuMobile from "./MenuMobile";
+import HomeMobile from "./HomeMobile";
 const Results = () => {
   const [menuArt, setMenuArt] = useState(false);
   const [menuGames, setMenuGames] = useState(false);
@@ -52,6 +55,8 @@ const Results = () => {
   const [menuCulture, setMenuCulture] = useState(false);
   const [menuCuisine, setMenuCuisine] = useState(false);
   const [menuDIY, setMenuDIY] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
   const [menuBeauty, setMenyBeauty] = useState(false);
   const [menuSports, setMenuSports] = useState(false);
   const [menuTheatre, setMenuTheatre] = useState(false);
@@ -191,17 +196,6 @@ const Results = () => {
     //console.log("STATE " + state);
     console.log("REQUEST1 " + request);
 
-    const cit = request.get("city");
-
-    const url = `https://api.geoapify.com/v1/geocode/search?text=${
-      cit + " France"
-    }&apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44`;
-
-    await axios.get(url).then((res) => {
-      lonCity.current = res.data.features[0].properties.lon;
-      latCity.current = res.data.features[0].properties.lat;
-    });
-
     //console.log("REQUEST " + JSON.stringify(values));
 
     await axios
@@ -209,45 +203,57 @@ const Results = () => {
       .then((res2) => {
         console.log("RESULTS REQUEST" + JSON.stringify(res2.data));
         // setResults(res.data);
+        if (request.get("city")) {
+          const cit = request.get("city");
 
-        res2.data.map(async (location) => {
-          var axios = require("axios");
-          console.log("213 " + latCity);
-          console.log("214" + location.lng + " " + location.lat);
+          const url = `https://api.geoapify.com/v1/geocode/search?text=${
+            cit + " France"
+          }&apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44`;
 
-          var data = JSON.stringify({
-            mode: "drive",
-            sources: [{ location: [location.lng, location.lat] }],
-            targets: [
-              {
-                location: [lonCity.current, latCity.current],
-              },
-            ],
-          });
+          axios.get(url).then((res) => {
+            lonCity.current = res.data.features[0].properties.lon;
+            latCity.current = res.data.features[0].properties.lat;
+            res2.data.map(async (location) => {
+              var axios = require("axios");
+              console.log("213 " + latCity);
+              console.log("214" + location.lng + " " + location.lat);
 
-          var config = {
-            method: "post",
-            url: "https://api.geoapify.com/v1/routematrix?apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            data: data,
-          };
+              var data = JSON.stringify({
+                mode: "drive",
+                sources: [{ location: [location.lng, location.lat] }],
+                targets: [
+                  {
+                    location: [lonCity.current, latCity.current],
+                  },
+                ],
+              });
 
-          axios(config)
-            .then(function (response) {
-              console.log(response.data.sources_to_targets[0][0].distance);
-              if (response.data.sources_to_targets[0][0].distance < 20000) {
-                setResults((res) => [...res, location]);
-              }
-            })
-            .catch(function (error) {
-              console.log(error);
+              var config = {
+                method: "post",
+                url: "https://api.geoapify.com/v1/routematrix?apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                data: data,
+              };
+
+              axios(config)
+                .then(function (response) {
+                  console.log(response.data.sources_to_targets[0][0].distance);
+                  if (response.data.sources_to_targets[0][0].distance < 20000) {
+                    setResults((res) => [...res, location]);
+                  }
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
             });
-
-          // res.data.map((res) => console.log("" + res.lat));
-        });
+          });
+        } else {
+          setResults(res2.data);
+        }
       })
+
       .catch((err) => console.log(err));
   }, []);
 
@@ -374,17 +380,296 @@ const Results = () => {
 
   if (results !== []) {
     return (
-      <BrowserView>
-        <div key={activity} style={{ width: "100%", display: "inline-block" }}>
+      <>
+        {width > 800 ? (
           <MenuBrowser
             width={width}
             city={city}
             datemax={datemax}
             activity={activity}
+            style={{ zIndex: "2" }}
           />
-
+        ) : (
+          <HomeMobile />
+        )}
+        <div key={activity} style={{ width: "100%", display: "inline-block" }}>
           <div style={{ display: "flex" }}>
             {" "}
+            <Modal
+              open={isVisible}
+              onOk={() => setIsVisible(false)}
+              //destroyOnClose={true}
+              onCancel={() => setIsVisible(false)}
+            >
+              <Form style={{ width: "100%", marginTop: "3%" }}>
+                <h3
+                  style={{
+                    color: "grey",
+                    marginTop: "-1%",
+                    //marginLeft: "%",
+                    textDecoration: "underline",
+                  }}
+                >
+                  Filtres
+                </h3>
+                <>
+                  <> </>
+                  <Form.Item
+                    label={
+                      <>
+                        <Icon
+                          style={{ width: "90%", height: "90%" }}
+                          component={() => (
+                            <img
+                              style={{
+                                width: "90%",
+                                height: "90%",
+                                marginRight: "50%",
+                              }}
+                              src={euros}
+                            />
+                          )}
+                        />
+                        {"  Prix  "}
+                      </>
+                    }
+                  >
+                    <Slider
+                      range
+                      max={600}
+                      step={10}
+                      //style={{ color: "black" }}
+                      defaultValue={[0, 600]}
+                      onChange={(prix) => {
+                        prix_max.current = prix[0];
+                        prix_min.current = prix[1];
+                        filtering();
+                      }}
+                    />
+                  </Form.Item>
+                </>
+
+                <Form.Item
+                  name="seats"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={friends}
+                          />
+                        )}
+                      />
+                      {"  Places  "}
+                    </>
+                  }
+                >
+                  <InputNumber
+                    defaultValue={1}
+                    style={{ width: "100%" }}
+                    onChange={(e) => {
+                      seats.current = e;
+                      filtering();
+                    }}
+                    min={0}
+                    max={1000}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="cascader_age"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={ageImage}
+                          />
+                        )}
+                      />
+                      {"  Age  "}
+                    </>
+                  }
+                >
+                  <Cascader
+                    //defaultValue={"Tous les âges"}
+                    // value={this.state.input}
+                    onChange={(e) => {
+                      e !== undefined
+                        ? (filterAge.current = e[0])
+                        : (filterAge.current = "");
+                      filtering();
+                    }}
+                    //style={{ width: 300 }}
+                    options={age}
+                    placeholder="Sélectionner l'âge"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="cascader_level"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={levelImage}
+                          />
+                        )}
+                      />
+                      {"  Niveau  "}
+                    </>
+                  }
+                >
+                  <Cascader
+                    defaultValue={""}
+                    onChange={(e) => {
+                      e !== undefined
+                        ? (level.current = e[0])
+                        : (level.current = "");
+                      filtering();
+                    }}
+                    // style={{ width: 300 }}
+                    options={options}
+                    placeholder="Sélectionner le niveau"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="switch_remote"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={locationImage}
+                          />
+                        )}
+                      />
+                      {"  En ligne  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      console.log("CLICK Remote");
+                      isRemote.current = !isRemote.current;
+                      console.log("remote   " + isRemote.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="switch_handi"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={handi}
+                          />
+                        )}
+                      />
+                      {"  Handi-Accessible  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      console.log("CLICK handi accessible");
+                      accessible.current = !accessible.current;
+                      console.log("acces   " + accessible.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="switch_free"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={free}
+                          />
+                        )}
+                      />
+                      {"  Gratuit  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      isFree.current = !isFree.current;
+                      console.log("free   " + isFree.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+                {/*   <div style={{ width: "10%", height: "40%" }}>
+              {results.length > 0 ? (
+                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
+                  <Maps
+                    key={JSON.stringify(results.length)}
+                    locations={results}
+                  />
+                </LoadScript>
+              ) : null}
+            </div>*/}
+                <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
+                  {results.length > 0 &&
+                  latCity.current !== 0 &&
+                  lonCity.current !== 0 ? (
+                    <Map
+                      key={JSON.stringify(results.length)}
+                      locations={results}
+                      centerLat={latCity.current}
+                      centerLong={lonCity.current}
+                      style={{ zIndex: "-1" }}
+                    />
+                  ) : null}
+                </div>
+              </Form>
+            </Modal>
             <Form style={{ width: "23%", marginTop: "3%", marginLeft: "10%" }}>
               <h3
                 style={{
@@ -639,11 +924,16 @@ const Results = () => {
                 </LoadScript>
               ) : null}
             </div>*/}
-              <div style={{ width: "50%", height: "50%" }}>
-                {results.length > 0 ? (
+              <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
+                {results.length > 0 &&
+                latCity.current !== 0 &&
+                lonCity.current !== 0 ? (
                   <Map
                     key={JSON.stringify(results.length)}
                     locations={results}
+                    centerLat={latCity.current}
+                    centerLong={lonCity.current}
+                    style={{ zIndex: "-1" }}
                   />
                 ) : null}
               </div>
@@ -656,94 +946,97 @@ const Results = () => {
                 // borderRightWidth: "thin",
               }}
             >
-              {results === [] ? (
-                <>Loading</>
-              ) : (
-                <>
-                  <Cascader
-                    defaultValue={""}
-                    onChange={(e) => {
-                      e !== undefined
-                        ? (classt.current = e[0])
-                        : (classt.current = 0);
-                      classer();
-                    }}
-                    // style={{ width: 300 }}
-                    options={classement}
-                    placeholder="Trier"
-                  />
-                  <br />
-                  <br />
-                  {results.map((res, i) => {
-                    return (
-                      <div key={"KEY" + i}>
-                        <span
-                          style={{
-                            position: "flex",
-                            display: "inline",
-                            width: "40%",
-                            float: "left",
-                            marginRight: "3%",
-                          }}
-                          key={res.id}
-                        >
-                          <a href={"/product/" + res.id}>
-                            <Card
-                              key={"HEY" + res.id}
-                              hoverable
-                              style={{ border: "none", width: "100%" }}
-                              cover={<img alt="example" src={res.img1} />}
-                            >
-                              <Meta
-                                id="button_giver"
-                                style={{
-                                  marginTop: "-2%",
-                                  height: "160%",
-                                  border: "none",
-                                  //  width: "60%",
-                                }}
-                                title={res.title}
-                                description={res.accroche}
-                              />
-                              <Meta
-                                id="button_giver"
-                                style={{
-                                  marginTop: "-2%",
-                                  height: "160%",
-                                  border: "none",
-                                  textDecoration: "none",
-                                }}
-                                title={
-                                  res.isDiscounted ? (
-                                    <>
-                                      <p
-                                        style={{
-                                          textDecoration: "line-through",
-                                        }}
-                                      >
-                                        {res.price + "€"}
-                                      </p>
-                                      <p>{res.discount + "€"}</p>{" "}
-                                    </>
-                                  ) : (
-                                    res.price + "€"
-                                  )
-                                }
-                                // description={}
-                              />
-                            </Card>
-                          </a>
-                        </span>
-                      </div>
-                    );
-                  })}
-                </>
-              )}
+              <>
+                <Button
+                  onClick={() => {
+                    setIsVisible(!isVisible);
+                  }}
+                >
+                  TRIER
+                </Button>
+                <Cascader
+                  defaultValue={""}
+                  onChange={(e) => {
+                    e !== undefined
+                      ? (classt.current = e[0])
+                      : (classt.current = 0);
+                    classer();
+                  }}
+                  // style={{ width: 300 }}
+                  options={classement}
+                  placeholder="Trier"
+                />
+                <br />
+                <br />
+                {results.map((res, i) => {
+                  return (
+                    <div key={"KEY" + i}>
+                      <span
+                        style={{
+                          position: "flex",
+                          display: "inline",
+                          width: "40%",
+                          float: "left",
+                          marginRight: "3%",
+                        }}
+                        key={res.id}
+                      >
+                        <a href={"/product/" + res.id}>
+                          <Card
+                            key={"HEY" + res.id}
+                            hoverable
+                            style={{ border: "none", width: "100%" }}
+                            cover={<img alt="example" src={res.img1} />}
+                          >
+                            <Meta
+                              id="button_giver"
+                              style={{
+                                marginTop: "-2%",
+                                height: "160%",
+                                border: "none",
+                                //  width: "60%",
+                              }}
+                              title={res.title}
+                              description={res.accroche}
+                            />
+                            <Meta
+                              id="button_giver"
+                              style={{
+                                marginTop: "-2%",
+                                height: "160%",
+                                border: "none",
+                                textDecoration: "none",
+                              }}
+                              title={
+                                res.isDiscounted ? (
+                                  <>
+                                    <p
+                                      style={{
+                                        textDecoration: "line-through",
+                                      }}
+                                    >
+                                      {res.price + "€"}
+                                    </p>
+                                    <p>{res.discount + "€"}</p>{" "}
+                                  </>
+                                ) : (
+                                  res.price + "€"
+                                )
+                              }
+                              // description={}
+                            />
+                          </Card>
+                        </a>
+                      </span>
+                    </div>
+                  );
+                })}
+              </>
             </div>
           </div>
         </div>
         <Footer width={width} />{" "}
-      </BrowserView>
+      </>
     );
   } else {
     return <>Loading</>;

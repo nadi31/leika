@@ -8,7 +8,7 @@ import L from "leaflet";
 const Map = (props) => {
   const [selected, setSelected] = useState({});
   const [isClicked, setIsClicked] = useState(false);
-  const coords = useRef([43.4706539, 1.3184371]);
+  const coords = useRef([props.centerLat, props.centerLong]);
   const { Meta } = Card;
   const onSelect = (item) => {
     setSelected(item);
@@ -17,7 +17,7 @@ const Map = (props) => {
     let map = useMap();
 
     if (coords !== null) {
-      map.setView([43.4706539, 1.3184371], map.getZoom());
+      map.setView([props.centerLat, props.centerLong], map.getZoom());
     }
 
     return null;
@@ -81,7 +81,7 @@ const Map = (props) => {
       });
       console.log("Tableaux : 1. LOCS " + JSON.stringify(locs));
     }
-  }, [props.locations]);
+  }, [props]);
 
   const customIcon = new L.Icon({
     //creating a custom icon to use in Marker
@@ -90,13 +90,17 @@ const Map = (props) => {
     iconAnchor: [5, 30],
   });
 
-  if (coords !== null && modified !== []) {
+  if (
+    props.centerLat !== null &&
+    props.centerLong !== null &&
+    modified !== []
+  ) {
     return (
       <MapContainer
         classsName="map"
-        center={[43.4706539, 1.3184371]}
-        zoom={14}
-        style={{ height: "400px", width: "400px" }}
+        center={[props.centerLat, props.centerLong]}
+        zoom={13}
+        style={{ height: "400px", width: "400px", zIndex: "-1" }}
         scrollWheelZoom={false}
       >
         {locs.map((location) => (

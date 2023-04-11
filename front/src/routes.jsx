@@ -22,7 +22,7 @@ import GiverView from "./GiverView";
 import TeamBuilding from "./TeamBuilding";
 import GiftCard from "./GiftCard";
 import Founders from "./Founders";
-
+import HomeMobile from "./HomeMobile";
 import Map from "./Map";
 const BaseRouter = () => (
   <Routes>
@@ -37,7 +37,7 @@ const BaseRouter = () => (
       element={<Results />}
       key={window.location.pathname}
     />
-
+    <Route exact path="/home" element={<HomeMobile />} />
     <Route exact path="/kids" element={<Kids />} />
     <Route exact path="/team" element={<TeamBuilding />} />
     <Route exact path="/profil" element={<ProfilCub />} />

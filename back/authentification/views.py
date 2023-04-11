@@ -700,7 +700,8 @@ class AdressesGiverView(APIView):
         #adresses = Adress.objects.all()
 
         #serializer = GiverSerializer(givers, many=True)
-        adresses = Adress.objects.filter(giver=self.kwargs['pk'])
+        user = Giver.objects.get(user=self.kwargs['pk'])
+        adresses = Adress.objects.filter(giver=user.user)
         serializer = AdressSerializer(adresses, many=True)
         # cub = user.cub_set.all()
         return Response(serializer.data)

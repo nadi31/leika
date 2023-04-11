@@ -31,7 +31,7 @@ import {
   EditOutlined,
   ContainerOutlined,
 } from "@ant-design/icons";
-import MenuMobile from "./MenuMobile";
+
 import axios from "axios";
 import Wishlist from "./Wishlist";
 import Footer from "./Footer";

@@ -87,6 +87,8 @@ class Course(models.Model):
     value = models.IntegerField(null=True, blank=True)
     date_fin = models.DateField(null=True, blank=True)
     courseHourIsCreated = models.BooleanField(default=False)
+    # adress = models.ForeignKey(
+    #  'authentification.Adress', related_name='courses', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title

@@ -1,7 +1,8 @@
 import MenuBrowser from "./MenuBrowser";
 import Bloc from "./Bloc";
 import { useParams } from "react-router-dom";
-
+import dayjs from "dayjs";
+import HomeMobile from "./HomeMobile";
 import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
 import {
   Rate,
@@ -24,7 +25,7 @@ import para from "./para.jpg";
 import couture from "./couture.jpg";
 import logo2 from "./logo2.png";
 import { BrowserView, MobileView } from "react-device-detect";
-import MenuMobile from "./MenuMobile";
+
 import Review from "./Review";
 import Footer from "./Footer";
 import axios from "axios";
@@ -172,12 +173,24 @@ const ProductDetail = (props) => {
         <>
           <div
             className="div_choix"
-            style={{ overflow: "auto", width: "70%", height: "100px" }}
+            style={{
+              overflow: "auto",
+              width: width <= 700 ? "70%" : "100%",
+              height: "100px",
+            }}
           >
             <div ref={myRef}>
-              <Timeline
-                style={{ marginTop: "5%", marginLeft: "1%" }}
-              ></Timeline>
+              <Timeline style={{ marginTop: "5%", marginLeft: "1%" }}>
+                {hours
+                  ? hours.map((h) =>
+                      timeMenu(
+                        dayjs(h.date).format("DD/MM/YYYY"),
+                        h.hour.slice(0, -3),
+                        h.seats
+                      )
+                    )
+                  : null}
+              </Timeline>
             </div>
           </div>{" "}
           {hours && hours.length > 2 ? (
@@ -216,102 +229,109 @@ const ProductDetail = (props) => {
         </Button>
       ),
       content: (
-        <div style={{ marginTop: "20px" }}>
-          Nombre de place(s){" "}
-          <Button
-            onClick={() => {
-              if (offers !== null) {
-                offers.map((offer, index) => {
-                  valueInput - 1 >= offer.seatsFirst &&
-                  valueInput <= offer.seatsLast
-                    ? setPrice(offer.price)
-                    : setPrice(course.price);
-                });
-              }
-              if (valueInput <= 1) {
-                setValueInput(1);
-              } else {
-                setValueInput(valueInput - 1);
-              }
-            }}
-          >
-            -
-          </Button>
-          <InputNumber
-            style={{ height: "33%", width: "50px" }}
-            value={valueInput}
-            onChange={(e) => {
-              if (e > maxSeats) {
-                setValueInput(maxSeats);
-              }
-              if (e < 1) {
-                setValueInput(1);
-              }
-            }}
-          ></InputNumber>
-          <Button
-            onClick={() => {
-              if (offers !== null) {
-                offers.map((offer, index) => {
-                  valueInput + 1 >= offer.seatsFirst &&
-                  valueInput <= offer.seatsLast
-                    ? setPrice(offer.price)
-                    : setPrice(course.price);
-                });
-              }
+        <>
+          <div style={{ display: "block", width: "100%" }}>
+            Nombre de place(s){" "}
+            <Button
+              onClick={() => {
+                if (offers !== null) {
+                  offers.map((offer, index) => {
+                    valueInput - 1 >= offer.seatsFirst &&
+                    valueInput <= offer.seatsLast
+                      ? setPrice(offer.price)
+                      : setPrice(course.price);
+                  });
+                }
+                if (valueInput <= 1) {
+                  setValueInput(1);
+                } else {
+                  setValueInput(valueInput - 1);
+                }
+              }}
+            >
+              -
+            </Button>
+            <InputNumber
+              style={{ width: "50px", bottom: "4px" }}
+              value={valueInput}
+              onChange={(e) => {
+                if (e > maxSeats) {
+                  setValueInput(maxSeats);
+                }
+                if (e < 1) {
+                  setValueInput(1);
+                }
+              }}
+            ></InputNumber>
+            <Button
+              style={{}}
+              onClick={() => {
+                if (offers !== null) {
+                  offers.map((offer, index) => {
+                    valueInput + 1 >= offer.seatsFirst &&
+                    valueInput <= offer.seatsLast
+                      ? setPrice(offer.price)
+                      : setPrice(course.price);
+                  });
+                }
 
-              if (valueInput >= maxSeats) {
-                setValueInput(maxSeats);
-              } else if (valueInput < 1) {
-                setValueInput(1);
-              } else {
-                setValueInput(valueInput + 1);
-              }
-            }}
-          >
-            +
-          </Button>
-          {price ? (
-            price !== course.price ? (
-              <>
-                {" "}
-                pour
-                <p style={{ textDecoration: " line-through" }}>
-                  {course.price}
-                </p>
-                <p>{price}€</p>
-              </>
-            ) : (
-              <p>pour {price}€</p>
-            )
-          ) : null}
-          <Button
-            id="button"
-            style={{
-              backgroundColor: "#ffd04f",
-              borderRadius: "25px",
-              width: "70%",
-              marginTop: "34px",
-              marginLeft: "5%",
-            }}
-            onClick={() => {
-              let init_cart = JSON.parse(localStorage.getItem("cart") || "[]");
-              let items = JSON.parse(localStorage.getItem("cart") || "[]");
+                if (valueInput >= maxSeats) {
+                  setValueInput(maxSeats);
+                } else if (valueInput < 1) {
+                  setValueInput(1);
+                } else {
+                  setValueInput(valueInput + 1);
+                }
+              }}
+            >
+              +
+            </Button>
+            {price ? (
+              price !== course.price ? (
+                <>
+                  {" "}
+                  pour
+                  <p style={{ textDecoration: " line-through" }}>
+                    {course.price}
+                  </p>
+                  <p>{price}€</p>
+                </>
+              ) : (
+                <p>pour {price}€</p>
+              )
+            ) : null}
+            <div />
+            <br />
+            <div style={{ width: "100%" }}>
+              <Button
+                id="button"
+                style={{
+                  backgroundColor: "#ffd04f",
+                  borderRadius: "25px",
+                  width: "70%",
+                  marginTop: "34px",
+                  //marginLeft: "5%",
+                }}
+                onClick={() => {
+                  let init_cart = JSON.parse(
+                    localStorage.getItem("cart") || "[]"
+                  );
+                  let items = JSON.parse(localStorage.getItem("cart") || "[]");
 
-              items.push({
-                key: courseID,
-                name: course.title,
-                price: course.price,
-                seats: valueInput,
-                img: course.img1,
-                maxSeats: maxSeats,
-                hourSelected: hourSelected,
-                currency: "€",
-              });
-              let itemsOrdered = refactorizedData(items, init_cart);
-              localStorage.setItem("cart", JSON.stringify(itemsOrdered));
+                  items.push({
+                    key: courseID,
+                    name: course.title,
+                    price: course.price,
+                    seats: valueInput,
+                    img: course.img1,
+                    maxSeats: maxSeats,
+                    hourSelected: hourSelected,
+                    currency: "€",
+                  });
+                  let itemsOrdered = refactorizedData(items, init_cart);
+                  localStorage.setItem("cart", JSON.stringify(itemsOrdered));
 
-              /*  let a = null;
+                  /*  let a = null;
               
                 if (localStorage.getItem("cart")) {
                    a = localStorage.getItem("cart");
@@ -342,20 +362,22 @@ const ProductDetail = (props) => {
 
                 localStorage.setItem("cart", a);
               }*/
-            }}
-          >
-            Ajouter au panier !
-            <ShoppingCartOutlined
-              style={{ color: "#eb0a0c", fontSize: "bold" }}
-            />
-          </Button>{" "}
-        </div>
+                }}
+              >
+                Ajouter au panier !
+                <ShoppingCartOutlined
+                  style={{ color: "#eb0a0c", fontSize: "bold" }}
+                />
+              </Button>{" "}
+            </div>
+          </div>
+        </>
       ),
     },
   ];
   //const courseID = useParams();
   const { Step } = Steps;
-  const [imagePrincipale, setImagePrincipale] = useState();
+  const [imagePrincipale, setImagePrincipale] = useState(null);
   const [width, setWidth] = useState(window.innerWidth);
   const [small, setSmall] = useState("horizontal");
   const refactorizedData = (dataForBasket, initBasket) => {
@@ -506,6 +528,7 @@ const ProductDetail = (props) => {
           `http://localhost:8000/api-course/${courseID}`
         );
         setCourse(res.data);
+        setImagePrincipale(res.data.img1);
 
         setPrice(res.data.price);
 
@@ -518,12 +541,12 @@ const ProductDetail = (props) => {
         console.log("GIVER " + JSON.stringify(res2.data[0].description));
         console.log("FK " + res2.data[0].adress);
         const res5 = await axios.get(
-          `http://localhost:8000/api/adress/${res2.data[0].adress}`
+          `http://localhost:8000/api/adress/${res.data.lieu}`
         );
 
         setAdress(res5.data);
 
-        console.log("RES" + JSON.stringify(adress));
+        console.log("RES" + JSON.stringify(res5.data));
 
         const res4 = await axios.get(
           `http://localhost:8000/api-course/create/offers/${courseID}`
@@ -590,17 +613,20 @@ const ProductDetail = (props) => {
   } else {
     return (
       <>
-        <MobileView>
-          <MenuMobile />
-        </MobileView>
-
-        <BrowserView>
-          {course.age === "Enfants" ? (
-            <MenuBrowser kids={true} width={width} />
-          ) : (
-            <MenuBrowser kids={false} width={width} />
-          )}
-        </BrowserView>
+        {width <= 700 ? (
+          <> {course.age === "Enfants" ? <HomeMobile /> : <HomeMobile />}</>
+        ) : (
+          <>
+            {" "}
+            <BrowserView>
+              {course.age === "Enfants" ? (
+                <MenuBrowser kids={true} width={width} />
+              ) : (
+                <MenuBrowser kids={false} width={width} />
+              )}
+            </BrowserView>
+          </>
+        )}
 
         <div style={{ width: "100%" }}>
           <div style={{ display: width <= 1200 ? "" : "flex", width: "100%" }}>
@@ -610,7 +636,7 @@ const ProductDetail = (props) => {
                   <div
                     style={{
                       width: "80%",
-                      display: "bloc",
+                      display: "block",
                       margin: "20px auto",
                     }}
                   >
@@ -632,12 +658,12 @@ const ProductDetail = (props) => {
                 <div
                   style={{
                     position: "sticky",
-                    top: "0px",
+                    marginTop: "20px",
                     width: "100%",
                     marginLeft: "5%",
                   }}
                 >
-                  <div style={{ width: "30%", marginTop: "15%" }}>
+                  <div style={{ width: "30%" }}>
                     <Card
                       className="product_card"
                       onClick={() => {
@@ -647,6 +673,7 @@ const ProductDetail = (props) => {
                       style={style_icone}
                       cover={<Image preview={false} src={course.img1} />}
                     />
+
                     <Card
                       className="product_card"
                       onClick={() => {
@@ -680,7 +707,7 @@ const ProductDetail = (props) => {
                         <Image
                           preview={false}
                           style={{ width: "100%" }}
-                          src={course.img1}
+                          src={imagePrincipale}
                         />
                       }
                     ></Card>
@@ -693,7 +720,7 @@ const ProductDetail = (props) => {
               style={{
                 margin: width <= 1200 ? "auto" : "0 0 0 2%",
                 display: width <= 1200 ? "bloc" : "",
-                width: width <= 1200 ? "80%" : "40%",
+                width: width <= 1200 ? "80%" : "50%",
                 marginTop: "2%",
               }}
             >
@@ -730,13 +757,7 @@ const ProductDetail = (props) => {
               <br /> <br />
               <span>
                 <EnvironmentTwoTone twoToneColor="#02245c" />
-                {adress
-                  ? adress[0].name +
-                    ", " +
-                    adress[0].zip_code +
-                    " " +
-                    adress[0].city
-                  : "chargement"}
+                {adress ? adress[0].name + ", " + adress[0].city : "chargement"}
               </span>
               <br />
               <br />
@@ -841,7 +862,7 @@ const ProductDetail = (props) => {
           {" "}
           <Bloc
             yellow={true}
-            height={"900px"}
+            height={"400px"}
             content={course.content}
             icone={
               <ExperimentTwoTone
@@ -854,7 +875,7 @@ const ProductDetail = (props) => {
           />
           <Bloc
             yellow={true}
-            height={"900px"}
+            height={"400px"}
             content={
               <div style={{ justifyContent: "center" }}>
                 <a href={"http://localhost:3000/giver/" + giver.id}>
@@ -893,7 +914,8 @@ const ProductDetail = (props) => {
           }}
         >
           <Bloc
-            height={"900px"}
+            yellow={true}
+            height={"400px"}
             content={course.aSavoir}
             icone={
               <BulbOutlined
@@ -905,7 +927,8 @@ const ProductDetail = (props) => {
             width={width <= 1200 ? "80%" : "40%"}
           />
           <Bloc
-            height={"900px"}
+            yellow={true}
+            height={"400px"}
             content={course.annulation}
             icone={
               <InfoCircleOutlined
@@ -918,7 +941,7 @@ const ProductDetail = (props) => {
           />
         </div>
         <Bloc
-          height={"900px"}
+          height={"400px"}
           content={
             <div style={{ display: "block", width: "100%" }}>
               <List style={{ width: "60%", margin: "auto" }}>

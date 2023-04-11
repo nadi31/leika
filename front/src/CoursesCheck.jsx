@@ -4,7 +4,6 @@ import axios from "axios";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import MenuBrowser from "./MenuBrowser";
-import MenuMobile from "./MenuMobile";
 
 import Footer from "./Footer";
 import { BrowserView, MobileView } from "react-device-detect";

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
 import { Card } from "antd";
 import MenuBrowser from "./MenuBrowser";
-import MenuMobile from "./MenuMobile";
+
 import axios from "axios";
 import Footer from "./Footer";
 import queryString from "query-string";

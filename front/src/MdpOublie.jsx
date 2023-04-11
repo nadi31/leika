@@ -141,10 +141,6 @@ const MdpOublie = (props) => {
   } else {
     return (
       <>
-        <MobileView>
-          <MenuMobile />
-        </MobileView>
-
         <BrowserView>
           <MenuBrowser width={width} />
         </BrowserView>

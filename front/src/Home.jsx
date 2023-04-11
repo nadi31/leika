@@ -1,30 +1,15 @@
 import React, { useState, useLayoutEffect, useEffect } from "react";
 import { ConfigProvider } from "antd";
-
-//import frFR from "antd/lib/locale/fr_FR";
-//import MediaQuery from 'react-responsive';
 import { BrowserView, MobileView } from "react-device-detect";
-import { Card, Menu, Button, Input, AutoComplete, Carousel } from "antd";
+import { Card } from "antd";
 import axios from "axios";
-
+import HomeMobile from "./HomeMobile";
 import Footer from "./Footer";
-import {
-  ShoppingCartOutlined,
-  MenuOutlined,
-  UserOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import Connexion from "./Connexion";
-import Cart from "./Cart";
-import logo2 from "./logo2.png";
-import para from "./para.jpg";
-import couture from "./couture.jpg";
-import kart from "./kart.jpg";
+
 import loop from "./loop.mp4";
-import kids from "./kids.png";
+import ResCard from "./ResCard";
 import MenuBrowser from "./MenuBrowser";
-import MenuMobile from "./MenuMobile";
-import Results from "./Results";
+
 const Home = () => {
   const [courseList, setCourseList] = useState([]);
   const [results, setResults] = useState([]);
@@ -53,84 +38,16 @@ const Home = () => {
   const [card2, setcard2] = useState(<></>);
   const [card3, setcard3] = useState(<></>);
   useEffect(() => {
-    {
-      axios.get("http://localhost:8000/api-course/").then((res) => {
-        setCourseList(res.data);
-        console.log(res.data);
+    axios.get("http://localhost:8000/api-course/").then((res) => {
+      setCourseList(res.data);
+      console.log(res.data);
+      //id+ width + img1 +title + price
+      setcard1(<ResCard info={res.data[0]} width={width} />);
 
-        setcard1(
-          <a href={"product/" + res.data[0].id}>
-            <Card
-              hoverable
-              style={{ border: "none", width: "100%" }}
-              cover={
-                <img
-                  alt="example"
-                  width="500"
-                  height="300"
-                  src={res.data[0].img1}
-                />
-              }
-            >
-              <Meta
-                id="button_giver"
-                style={{ marginTop: "-2%", border: "none" }}
-                title={res.data[0].title}
-                description={res.data[0].price + "€"}
-              />
-            </Card>
-          </a>
-        );
+      setcard2(<ResCard info={res.data[1]} width={width} />);
 
-        setcard2(
-          <a href={"product/" + res.data[1].id}>
-            <Card
-              hoverable
-              style={{ border: "none", width: "100%" }}
-              cover={
-                <img
-                  alt="kart"
-                  width="500"
-                  height="300"
-                  src={res.data[1].img1}
-                />
-              }
-            >
-              <Meta
-                id="button_giver"
-                style={{ border: "none", marginTop: "-2%" }}
-                title={res.data[1].title}
-                description={res.data[1].price + "€"}
-              />
-            </Card>
-          </a>
-        );
-
-        setcard3(
-          <a href={"product/" + res.data[2].id}>
-            <Card
-              hoverable
-              style={{ border: "none", width: "100%" }}
-              cover={
-                <img
-                  alt="couture"
-                  width="500"
-                  height="300"
-                  src={res.data[2].img1}
-                />
-              }
-            >
-              <Meta
-                id="button_giver"
-                style={{ border: "none", marginTop: "-2%" }}
-                title={res.data[2].title}
-                description={res.data[2].price + "€"}
-              />
-            </Card>
-          </a>
-        );
-      });
-    }
+      setcard3(<ResCard info={res.data[2]} width={width} />);
+    });
   }, []);
 
   const { Meta } = Card;
@@ -151,74 +68,23 @@ const Home = () => {
 
   if (courseList === null) {
     return <div id="root">Loading..</div>;
-  } else {
+  } else if (width < 800 && courseList !== null) {
+    return (
+      <div id="root">
+        <HomeMobile />
+
+        {card1}
+        {card2}
+        {card3}
+      </div>
+    );
+  } else if (width > 600 && courseList !== null) {
     return (
       <div id="root">
         <ConfigProvider>
           <MobileView>
-            {" "}
-            <MenuMobile />
-            <div
-              className="top"
-              style={{
-                height: "50px",
-                paddingTop: "22px",
-                marginTop: "10px",
-                fontSize: "20px",
-              }}
-            >
-              Dispos aujourd'hui.
-            </div>
-            <Carousel autoplay="true" dotPosition="top">
-              <div>{card1}</div>
-              <div>{card2}</div>
-              <div>
-                <h3 style={contentStyle}>3</h3>
-              </div>
-              <div>
-                <h3 style={contentStyle}>4</h3>
-              </div>
-            </Carousel>
-            <div
-              className="top"
-              style={{
-                height: "50px",
-                paddingTop: "22px",
-                marginTop: "-30px",
-                fontSize: "20px",
-              }}
-            >
-              Dispos aujourd'hui.{" "}
-            </div>
-            <Carousel autoplay="true" dotPosition="top">
-              <div>{card3}</div>
-              <div>
-                <h3 style={contentStyle}>2</h3>
-              </div>
-              <div>
-                <h3 style={contentStyle}>3</h3>
-              </div>
-              <div>
-                <h3 style={contentStyle}>4</h3>
-              </div>
-            </Carousel>
-            <Button
-              id="button_giver"
-              style={{
-                paddingBottom: "10%",
-                color: "grey",
-                fontSize: "20px",
-                marginTop: "-10px",
-                left: "20%",
-                borderRadius: "25px",
-                backgroundColor: "white",
-                fontWeight: "500",
-              }}
-            >
-              Proposer des Expériences
-            </Button>
+            <HomeMobile />
           </MobileView>
-
           <BrowserView>
             <MenuBrowser
               team={false}
@@ -227,7 +93,6 @@ const Home = () => {
               width={width}
               setResults={setResults}
             />
-
             <div
               className="div_video"
               style={{
@@ -242,7 +107,6 @@ const Home = () => {
                 <source src={loop} type="video/mp4" />
               </video>
             </div>
-
             <div
               className="top"
               style={{
@@ -251,7 +115,6 @@ const Home = () => {
             >
               <h3>Les plus recommandées.</h3>
             </div>
-
             <div
               style={{
                 display: "block",
@@ -303,7 +166,6 @@ const Home = () => {
             >
               <h3>Dispos aujourd'hui.</h3>
             </div>
-
             <div
               style={{
                 display: "block",
@@ -346,10 +208,9 @@ const Home = () => {
                 {card2}
               </span>
             </div>
+            <Footer width={width} />
           </BrowserView>
-
-          <Footer width={width} />
-        </ConfigProvider>{" "}
+        </ConfigProvider>
       </div>
     );
   }

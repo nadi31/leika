@@ -25,7 +25,7 @@ import {
 } from "antd";
 
 import MenuBrowser from "./MenuBrowser";
-import MenuMobile from "./MenuMobile";
+
 import axios from "axios";
 import Footer from "./Footer";
 import queryString from "query-string";

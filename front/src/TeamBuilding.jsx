@@ -22,7 +22,7 @@ import kart from "./kart.jpg";
 import loop from "./loop.mp4";
 import kids from "./kids.png";
 import MenuBrowser from "./MenuBrowser";
-import MenuMobile from "./MenuMobile";
+
 import Results from "./Results";
 const TeamBuilding = () => {
   const [courseList, setCourseList] = useState([]);
@@ -162,70 +162,6 @@ const TeamBuilding = () => {
     return (
       <div id="root">
         <ConfigProvider>
-          <MobileView>
-            {" "}
-            <MenuMobile />
-            <div
-              className="top"
-              style={{
-                height: "50px",
-                paddingTop: "22px",
-                marginTop: "10px",
-                fontSize: "20px",
-              }}
-            >
-              Dispos aujourd'hui.
-            </div>
-            <Carousel autoplay="true" dotPosition="top">
-              <div>{card1}</div>
-              <div>{card2}</div>
-              <div>
-                <h3 style={contentStyle}>3</h3>
-              </div>
-              <div>
-                <h3 style={contentStyle}>4</h3>
-              </div>
-            </Carousel>
-            <div
-              className="top"
-              style={{
-                height: "50px",
-                paddingTop: "22px",
-                marginTop: "-30px",
-                fontSize: "20px",
-              }}
-            >
-              Dispos aujourd'hui.{" "}
-            </div>
-            <Carousel autoplay="true" dotPosition="top">
-              <div>{card3}</div>
-              <div>
-                <h3 style={contentStyle}>2</h3>
-              </div>
-              <div>
-                <h3 style={contentStyle}>3</h3>
-              </div>
-              <div>
-                <h3 style={contentStyle}>4</h3>
-              </div>
-            </Carousel>
-            <Button
-              id="button_giver"
-              style={{
-                paddingBottom: "10%",
-                color: "grey",
-                fontSize: "20px",
-                marginTop: "-10px",
-                left: "20%",
-                borderRadius: "25px",
-                backgroundColor: "white",
-                fontWeight: "500",
-              }}
-            >
-              Proposer des Expériences
-            </Button>
-          </MobileView>
-
           <BrowserView>
             <MenuBrowser
               team={true}

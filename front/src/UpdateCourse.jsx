@@ -4,7 +4,7 @@ import axios from "axios";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import MenuBrowser from "./MenuBrowser";
-import MenuMobile from "./MenuMobile";
+
 import * as dayjs from "dayjs";
 
 import Footer from "./Footer";
