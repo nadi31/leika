@@ -35,9 +35,26 @@ class researchCourseList(ListCreateAPIView):
 
     def get_queryset(self):  # new
         # query = self.request.GET.get('q')
+
+        # kidsx
         course_list = Course.objects.all()
-        # SI la categorie est précisée:
-        # course_list_sub_cat = []
+        if self.request.query_params.get('terroir'):
+            course_list = Course.objects.filter(
+                terroirActivity=True)
+        if self.request.query_params.get('team'):
+            course_list = Course.objects.filter(
+                teamBuildingActivity=True)
+        if self.request.query_params.get('kids'):
+            course_list = Course.objects.filter(
+                Q(age__icontains="enfants"))
+        # parent
+        if self.request.query_params.get('parent'):
+            course_list = Course.objects.filter(
+                Q(age__icontains="parent"))
+        # anniversaire
+        if self.request.query_params.get('bday'):
+            course_list = Course.objects.filter(
+                birthdayActivity=True)
         if self.request.query_params.get('sub_category'):
             sub_category = self.request.query_params.get('sub_category')
             print("**********"+"sub_category " + sub_category)

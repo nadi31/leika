@@ -207,6 +207,14 @@ const Menu2 = (props) => {
         searchParams.delete(["sub_category"]);
         query = query + "&category=" + "10";
         break;
+      case 14:
+        // setMenyBeauty(true);
+        searchParams.delete(["city"]);
+        searchParams.delete(["date_max"]);
+        searchParams.set("terroir", true);
+        searchParams.delete(["sub_category"]);
+        // query = query + "&category=" + "10";
+        break;
       case "":
         searchParams.delete(["city"]);
         searchParams.delete(["date_max"]);
@@ -258,6 +266,7 @@ const Menu2 = (props) => {
   return (
     <>
       <div
+        className="header"
         style={{
           width: "100%",
           overflow: "hidden",
@@ -271,6 +280,7 @@ const Menu2 = (props) => {
           <ul
             ref={ref}
             style={{
+              display: "list-item",
               overflowX: "scroll",
               display: "inline-flex",
               width: "90%",
@@ -570,7 +580,7 @@ const Menu2 = (props) => {
             <li
               onClick={() => {
                 //setActivity(6);
-                //handleSubmit(8);
+                handleSubmit(14);
               }}
               style={{ display: "inline-block" }}
             >

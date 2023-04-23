@@ -11,8 +11,8 @@ import locale from "antd/es/date-picker/locale/fr_FR";
 import { ConfigProvider } from "antd";
 //import frFR from "antd/lib/locale-provider/fr_FR";
 import Menu2 from "./Menu2";
-import MenuKids from "./MenuKids";
-import MenuTeamBuilding from "./MenuTeamBuilding";
+import MenuKids2 from "./MenuKids2";
+import MenuTeamBuilding from "./MenuTeam2";
 
 import board from "./board.png";
 import drill from "./drill.png";
@@ -84,6 +84,8 @@ const MenuBrowser = (props) => {
   const [kids, setKids] = useState(false);
   const [team, setTeam] = useState(false);
   const [results, setResults] = useState([]);
+  const [menuSciences, setMenuSciences] = useState(false);
+  const [menuStage, setMenuStage] = useState(false);
   const [menuArt, setMenuArt] = useState(false);
   const [display, setDisplay] = useState(false);
   const [cubConnect, setCubConnect] = useState(false);
@@ -108,14 +110,24 @@ const MenuBrowser = (props) => {
     console.log("Activité " + dayjs(props.date_max).format("DD/MM/YYYY"));
     setKids(props.kids);
     setTeam(props.team);
+    let acti;
+    props.activity
+      ? (acti =
+          props.activity.charAt(0).toUpperCase() + props.activity.slice(1))
+      : (acti = "");
+    //  const acti =
+    //
     setActivity(props.activity);
+    // setActivity(activity.);
     console.log("Activité " + props.activity);
     cat(props.activity);
     setCity(props.city);
     setDatemax(props.date_max);
+    setActivity(acti);
   }, [props]);
   const cat = (cat) => {
     setMenuConnected(true);
+
     switch (cat) {
       case "Arts plastiques" || 1:
         setMenuArt(true);
@@ -641,112 +653,93 @@ const MenuBrowser = (props) => {
         >
           {" "}
           <a href={"/"}>
-            <Affix top={100} style={{ backgroundColor: "white" }}>
-              <div
+            <div
+              style={{
+                background: "white", //varies height for mobile...
+                height: "192%",
+                width: "130%",
+              }}
+            >
+              <img
                 style={{
-                  background: "white", //varies height for mobile...
-                  height: "192%",
-                  width: "130%",
-                }}
-              >
-                <img
-                  style={{
-                    justifyContent: "left",
-                    width: props.width <= "1100" ? "50%" : "50%",
-                    marginLeft: "20%",
-                  }}
-                  id="img_logo_desktop"
-                  src={logo2}
-                  alt="logo"
-                ></img>
-              </div>
-            </Affix>
-          </a>
-          {props.width <= 800 ? (
-            <>
-              <Menu
-                style={{ border: "none", display: "flex", marginLeft: "50%" }}
-              >
-                <Menu.Item
-                  //onClick={() => handleClick()}
-                  key="dropdown"
-                  // icon={<UserOutlined />}
-                >
-                  <MenuOutlined style={{ fontSize: "20px" }} />
-                </Menu.Item>
-              </Menu>
-            </>
-          ) : props.width >= 1100 ? (
-            <>
-              <Menu
-                mode="horizontal"
-                className="menu"
-                name="menu_elements"
-                style={{
-                  justifyContent: "center",
-                  width: "60%",
-                  borderBottom: "none",
-                  display: "flex",
+                  justifyContent: "left",
+                  width: props.width <= "1100" ? "50%" : "50%",
                   marginLeft: "20%",
-                  fontSize: props.width <= "1400" ? "15px" : "20px",
                 }}
+                id="img_logo_desktop"
+                src={logo2}
+                alt="logo"
+              ></img>
+            </div>
+          </a>
+          <>
+            <Menu
+              mode="horizontal"
+              className="menu"
+              name="menu_elements"
+              style={{
+                justifyContent: "center",
+                width: "60%",
+                borderBottom: "none",
+                display: "flex",
+                marginLeft: "20%",
+                fontSize: props.width <= "1400" ? "15px" : "20px",
+              }}
+            >
+              <Menu.Item
+                id="kids"
+                onClick={() => {
+                  navigate("../kids", { replace: true });
+
+                  setKids(true);
+                }}
+                key="kids"
+                icon={
+                  <Image
+                    src={kidIcon}
+                    preview={false}
+                    style={{ width: "20px", marginLeft: "-30%", bottom: "0" }}
+                  />
+                }
               >
-                <Menu.Item
-                  id="kids"
-                  onClick={() => {
-                    navigate("../kids", { replace: true });
-                    setKids(true);
-                  }}
-                  key="kids"
-                  icon={
-                    <Image
-                      src={kidIcon}
-                      preview={false}
-                      style={{ width: "20px", marginLeft: "-30%", bottom: "0" }}
-                    />
-                  }
-                >
-                  Kids
-                </Menu.Item>
+                Kids
+              </Menu.Item>
 
-                <Menu.Item
-                  onClick={() => {
-                    navigate("../team", { replace: true });
-                    setTeam(true);
-                  }}
-                  key="team"
-                >
-                  Team Building
-                </Menu.Item>
+              <Menu.Item
+                onClick={() => {
+                  navigate("../team", { replace: true });
+                  setTeam(true);
+                }}
+                key="team"
+              >
+                Team Building
+              </Menu.Item>
 
-                <Menu.Item
-                  onClick={() => {
-                    navigate("../gift", { replace: true });
-                  }}
-                  key="gift"
-                  icon={
-                    <Icon
-                      component={() => (
-                        <img
-                          src={gift}
-                          height={30}
-                          style={{
-                            // margin: "0 7px 0 0",
-                            //paddingTop: 10,
-                            float: "center",
-                          }}
-                        />
-                      )}
-                    />
-                  }
-                >
-                  Carte Cadeau
-                </Menu.Item>
-              </Menu>{" "}
-            </>
-          ) : (
-            <></>
-          )}{" "}
+              <Menu.Item
+                onClick={() => {
+                  navigate("../gift", { replace: true });
+                }}
+                key="gift"
+                icon={
+                  <Icon
+                    component={() => (
+                      <img
+                        src={gift}
+                        height={30}
+                        style={{
+                          // margin: "0 7px 0 0",
+                          //paddingTop: 10,
+                          float: "center",
+                        }}
+                      />
+                    )}
+                  />
+                }
+              >
+                Carte Cadeau
+              </Menu.Item>
+            </Menu>{" "}
+          </>
           <Menu
             mode="horizontal"
             style={{
@@ -979,7 +972,7 @@ const MenuBrowser = (props) => {
         {team ? (
           <MenuTeamBuilding />
         ) : kids ? (
-          <MenuKids activity={activity} date_max={datemax} city={city} />
+          <MenuKids2 activity={activity} date_max={datemax} city={city} />
         ) : (
           <Menu2 activity={activity} date_max={datemax} city={city} />
         )}
@@ -1180,6 +1173,407 @@ const MenuBrowser = (props) => {
                     }}
                   >
                     Vitraux
+                  </a>
+                </Breadcrumb.Item>
+              </Breadcrumb>
+            </>
+          ) : (
+            <></>
+          )}
+          {menuSciences && menuConnected ? (
+            <>
+              <Breadcrumb
+                separator="|"
+                style={{
+                  width: "100%",
+                  //  marginLeft: "17%",
+                  // paddingLeft: "18%",
+                  marginBottom: "3%",
+                  fontFamily: "Dosis",
+                  border: "none",
+
+                  fontSize: "16px",
+                  // color: "gray",
+                }}
+              >
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Informatique");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Informatique
+                  </a>
+                </Breadcrumb.Item>{" "}
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Astronomie");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Astronomie
+                  </a>
+                </Breadcrumb.Item>{" "}
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Biologie");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Biologie
+                  </a>
+                </Breadcrumb.Item>{" "}
+                <Breadcrumb.Item>
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Nature");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Nature
+                  </a>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Physique");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Physique
+                  </a>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Maths");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Maths
+                  </a>
+                </Breadcrumb.Item>
+              </Breadcrumb>
+            </>
+          ) : (
+            <></>
+          )}
+          {menuGames && menuConnected ? (
+            <>
+              <Breadcrumb
+                separator="|"
+                style={{
+                  width: "100%",
+                  //  marginLeft: "17%",
+                  // paddingLeft: "18%",
+                  marginBottom: "3%",
+                  fontFamily: "Dosis",
+                  border: "none",
+
+                  fontSize: "16px",
+                  // color: "gray",
+                }}
+              >
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Accrobranche");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Accrobranche
+                  </a>
+                </Breadcrumb.Item>{" "}
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Airsoft");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Airsoft
+                  </a>
+                </Breadcrumb.Item>{" "}
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Escape Games");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Escape Games
+                  </a>
+                </Breadcrumb.Item>{" "}
+                <Breadcrumb.Item>
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Laser Games");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Laser Games
+                  </a>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Paintball");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Paintball
+                  </a>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Jeux de société");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Jeux de société
+                  </a>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Jeux vidéo");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Jeux vidéo
+                  </a>
+                </Breadcrumb.Item>
+              </Breadcrumb>
+            </>
+          ) : (
+            <></>
+          )}
+          {menuSciences && menuConnected ? (
+            <>
+              <Breadcrumb
+                separator="|"
+                style={{
+                  width: "100%",
+                  //  marginLeft: "17%",
+                  // paddingLeft: "18%",
+                  marginBottom: "3%",
+                  fontFamily: "Dosis",
+                  border: "none",
+
+                  fontSize: "16px",
+                  // color: "gray",
+                }}
+              >
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Informatique");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Informatique
+                  </a>
+                </Breadcrumb.Item>{" "}
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Astronomie");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Astronomie
+                  </a>
+                </Breadcrumb.Item>{" "}
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Biologie");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Biologie
+                  </a>
+                </Breadcrumb.Item>{" "}
+                <Breadcrumb.Item>
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Nature");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Nature
+                  </a>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Physique");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Physique
+                  </a>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Maths");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Maths
+                  </a>
+                </Breadcrumb.Item>
+              </Breadcrumb>
+            </>
+          ) : (
+            <></>
+          )}
+          {menuSciences && menuConnected ? (
+            <>
+              <Breadcrumb
+                separator="|"
+                style={{
+                  width: "100%",
+                  //  marginLeft: "17%",
+                  // paddingLeft: "18%",
+                  marginBottom: "3%",
+                  fontFamily: "Dosis",
+                  border: "none",
+
+                  fontSize: "16px",
+                  // color: "gray",
+                }}
+              >
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Informatique");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Informatique
+                  </a>
+                </Breadcrumb.Item>{" "}
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Astronomie");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Astronomie
+                  </a>
+                </Breadcrumb.Item>{" "}
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Biologie");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Biologie
+                  </a>
+                </Breadcrumb.Item>{" "}
+                <Breadcrumb.Item>
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Nature");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Nature
+                  </a>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Physique");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Physique
+                  </a>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                  {" "}
+                  <a
+                    onClick={() => {
+                      searchParams.set("sub_category", "Maths");
+                      searchParams.delete(["category"]);
+                      goToPosts();
+                      window.location.reload();
+                    }}
+                  >
+                    Maths
                   </a>
                 </Breadcrumb.Item>
               </Breadcrumb>

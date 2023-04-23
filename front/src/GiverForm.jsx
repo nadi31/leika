@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useNavigate, withRouter } from "react-router-dom";
@@ -32,6 +32,7 @@ import queryString from "query-string";
 
 const GiverForm = (props) => {
   const [response, setResponse] = useState();
+  const tabAdress = useRef([]);
   const [results, setResults] = useState([]);
   const [password, setPassword] = useState(null);
   const [lat, setLat] = useState(null);
@@ -42,7 +43,8 @@ const GiverForm = (props) => {
   const onPlaceSelect = (value) => {
     console.log(JSON.stringify(value));
     setArrayAdresses([...arrayAdresses, value]);
-    console.log(JSON.stringify(arrayAdresses));
+    tabAdress.current = [...tabAdress.current, value];
+    console.log(JSON.stringify(tabAdress.current));
   };
 
   const getResponse = (value) => {
@@ -92,6 +94,7 @@ const GiverForm = (props) => {
     form_data.append("password", password);
     form_data.append("siret", values.input_siret);
     form_data.append("email", values.input_email);
+    console.log("TABADRESS", tabAdress);
     if (values.upload) {
       form_data.append(
         "img1",
@@ -107,52 +110,63 @@ const GiverForm = (props) => {
         },
       })
       .then((res) => {
-        arrayAdresses.map((adress, idx) => {
-          console.log("GIVER" + JSON.stringify(res));
-          //console.log("ADRESS" + value);
-          console.log(password);
-          const lat = adress.lat;
-          const lng = adress.lon;
-          setLat(lat);
-          setLng(lng);
-          //const keyGeo = "ea16b50fa61c47faa5c3cd8fc43eeb44";
-          //const url = `https://api.geoapify.com/v1/geocode/search?text=1214-1224${adress}&format=json&apiKey=${keyGeo}`;
-          form.append("lat", lat);
-          form.append("lng", lng);
-          form.append("name", adress.formatted);
-          form.append("giver", res.data[0]);
-          form.append("city", adress.city);
-          //form.append("apartment_number", values.input_adress_apt_number);
-          form.append("country", adress.country);
-          form.append("add_ons", arrayAdd_ons[idx]);
-          /*  Geocode.setApiKey("AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4");
-          Geocode.fromAddress(adress.value.description).then(
-            (response) => {
-             
-              console.log("lat : " + lat + "long " + lng);
-              
-              //OULA
-              console.log(values);
-              axios
-                .post(`http://localhost:8000/api/create/adress`, form, {
-                  headers: {
-                    "content-type": "multipart/form-data",
-                    Authorization: "Bearer " + localStorage.getItem("token"),
-                  },
-                })
-                .then((res) => {
-                  message.success("Profil créé avec succès", 10);
-                })
-                .catch((err) => {
-                  message.error("Erreur", 10);
-                  console.log(err);
-                });
-            },
-            (error) => {
-              console.error(error);
-            }
-          );*/
-        });
+        console.log("TABADRESS", tabAdress);
+        arrayAdresses.map(
+          (adress, idx) => {
+            console.log("ADR" + JSON.stringify(tabAdress.current[idx]));
+            console.log(
+              "ADRESS" +
+                JSON.stringify(tabAdress.current[idx].geometry.coordinates[1])
+            );
+            console.log(password);
+            const lat = tabAdress.current[idx].geometry.coordinates[1];
+            const lng = tabAdress.current[idx].geometry.coordinates[0];
+            console.log(
+              "lat1 : " +
+                tabAdress.current[idx].geometry.coordinates[1] +
+                "long " +
+                tabAdress.current[idx].geometry.coordinates[0]
+            );
+
+            setLat(lat);
+            setLng(lng);
+            //const keyGeo = "ea16b50fa61c47faa5c3cd8fc43eeb44";
+            //const url = `https://api.geoapify.com/v1/geocode/search?text=1214-1224${adress}&format=json&apiKey=${keyGeo}`;
+            form.append("lat", lat);
+            form.append("lng", lng);
+            form.append("name", tabAdress.current[idx].properties.formatted);
+            form.append("giver", res.data[0]);
+            form.append("city", tabAdress.current[idx].properties.city);
+            //form.append("apartment_number", values.input_adress_apt_number);
+            form.append("country", tabAdress.current[idx].properties.country);
+            form.append("add_ons", arrayAdd_ons[idx]);
+            //  Geocode.setApiKey("AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4");
+            //Geocode.fromAddress(adress.value.description).then(
+            //(response) => {
+
+            console.log("lat2 : " + lat + "long " + lng);
+
+            //OULA
+            console.log(values);
+            axios
+              .post(`http://localhost:8000/api/create/adress`, form, {
+                headers: {
+                  "content-type": "multipart/form-data",
+                  Authorization: "Bearer " + localStorage.getItem("token"),
+                },
+              })
+              .then((res) => {
+                message.success("Profil créé avec succès", 10);
+              })
+              .catch((err) => {
+                message.error("Erreur", 10);
+                console.log(err);
+              });
+          },
+          (error) => {
+            console.error(error);
+          }
+        );
       });
   };
 

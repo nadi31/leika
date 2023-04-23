@@ -62,7 +62,7 @@ const Footer = (props) => {
           margin: "auto",
           width: "100%",
           height: "20%",
-          paddingBottom: "0px",
+          marginBottom: "20%",
         }}
       >
         <div
@@ -182,6 +182,8 @@ const Footer = (props) => {
           />
         </div>
       </div>
+      <br />
+      <div style={{ marginBottom: "10%" }}></div>
     </div>
   );
 };

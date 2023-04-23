@@ -157,7 +157,7 @@
   flex-direction: row;
   width: 100%;
 }
-ul {
+.header ul {
   list-style-type: none;
   display: flex;
 
@@ -165,19 +165,17 @@ ul {
 }
 
 @media (max-width: 799px) {
-  ul li {
+  .header ul li {
     display: list-item;
 
     padding-right: 15%;
   }
 }
 @media (min-width: 800px) {
-  ul {
+  .header ul {
     justify-content: center;
   }
-  ul li {
-    display: list-item;
-
+  .header ul li {
     padding-right: 2%;
   }
 }

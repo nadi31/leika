@@ -39,6 +39,7 @@ import axios from "axios";
 import Footer from "./Footer";
 import queryString from "query-string";
 import { filter } from "lodash";
+import MenuMobile from "./MenuMobile";
 
 const GiftCard = () => {
   const [small, setSmall] = useState("horizontal");
@@ -142,18 +143,23 @@ const GiftCard = () => {
   return (
     <div>
       <>
-        {" "}
-        <BrowserView>
-          <MenuBrowser width={width} />
-        </BrowserView>
+        {width < 800 ? (
+          <>
+            <MenuMobile />
+          </>
+        ) : (
+          <BrowserView>
+            <MenuBrowser width={width} />
+          </BrowserView>
+        )}{" "}
       </>
       <Card
         className="product_card"
-        style={{ width: "100%", left: "12%" }}
+        style={{ width: "40%", left: "12%" }}
         cover={
           <Image
             preview={false}
-            style={{ width: "30%", height: "30%" }}
+            style={{ width: "100%", height: "30%" }}
             src={gift}
           />
         }
@@ -188,6 +194,7 @@ const GiftCard = () => {
 
         <Button onClick={handleOK}>Ajouter dans le panier </Button>
       </Form>
+      <br />
       <Footer width={width} />
     </div>
   );

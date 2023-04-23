@@ -614,17 +614,36 @@ const ProductDetail = (props) => {
     return (
       <>
         {width <= 700 ? (
-          <> {course.age === "Enfants" ? <HomeMobile /> : <HomeMobile />}</>
+          <>
+            {" "}
+            {course.age === "Enfants" ? (
+              <HomeMobile
+                kids={true}
+                //team={course.teamBuildingActivity}
+              />
+            ) : (
+              <HomeMobile
+                kids={false}
+                // team={course.teamBuildingActivity}
+              />
+            )}
+          </>
         ) : (
           <>
             {" "}
-            <BrowserView>
-              {course.age === "Enfants" ? (
-                <MenuBrowser kids={true} width={width} />
-              ) : (
-                <MenuBrowser kids={false} width={width} />
-              )}
-            </BrowserView>
+            {course.age === "Enfants" ? (
+              <MenuBrowser
+                kids={true}
+                width={width}
+                //  team={course.teamBuildingActivity}
+              />
+            ) : (
+              <MenuBrowser
+                kids={false}
+                width={width}
+                // team={course.teamBuildingActivity}
+              />
+            )}
           </>
         )}
 
@@ -657,13 +676,13 @@ const ProductDetail = (props) => {
               ) : (
                 <div
                   style={{
-                    position: "sticky",
-                    marginTop: "20px",
+                    // position: "sticky",
+                    //marginTop: "20px",
                     width: "100%",
                     marginLeft: "5%",
                   }}
                 >
-                  <div style={{ width: "30%" }}>
+                  <div style={{ top: "10%", width: "30%" }}>
                     <Card
                       className="product_card"
                       onClick={() => {
@@ -697,7 +716,7 @@ const ProductDetail = (props) => {
                     style={{
                       width: "70%",
                       marginLeft: "20%",
-                      marginTop: "-38%",
+                      marginTop: "-18%",
                     }}
                   >
                     <Card

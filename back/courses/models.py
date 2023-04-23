@@ -60,6 +60,7 @@ class Course(models.Model):
     accessible = models.BooleanField(default=False)
     duoActivity = models.BooleanField(default=False)
     terroirActivity = models.BooleanField(default=False)
+    birthdayActivity = models.BooleanField(default=False)
     language = models.CharField(max_length=30, null=True, blank=True)
 
     CATEGORY_CHOICES = (
@@ -74,6 +75,8 @@ class Course(models.Model):
         (9, 'jeux'),
         (10, 'beaute_bien_etre'),
         (11, 'tours_circuits'),
+        (12, 'science'),
+        (13, 'stage'),
     )
 
     category = models.PositiveSmallIntegerField(

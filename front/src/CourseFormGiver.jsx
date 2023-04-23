@@ -67,6 +67,7 @@ const category = [
   { value: "plein_air", label: "Plein air" },
   { value: "evenement", label: "Évènement" },
   { value: "stage", label: "Stage" },
+  { value: "science", label: "Science" },
 ];
 
 const formItemLayout = {
@@ -176,6 +177,7 @@ class CourseForm extends React.Component {
       visibl: false,
       free: false,
       input: "",
+      birthday: false,
       list2: [],
       disabled_upload: false,
       fileList: [],
@@ -357,13 +359,23 @@ class CourseForm extends React.Component {
     this.setState({ is_remote: !this.state.is_remote });
     this.is_Remote();
   };
-
+  birthday = () => {
+    this.setState({ birthday: !this.state.birthday });
+  };
   list_langue = [
     { value: "Français", label: "Français" },
     { value: "Anglais", label: "Anglais" },
     { value: "Allemand", label: "Allemand" },
     { value: "Espagnol", label: "Espagnol" },
     { value: "Russe", label: "Russe" },
+  ];
+  list_science = [
+    { value: "informatique", label: "Informatique" },
+    { value: "astronomie", label: "Astronomie" },
+    { value: "biologie", label: "Biologie" },
+    { value: "nature", label: "Nature" },
+    { value: "physique", label: "Physique" },
+    { value: "maths", label: "Maths" },
   ];
 
   list_plein_air = [
@@ -660,6 +672,18 @@ class CourseForm extends React.Component {
             }
           />
         );
+      case "science":
+        return (
+          <AutoComplete
+            style={{ top: -57, width: 200, right: -550 }}
+            options={this.list_science}
+            placeholder="Sélectionner la sous-catégorie"
+            filterOption={(inputValue, options) =>
+              options.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
+              -1
+            }
+          />
+        );
       case "tours_circuits":
         return (
           <AutoComplete
@@ -844,7 +868,12 @@ class CourseForm extends React.Component {
       case "tours_circuits":
         category = 11;
         break;
-
+      case "science":
+        category = 12;
+        break;
+      case "stage":
+        category = 13;
+        break;
       default:
         break;
     }
@@ -976,6 +1005,9 @@ class CourseForm extends React.Component {
     form_data.append("isAdvanced", convert(this.state.is_advanced));
     form_data.append("valOffers", this.state.addIdx);
     form_data.append("teamBuildingActivity", convert(this.state.is_team));
+
+    form_data.append("birthdayActivity", convert(this.state.birthday));
+
     form_data.append("duoActivity", convert(this.state.is_duo));
     form_data.append("terroirActivity", convert(this.state.is_terroir));
     form_data.append("value", this.state.value);
@@ -1689,6 +1721,9 @@ class CourseForm extends React.Component {
 
               <Form.Item name="switch_remote" label="Activité en ligne">
                 <Switch onClick={this.remote} />
+              </Form.Item>
+              <Form.Item name="switch_birthday" label="Activité Anniversaire">
+                <Switch onClick={this.birthday} />
               </Form.Item>
               <Form.Item name="switch_team" label="Activités de team building">
                 <Switch

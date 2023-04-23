@@ -72,7 +72,7 @@ const MenuMobile = () => {
       getItem("Option 12", "12"),
     ]),
   ];
-
+  const [kids, setKids] = useState(false);
   const [connected, setConnected] = useState(false);
   const handleClick = () => {
     setConnexion(!connexion);
@@ -421,9 +421,7 @@ const MenuMobile = () => {
           // key="mail"
 
           onClick={() => {
-            // setActivity("");
-            //  handleSubmit(1);
-            // setMenuArt(true);
+            navigate("../");
           }}
           icon={
             <img
@@ -493,9 +491,7 @@ const MenuMobile = () => {
               paddingBottom: "10px",
             }}
             onClick={() => {
-              // setActivity("");
-              //  handleSubmit(1);
-              // setMenuArt(true);
+              navigate("../gift", { replace: true });
             }}
             icon={
               <Icon
@@ -528,9 +524,8 @@ const MenuMobile = () => {
             // key="mail"
 
             onClick={() => {
-              // setActivity("");
-              //  handleSubmit(1);
-              // setMenuArt(true);
+              navigate("../kids", { replace: true });
+              setKids(true);
             }}
             icon={
               <Icon
@@ -561,7 +556,9 @@ const MenuMobile = () => {
               paddingBottom: "10px",
             }}
             id="icons"
-            //onClick={handleClick}
+            onClick={() => {
+              navigate("../team", { replace: true });
+            }}
             icon={
               <Icon
                 style={{ paddingTop: "10px" }}

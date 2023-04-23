@@ -24,6 +24,7 @@ import kids from "./kids.png";
 import MenuBrowser from "./MenuBrowser";
 
 import Results from "./Results";
+import HomeMobile from "./HomeMobile";
 const TeamBuilding = () => {
   const [courseList, setCourseList] = useState([]);
   const [results, setResults] = useState([]);
@@ -158,126 +159,236 @@ const TeamBuilding = () => {
 
   if (courseList === null) {
     return <div id="root">Loading..</div>;
-  } else {
+  }
+  if (width > 700) {
     return (
       <div id="root">
-        <ConfigProvider>
-          <BrowserView>
-            <MenuBrowser
-              team={true}
-              kids={false}
-              setDisplay={setDisplay}
-              width={width}
-              setResults={setResults}
-            />
+        <MenuBrowser
+          team={true}
+          kids={false}
+          setDisplay={setDisplay}
+          width={width}
+          setResults={setResults}
+        />
 
-            <div
-              className="top"
-              style={{
-                fontSize: "200%",
-              }}
-            >
-              <h3>Les plus populaires.</h3>
-            </div>
+        <div
+          className="top"
+          style={{
+            fontSize: "200%",
+          }}
+        >
+          <h3>Les plus populaires.</h3>
+        </div>
 
-            <div
-              style={{
-                display: "block",
+        <div
+          style={{
+            display: "block",
 
-                marginLeft: "4%",
-                width: "95%",
-              }}
-            >
-              <span
-                style={{
-                  position: "flex",
-                  display: "inline",
-                  width: "30%",
-                  float: "left",
-                  marginRight: "4%",
-                }}
-              >
-                {card1}
-              </span>
-              <span
-                style={{
-                  position: "flex",
-                  display: "inline",
-                  width: "30%",
-                  float: "left",
-                }}
-              >
-                {card2}
-              </span>
-              <span
-                style={{
-                  position: "flex",
+            marginLeft: "4%",
+            width: "95%",
+          }}
+        >
+          <span
+            style={{
+              position: "flex",
+              display: "inline",
+              width: "30%",
+              float: "left",
+              marginRight: "4%",
+            }}
+          >
+            {card1}
+          </span>
+          <span
+            style={{
+              position: "flex",
+              display: "inline",
+              width: "30%",
+              float: "left",
+            }}
+          >
+            {card2}
+          </span>
+          <span
+            style={{
+              position: "flex",
 
-                  width: "30%",
-                  float: "left",
-                  marginLeft: "4%",
-                }}
-              >
-                {card3}
-              </span>
-            </div>
-            <div
-              className="top"
-              style={{
-                width: "40%",
-                fontSize: "200%",
-                display: "block",
-              }}
-            >
-              <h3>Dispos aujourd'hui.</h3>
-            </div>
+              width: "30%",
+              float: "left",
+              marginLeft: "4%",
+            }}
+          >
+            {card3}
+          </span>
+        </div>
+        <div
+          className="top"
+          style={{
+            width: "40%",
+            fontSize: "200%",
+            display: "block",
+          }}
+        >
+          <h3>Dispos aujourd'hui.</h3>
+        </div>
 
-            <div
-              style={{
-                display: "block",
-                marginLeft: "4%",
-                width: "95%",
-                float: "left",
-              }}
-            >
-              <span
-                style={{
-                  position: "flex",
-                  display: "inline",
-                  width: "30%",
-                  float: "left",
-                  marginRight: "4%",
-                }}
-              >
-                {card1}
-              </span>
-              <span
-                style={{
-                  position: "flex",
-                  display: "inline",
-                  width: "30%",
-                  float: "left",
-                }}
-              >
-                {" "}
-                {card3}
-              </span>
-              <span
-                style={{
-                  position: "flex",
-                  display: "inline",
-                  width: "30%",
-                  float: "left",
-                  marginLeft: "4%",
-                }}
-              >
-                {card2}
-              </span>
-            </div>
-          </BrowserView>
+        <div
+          style={{
+            display: "block",
+            marginLeft: "4%",
+            width: "95%",
+            float: "left",
+          }}
+        >
+          <span
+            style={{
+              position: "flex",
+              display: "inline",
+              width: "30%",
+              float: "left",
+              marginRight: "4%",
+            }}
+          >
+            {card1}
+          </span>
+          <span
+            style={{
+              position: "flex",
+              display: "inline",
+              width: "30%",
+              float: "left",
+            }}
+          >
+            {" "}
+            {card3}
+          </span>
+          <span
+            style={{
+              position: "flex",
+              display: "inline",
+              width: "30%",
+              float: "left",
+              marginLeft: "4%",
+            }}
+          >
+            {card2}
+          </span>
+        </div>
 
-          <Footer width={width} />
-        </ConfigProvider>{" "}
+        <Footer width={width} />
+      </div>
+    );
+  }
+  if (width < 800) {
+    return (
+      <div id="root">
+        <HomeMobile team={true} kids={false} />
+
+        <div
+          className="top"
+          style={{
+            fontSize: "200%",
+          }}
+        >
+          <h3>Les plus populaires.</h3>
+        </div>
+
+        <div
+          style={{
+            display: "block",
+
+            marginLeft: "4%",
+            width: "95%",
+          }}
+        >
+          <span
+            style={{
+              position: "flex",
+              display: "inline",
+              width: "30%",
+              float: "left",
+              marginRight: "4%",
+            }}
+          >
+            {card1}
+          </span>
+          <span
+            style={{
+              position: "flex",
+              display: "inline",
+              width: "30%",
+              float: "left",
+            }}
+          >
+            {card2}
+          </span>
+          <span
+            style={{
+              position: "flex",
+
+              width: "30%",
+              float: "left",
+              marginLeft: "4%",
+            }}
+          >
+            {card3}
+          </span>
+        </div>
+        <div
+          className="top"
+          style={{
+            width: "40%",
+            fontSize: "200%",
+            display: "block",
+          }}
+        >
+          <h3>Dispos aujourd'hui.</h3>
+        </div>
+
+        <div
+          style={{
+            display: "block",
+            marginLeft: "4%",
+            width: "95%",
+            float: "left",
+          }}
+        >
+          <span
+            style={{
+              position: "flex",
+              display: "inline",
+              width: "30%",
+              float: "left",
+              marginRight: "4%",
+            }}
+          >
+            {card1}
+          </span>
+          <span
+            style={{
+              position: "flex",
+              display: "inline",
+              width: "30%",
+              float: "left",
+            }}
+          >
+            {" "}
+            {card3}
+          </span>
+          <span
+            style={{
+              position: "flex",
+              display: "inline",
+              width: "30%",
+              float: "left",
+              marginLeft: "4%",
+            }}
+          >
+            {card2}
+          </span>
+        </div>
+
+        <Footer width={width} />
       </div>
     );
   }

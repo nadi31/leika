@@ -200,6 +200,7 @@ THUMBNAIL_DEBUG = True
 CORS_ORIGIN_WHITELIST = [
 
     "http://localhost:3000",
+    "https://api.geoapify.com"
 
 
 ]

@@ -6,7 +6,8 @@ import { ConfigProvider } from "antd";
 import { BrowserView, MobileView } from "react-device-detect";
 import { Card, Menu, Button, Input, AutoComplete, Layout } from "antd";
 import Menu2 from "./Menu2";
-import Icon from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
+import Footer from "./Footer";
 import MenuMobile from "./MenuMobile";
 import axios from "axios";
 import logo2 from "./leika_logo2.png";
@@ -34,15 +35,29 @@ import kart from "./kart.jpg";
 import loop from "./loop.mp4";
 import kids from "./kids.png";
 import MenuBrowser from "./MenuBrowser";
-
+import { useNavigate, withRouter, useSearchParams } from "react-router-dom";
 import Results from "./Results";
+import MenuKids2 from "./MenuKids2";
+import MenuTeam2 from "./MenuTeam2";
 const HomeMobile = (props) => {
+  const navigate = useNavigate();
+  const goToPosts = () =>
+    navigate({
+      pathname: "/search/",
+      search: `?${searchParams}`,
+    });
+  const options2 = [
+    { value: "Toulouse" },
+    { value: "Paris" },
+    { value: "Genève" },
+  ];
   const [menuGames, setMenuGames] = useState(false);
   const [menuDrill, setMenuDrill] = useState(false);
   const [menuTour, setMenuTour] = useState(false);
   const [menuCulture, setMenuCulture] = useState(false);
   const [menuCuisine, setMenuCuisine] = useState(false);
   const [menuDIY, setMenuDIY] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams({});
   const [menuBeauty, setMenyBeauty] = useState(false);
   const [menuSports, setMenuSports] = useState(false);
   const [menuTheatre, setMenuTheatre] = useState(false);
@@ -59,7 +74,20 @@ const HomeMobile = (props) => {
     setCity(props.city);
     setDatemax(props.date_max);
   }, [props]);
+  const handleSubmit = () => {
+    if (city !== null && typeof city !== "undefined") {
+      searchParams.set("city", city);
+    }
+    if (datemax !== null && typeof datemax !== "undefined") {
+      searchParams.set("date_max", datemax);
+    }
+    console.log("SEARCH " + searchParams);
+    //setSearchParams(searchParams);
 
+    goToPosts();
+
+    window.location.reload();
+  };
   const cat = (cat) => {
     setMenuConnected(true);
     switch (cat) {
@@ -130,41 +158,29 @@ const HomeMobile = (props) => {
   //6 activités à mettre en valeur
 
   return (
-    <>
+    <div style={{}}>
       <MenuMobile />
-      <div
-        style={{
-          position: "relative",
-          display: "flex",
-          justifyContent: "center",
-          zIndex: -1,
-        }}
-      >
+      <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
         <div
           id="color"
           style={{
-            position: "flex",
             display: "flex",
-            //justifyContent: "center",
+
             borderRadius: "25px",
             padding: 0,
             width: "80%",
-            marginTop: "5%",
+            // alignContent: "center",
           }}
         >
           <AutoComplete
             className="dashboardSearch"
             onChange={(e) => {
-              // setCity(e);
+              setCity(e);
               console.log("City...: " + e);
             }}
-            //defaultValue={props.city}
+            defaultValue={props.city}
             style={{ width: "100%", border: 0 }}
-            // options={options2}
-            filterOption={(inputValue, option) =>
-              option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
-              -1
-            }
+            options={options2}
           >
             <Input
               style={{
@@ -179,11 +195,36 @@ const HomeMobile = (props) => {
               placeholder="Toulouse, Paris, Genève..."
             />
           </AutoComplete>
+
+          <Button
+            onClick={handleSubmit}
+            htmlType="submit"
+            style={{
+              border: "none",
+              width: "8%",
+              height: "90%",
+              padding: 0,
+              marginRight: "2%",
+            }}
+          >
+            <SearchOutlined
+              style={{
+                fontSize: props.width <= "800" ? "14px" : "27px",
+                color: "#FFB319",
+                width: "50%",
+              }}
+            />
+          </Button>
         </div>
       </div>
-
-      <Menu2 activity={activity} date_max={datemax} city={city} />
-    </>
+      {props.team ? (
+        <MenuTeam2 activity={activity} date_max={datemax} city={city} />
+      ) : props.kids ? (
+        <MenuKids2 activity={activity} date_max={datemax} city={city} />
+      ) : (
+        <Menu2 activity={activity} date_max={datemax} city={city} />
+      )}
+    </div>
   );
 };
 
