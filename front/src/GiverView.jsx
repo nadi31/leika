@@ -46,6 +46,7 @@ import {
   InfoCircleOutlined,
 } from "@ant-design/icons";
 import { isArrayLiteralExpression } from "typescript";
+import HomeMobile from "./HomeMobile";
 
 const Giver = () => {
   const id = useParams();
@@ -117,12 +118,12 @@ const Giver = () => {
 
   if (giver === null || adress === null) {
     return <div>Loading..</div>;
-  } else {
+  }
+  if (width > 700) {
     return (
-      <div style={{ marginLeft: "10%" }}>
-        <BrowserView>
-          <MenuBrowser width={width} />
-        </BrowserView>
+      <div>
+        <MenuBrowser width={width} />
+
         <div style={{ display: "flex", justifyContent: "center" }}>
           {" "}
           <Image
@@ -210,6 +211,132 @@ const Giver = () => {
             : null}
         </div>
 
+        <Bloc
+          height={"900px"}
+          content={
+            <div style={{ display: "block", width: "100%" }}>
+              {review ? (
+                <List style={{ width: "60%", margin: "auto" }}>
+                  {review.map((comment) => {
+                    return (
+                      <List.Item>
+                        <Review
+                          iniale={comment.initiale}
+                          prenom={comment.prenom}
+                          titre={comment.titre}
+                          content={comment.comment_cub}
+                          date={dayjs(comment.dateHour).format("Do MMMM  YYYY")}
+                          rating={comment.note}
+                          statut={"GOLD"}
+                        />
+                      </List.Item>
+                    );
+                  })}
+                </List>
+              ) : null}{" "}
+            </div>
+          }
+          icone={
+            <HeartOutlined
+              twoToneColor="#ffa940"
+              style={{ fontSize: "25px" }}
+            />
+          }
+          titre={"AVIS"}
+          width={"100%"}
+        />
+        <Footer width={width} />
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <HomeMobile width={width} />;
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          {" "}
+          <Image
+            style={{ borderRadius: "50%", width: "100px", height: "100px" }}
+            preview={false}
+            src={giver.img1}
+          />{" "}
+          <br />
+          <div>
+            {" "}
+            <h1>{giver.appelation}</h1> <br />
+            <div>
+              <p>
+                {" 📍 "}
+                {adress.name + "  "}
+                {adress.add_ons ? adress.add_ons + "  " : "  "}
+                {adress.apartment_number ? adress.apartment_number : "  "}
+
+                {adress.city}
+              </p>
+            </div>
+          </div>
+        </div>
+        <Bloc
+          yellow={true}
+          height={"900px"}
+          content={giver.description}
+          icone={
+            <RocketTwoTone
+              twoToneColor="#ffa940"
+              style={{ fontSize: "25px" }}
+            />
+          }
+          titre={"À propos"}
+          width={width <= 1200 ? "100%" : "80%"}
+        />
+        <div>
+          <h1>Cours en ligne</h1>
+          {courses
+            ? courses.map((course) => {
+                return (
+                  <div
+                    style={{
+                      display: "block",
+
+                      marginLeft: "4%",
+                      width: "95%",
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: "flex",
+                        display: "inline",
+                        width: "30%",
+                        float: "left",
+                        marginRight: "4%",
+                      }}
+                    >
+                      <a href={"http://localhost:3000/product/" + course.id}>
+                        <Card
+                          hoverable
+                          style={{ border: "none", width: "100%" }}
+                          cover={
+                            <img
+                              alt="couture"
+                              width="500"
+                              height="300"
+                              src={course.img1}
+                            />
+                          }
+                        >
+                          <Meta
+                            id="button_giver"
+                            style={{ border: "none", marginTop: "-2%" }}
+                            title={course.title}
+                            description={course.price + "€"}
+                          />
+                        </Card>
+                      </a>
+                    </span>
+                  </div>
+                );
+              })
+            : null}
+        </div>
         <Bloc
           height={"900px"}
           content={

@@ -46,6 +46,7 @@ import {
   InfoCircleOutlined,
 } from "@ant-design/icons";
 import { isArrayLiteralExpression } from "typescript";
+import HomeMobile from "./HomeMobile";
 
 const EmailVerify = (props) => {
   const [course, setCourse] = useState(null);
@@ -83,9 +84,11 @@ const EmailVerify = (props) => {
 
             .then((response) => {
               if (response.status == "success") {
+                message.success("Vous êtes inscrits");
                 this.setState({ valid: 1 });
                 localStorage.setItem("nana@gmail.com", 1);
               } else if (response.status == "failed") {
+                message.error("Un problème est survenu.");
                 this.setState({ valid: 2 });
               }
             });
@@ -116,15 +119,64 @@ const EmailVerify = (props) => {
 
   if (key === null) {
     return <div>Loading..</div>;
+  }
+  if (width > 800) {
+    return (
+      <>
+        <MenuBrowser width={width} />
+
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            fontFamily: "Dosis",
+          }}
+        >
+          Pour vérifier votre email, <br /> veuillez cliquer sur le bouton
+          suivant:{" "}
+          <Button
+            style={{
+              width: "40%",
+              borderRadius: "25px",
+              backgroundColor: "#ffd04f",
+              margin: "10%",
+            }}
+            onClick={requests}
+          >
+            Verify
+          </Button>
+        </div>
+        <Footer width={width} />
+      </>
+    );
   } else {
     return (
       <>
-        <BrowserView>
-          <MenuBrowser width={width} />
-        </BrowserView>
+        <HomeMobile width={width} />
 
-        <div style={{ width: "100%" }}></div>
-        <Button onClick={requests}>Verify</Button>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            fontFamily: "Dosis",
+          }}
+        >
+          Pour vérifier votre email, <br /> veuillez cliquer sur le bouton
+          suivant:{" "}
+          <Button
+            style={{
+              width: "40%",
+              borderRadius: "25px",
+              backgroundColor: "#ffd04f",
+              margin: "10%",
+            }}
+            onClick={requests}
+          >
+            Verify
+          </Button>
+        </div>
         <Footer width={width} />
       </>
     );

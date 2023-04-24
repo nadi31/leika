@@ -36,6 +36,7 @@ import axios from "axios";
 import Wishlist from "./Wishlist";
 import Footer from "./Footer";
 import imgCub from "./cub_menu3.gif";
+import HomeMobile from "./HomeMobile";
 //import MenuItem from "antd/lib/menu/MenuItem";
 
 const ProfilCub = (props) => {
@@ -413,10 +414,9 @@ const ProfilCub = (props) => {
       })
       .catch((err) => console.log(err));
   }, []);
-
-  return (
-    <div>
-      <BrowserView>
+  if (width > 700) {
+    return (
+      <div>
         <MenuBrowser width={width} />
         <br />
         <div
@@ -726,8 +726,320 @@ const ProfilCub = (props) => {
             <></>
           )}
         </div>
-      </BrowserView>
-    </div>
-  );
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <HomeMobile width={width} />
+        <br />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            background: "#f1e6d0",
+          }}
+        >
+          <img src={imgCub}></img>
+        </div>
+        <br />
+        <Modal
+          title="Votre avis"
+          visible={isModalVisible}
+          onOk={handleOk}
+          footer={null}
+          onCancel={handleCancel}
+        >
+          <Form name="rating" onFinish={onFinishReview}>
+            <Form.Item
+              name={["titre"]}
+              label="Titre"
+              rules={[{ required: false }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item name={["rating"]} label="Note">
+              {" "}
+              <Rate
+                onChange={(value) => {
+                  setRating(value);
+                }}
+                allowHalf
+                defaultValue={0}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name={["commentaire"]}
+              label="Commentaire"
+              rules={[{ required: false }]}
+            >
+              <Input.TextArea />
+            </Form.Item>
+
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Submit
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
+        <div style={{ width: "100%", display: "flex" }}>
+          <Menu
+            onClick={handleClick}
+            style={{
+              border: "none",
+              // width: "100%",
+              //display: "inline-block",
+              // marginTop: "0%",
+            }}
+            mode="vertical"
+          >
+            <Menu.Item key="1" icon={<ShoppingCartOutlined />} title="">
+              Mes offres
+            </Menu.Item>
+            <Menu.Item key="2" icon={<ShoppingOutlined />} title="">
+              Mes achats
+            </Menu.Item>
+            <Menu.Item key="3" icon={<HeartOutlined />} title="">
+              Mes favoris
+            </Menu.Item>
+            <Menu.Item key="4" icon={<ContainerOutlined />} title="">
+              Mes informations
+            </Menu.Item>
+            <Menu.Item key="5" icon={<SettingOutlined />} title="">
+              Mot de passe
+            </Menu.Item>
+            <Menu.Item key="6" icon={<LikeOutlined />} title="">
+              Mes Avis
+            </Menu.Item>
+          </Menu>
+          {menuKey == "3" && localStorage.getItem("ID") != null ? (
+            <>
+              <Wishlist results={resFavoris} />
+            </>
+          ) : (
+            <></>
+          )}
+
+          {menuKey == "2" ? (
+            <div>
+              <table className="table">
+                <tbody>
+                  {unique.map(function (bookingRef) {
+                    return (
+                      <tr key={bookingRef}>
+                        <tr>
+                          <td>
+                            <b>Réservation référence : {bookingRef}</b>
+                          </td>
+                        </tr>
+                        {singleDetails.map(function (bookingComplete, idx) {
+                          if (bookingRef == bookingComplete.ref) {
+                            return (
+                              <tr key={idx}>
+                                <td>
+                                  {bookingComplete.course.id}
+                                  {bookingComplete.course.title}
+                                  {bookingComplete.single.isCommented ? (
+                                    <></>
+                                  ) : (
+                                    <Button
+                                      value={idx}
+                                      onClick={() => {
+                                        console.log(
+                                          "BOOKING " +
+                                            bookingComplete.ref +
+                                            "COURSE " +
+                                            bookingComplete.course.id +
+                                            "booking " +
+                                            bookingComplete.single.id
+                                        );
+                                        setBookingRating(
+                                          bookingComplete.single.id
+                                        );
+                                        setCourseRating(
+                                          bookingComplete.course.id
+                                        );
+                                        setIsModalVisible(true);
+                                      }}
+                                      style={{ border: "none" }}
+                                    >
+                                      Donner votre avis
+                                    </Button>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          }
+                        })}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <></>
+          )}
+          {menuKey == "6" ? (
+            <>
+              <table className="table">
+                <tbody>
+                  {review.map(function (review) {
+                    return (
+                      <tr key={review.id}>
+                        <tr>
+                          <td>
+                            <a href={`/product/${review.course}`}>Expérience</a>
+                            <b>{review.note}</b>
+                            {review.comment_cub}
+                          </td>
+                        </tr>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </>
+          ) : (
+            <></>
+          )}
+          {menuKey == "4" ? (
+            <div style={{ display: "flex" }}>
+              <Form
+                name="edit_data_form"
+                initialValues={{
+                  last_name: results.last_name,
+                  first_name: results.first_name,
+                  email: results.email,
+                  phone: phone,
+                }}
+                onFinish={onFinish}
+                style={{ width: "100%" }}
+              >
+                <Form.Item label="Nom" name="last_name">
+                  <Input
+                    style={{ width: "85%" }}
+                    disabled={changeLast_name}
+                    suffix={
+                      <Tooltip title={"Changer votre nom"}>
+                        <Button
+                          style={{ border: "none" }}
+                          icon={<EditOutlined />}
+                          onClick={() => {
+                            setChangeLast_name(false);
+                          }}
+                        />
+                      </Tooltip>
+                    }
+                  />
+                </Form.Item>
+                <Form.Item label="Prénom" name="first_name">
+                  <Input
+                    style={{ width: "85%" }}
+                    disabled={changeFirst_Name}
+                    suffix={
+                      <Tooltip title={"Changer votre prénom"}>
+                        <Button
+                          style={{ border: "none" }}
+                          icon={<EditOutlined />}
+                          onClick={() => {
+                            setChangeFirst_name(false);
+                          }}
+                        />
+                      </Tooltip>
+                    }
+                  />
+                </Form.Item>
+                <Form.Item label="Email" name="email">
+                  <Input
+                    style={{ width: "85%" }}
+                    suffix={
+                      <Tooltip title={"Changer votre email"}>
+                        <Button
+                          style={{ border: "none" }}
+                          icon={<EditOutlined />}
+                          onClick={() => {
+                            setChangeEmail(false);
+                          }}
+                        />
+                      </Tooltip>
+                    }
+                    disabled={changeEmail}
+                  />
+                </Form.Item>
+                <Form.Item label="Téléphone" name="phone">
+                  <Input
+                    style={{ width: "85%" }}
+                    suffix={
+                      <Tooltip title={"Changer votre numéro"}>
+                        <Button
+                          style={{ border: "none" }}
+                          icon={<EditOutlined />}
+                          onClick={() => {
+                            setChangePhone(false);
+                          }}
+                        />
+                      </Tooltip>
+                    }
+                    disabled={changePhone}
+                  />
+                </Form.Item>
+                {!changeEmail ||
+                !changeFirst_Name ||
+                !changePhone ||
+                !changeLast_name ? (
+                  <Button htmlType="submit">Modifier</Button>
+                ) : (
+                  <></>
+                )}
+                <Form.Item></Form.Item>
+              </Form>
+            </div>
+          ) : (
+            <></>
+          )}
+
+          {menuKey == "5" ? (
+            <div style={{ width: "100%", marginTop: "1%" }}>
+              <Form
+                name="edit_data_form"
+                initialValues={{
+                  last_name: results.last_name,
+                  first_name: results.first_name,
+                  email: results.email,
+                  phone: phone,
+                }}
+                onFinish={onFinishMpd}
+                style={{ width: "100%" }}
+              >
+                <Form.Item label="Mot de passe actuel" name="password">
+                  <Input.Password
+                    style={{ width: "85%" }}
+                    //disabled={changeLast_name}
+                  />
+                </Form.Item>
+                <Form.Item label="Nouveau mot de passe " name="new_password">
+                  <Input.Password
+                    style={{ width: "85%" }}
+                    //disabled={changeLast_name}
+                  />
+                </Form.Item>
+                <Form.Item>
+                  {" "}
+                  <Button htmlType="submit">Modifier</Button>
+                </Form.Item>
+              </Form>
+            </div>
+          ) : (
+            <></>
+          )}
+        </div>
+      </div>
+    );
+  }
 };
 export default ProfilCub;

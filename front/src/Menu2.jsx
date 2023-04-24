@@ -213,6 +213,7 @@ const Menu2 = (props) => {
         searchParams.delete(["date_max"]);
         searchParams.set("terroir", true);
         searchParams.delete(["sub_category"]);
+        searchParams.delete(["category"]);
         // query = query + "&category=" + "10";
         break;
       case "":

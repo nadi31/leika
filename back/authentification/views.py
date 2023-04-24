@@ -62,6 +62,35 @@ class UserOublieView(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
 
+class ContactFormFuturGiver(APIView):
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+    permission_classes = (
+        permissions.AllowAny, )
+
+    def post(self,  request, format='json'):
+       # print("RESTRSTRSD" + str(request.data['email']))
+
+        #myu = MyUser.objects.get(email=request.data['email'])
+        # envoyer les emails...
+        # token
+
+        #token = Token.objects.create(user=myu)
+        print("TOK "+request.data[
+            'email'])
+        # 2. envoie du mail
+        subject, from_email, to = 'Leikka: Contact ! ', settings.EMAIL_HOST_USER, settings.EMAIL_HOST_USER
+       # verify_link = "http://localhost:3000/mdp/" + token.key
+        html_content = render_to_string('contact.html', {'name': request.data['name'],
+                                                         'email': request.data['email'], 'url': request.data['url'], 'message': request.data['message'], })
+        text_content = strip_tags(html_content)
+        msg = EmailMultiAlternatives(
+            subject, text_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+        return Response(status=status.HTTP_201_CREATED)
+
+
 class UserMdpOublieView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = (
