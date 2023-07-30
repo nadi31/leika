@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import MenuBrowser from "./MenuBrowser";
 import { Form, Input, Image, Upload, Button, message } from "antd";
 import "./style/review.css";
@@ -59,13 +59,13 @@ const GiverProfil = (props) => {
               },
             }
           );
-          arrayAdresses.map((adress, idx) => {
+          adressA.current.map((adress, idx) => {
             let form = new FormData();
-            console.log("GIVER" + JSON.stringify(res));
+            console.log("GIVER" + JSON.stringify(adress));
             //console.log("ADRESS" + value);
             // console.log(password);
             if (adress.value) {
-              console.log("GIVER" + JSON.stringify(res));
+              console.log("GIVER" + adress.lon);
               //console.log("ADRESS" + value);
               //console.log(password);
               const lat = adress.lat;
@@ -138,7 +138,7 @@ upload: */
       },
     },
   };
-
+  const adressA = useRef([]);
   const [resultsGiver, setResultsGiver] = useState(null);
   const [adress, setAdress] = useState(null);
   const [width, setWidth] = useState(window.innerWidth);
@@ -172,6 +172,7 @@ upload: */
             })
             .then((res2) => {
               setArrayAdresses(res2.data);
+              adressA.current = res2.data;
               console.log("RESULTS REQUEST" + JSON.stringify(res2.data));
               //  console.log("RESULTS REQUEST" + JSON.stringify(res.data));
               setAdresses(res2.data.length);
@@ -275,16 +276,17 @@ upload: */
                 <GeoapifyContext apiKey="ea16b50fa61c47faa5c3cd8fc43eeb44">
                   <GeoapifyGeocoderAutocomplete
                     placeSelect={(e) => {
-                      console.log(JSON.stringify(e));
-                      arrayAdresses[idx] = e;
-                      setArrayAdresses([...arrayAdresses]);
-                      console.log(JSON.stringify(arrayAdresses));
-                      setChangeDetected(true);
+                      console.log("LON *" + e.properties.lon);
+                      adressA.current = [...adressA.current, e.properties];
+                      //arrayAdresses[idx] = e.properties;
+                      //  setArrayAdresses([...arrayAdresses, e.properties]);
+                      console.log(adressA.current);
+                      //   setChangeDetected(true);
                     }}
                     value={
-                      arrayAdresses[idx] !== undefined
-                        ? arrayAdresses[idx].name
-                        : null
+                      adressA.current[idx] !== undefined
+                        ? adressA.current[idx].name
+                        : ""
                     }
                     placeholder="Adresse"
                   />

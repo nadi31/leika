@@ -153,7 +153,8 @@ class Adress(models.Model):
     giver = models.ForeignKey(
         MyUser, on_delete=models.CASCADE, null=True, blank=True)
     lat = models.FloatField(null=True, blank=True)
-    lng = models.FloatField(null=True, blank=True)
+    lng = models.DecimalField(null=True, max_digits=40,
+                              decimal_places=20, blank=True)
 
     def __str__(self):
         return self.name

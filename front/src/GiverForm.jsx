@@ -119,13 +119,13 @@ const GiverForm = (props) => {
                 JSON.stringify(tabAdress.current[idx].geometry.coordinates[1])
             );
             console.log(password);
-            const lat = tabAdress.current[idx].geometry.coordinates[1];
-            const lng = tabAdress.current[idx].geometry.coordinates[0];
+            const lat = tabAdress.current[idx].properties.lat;
+            const lng = tabAdress.current[idx].properties.lon;
             console.log(
               "lat1 : " +
-                tabAdress.current[idx].geometry.coordinates[1] +
+                tabAdress.current[idx].properties.lat +
                 "long " +
-                tabAdress.current[idx].geometry.coordinates[0]
+                tabAdress.current[idx].properties.lon
             );
 
             setLat(lat);

@@ -38,6 +38,20 @@ class researchCourseList(ListCreateAPIView):
 
         # kidsx
         course_list = Course.objects.all()
+        course_list2 = []
+
+        if self.request.query_params.get('date_max'):
+            print('date_max'+self.request.query_params.get('date_max'))
+            for course in course_list:
+                print("*********"+str(course.id)+"*****")
+                courseHour = CourseHour.objects.get(course=course.id)
+                print("*********" + str(courseHour.date)+"*****")
+                if str(courseHour.date) == self.request.query_params.get('date_max'):
+                    print("*1*1*1"+str(course.id)+"*****")
+                    course_list2.append(course.id)
+
+            course_list = Course.objects.filter(
+                id__in=course_list2)
         if self.request.query_params.get('terroir'):
             course_list = Course.objects.filter(
                 terroirActivity=True)

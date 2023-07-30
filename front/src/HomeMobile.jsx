@@ -4,9 +4,13 @@ import { ConfigProvider } from "antd";
 //import frFR from "antd/lib/locale/fr_FR";
 //import MediaQuery from 'react-responsive';
 import { BrowserView, MobileView } from "react-device-detect";
-import { Card, Menu, Button, Input, AutoComplete, Layout } from "antd";
+import { Card, Menu, Tag, Button, Input, AutoComplete, Layout } from "antd";
 import Menu2 from "./Menu2";
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  RocketOutlined,
+  ExperimentOutlined,
+} from "@ant-design/icons";
 import Footer from "./Footer";
 import MenuMobile from "./MenuMobile";
 import axios from "axios";
@@ -217,6 +221,7 @@ const HomeMobile = (props) => {
           </Button>
         </div>
       </div>
+
       {props.team ? (
         <MenuTeam2 activity={activity} date_max={datemax} city={city} />
       ) : props.kids ? (
@@ -224,6 +229,50 @@ const HomeMobile = (props) => {
       ) : (
         <Menu2 activity={activity} date_max={datemax} city={city} />
       )}
+
+      {props.city ? (
+        <Tag
+          onClose={() => {
+            searchParams.delete(["city"]);
+            goToPosts();
+            window.location.reload();
+          }}
+          style={{
+            fontSize: "18px",
+            marginBottom: "1%",
+            fontFamily: "Dosis",
+            color: "black",
+          }}
+          icon=<RocketOutlined />
+          closable
+          color="#f7b526"
+        >
+          {props.city}
+        </Tag>
+      ) : null}
+      {activity ? (
+        <Tag
+          onClose={() => {
+            searchParams.delete(["category"]);
+            searchParams.delete(["sub_category"]);
+            goToPosts();
+            window.location.reload();
+
+            setMenuConnected(false);
+          }}
+          style={{
+            fontSize: "18px",
+            marginBottom: "1%",
+            fontFamily: "Dosis",
+            color: "black",
+          }}
+          icon={<ExperimentOutlined />}
+          closable
+          color="#f7b526"
+        >
+          {activity}
+        </Tag>
+      ) : null}
     </div>
   );
 };

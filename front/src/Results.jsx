@@ -267,6 +267,7 @@ const Results = () => {
                   console.log(response.data.sources_to_targets[0][0].distance);
                   if (response.data.sources_to_targets[0][0].distance < 20000) {
                     setResults((res) => [...res, location]);
+                    res.current = [...res, location];
                   }
                 })
                 .catch(function (error) {
@@ -276,9 +277,9 @@ const Results = () => {
           });
         } else {
           setResults(res2.data);
+          res.current = res2.data;
         }
         // res.current = results;
-        res.current = res2.data;
       })
 
       .catch((err) => console.log(err));
@@ -411,7 +412,7 @@ const Results = () => {
     if (width < 800) {
       return (
         <>
-          <HomeMobile kids={kids} team={team} />
+          <HomeMobile kids={kids} team={team} city={city} activity={activity} />
           <div
             key={activity}
             style={{ width: "100%", display: "inline-block" }}
