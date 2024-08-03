@@ -2,21 +2,17 @@ import React, { useState, useEffect, useRef } from "react";
 import MenuBrowser from "./MenuBrowser";
 import { Form, Input, Image, Upload, Button, message } from "antd";
 import "./style/review.css";
-import Geocode from "react-geocode";
-import "@geoapify/geocoder-autocomplete/styles/minimal.css";
-import {
-  GeoapifyGeocoderAutocomplete,
-  GeoapifyContext,
-} from "@geoapify/react-geocoder-autocomplete";
+
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import Footer from "./Footer";
 import { UserOutlined } from "@ant-design/icons";
-import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
 const GiverProfil = (props) => {
   const handleModify = (values) => {
     console.log(values);
+    console.log(values.upload.fileList[0].originFileObj);
+    console.log(values.upload.fileList[0].originFileObj.name);
     let form_data = new FormData();
     form_data.append("appelation", values.input_appelation);
     form_data.append("email", localStorage.getItem("email"));
@@ -204,7 +200,7 @@ upload: */
 
         .catch((err) => console.log(err));
     }
-  }, []);
+  }, [adresses]);
   return resultsGiver !== null && arrayAdresses.length > 0 && adresses > 0 ? (
     <>
       <MenuBrowser width={width} />
@@ -244,8 +240,8 @@ upload: */
                   uid: "-1",
                   name: "image1.png",
                   status: "done",
-                  url: resultsGiver.img1,
-                  thumbUrl: resultsGiver.img1,
+                  url: "http://localhost:8000" + resultsGiver.img1,
+                  thumbUrl: "http://localhost:8000" + resultsGiver.img1,
                 },
               ]}
               maxCount={1}
@@ -269,76 +265,6 @@ upload: */
               onChange={() => setMdp(true)}
               placeholder="Nouveau mot de passe"
             />
-          </Form.Item>
-          <Form.Item name="input_adress_rue" label="Adresse ">
-            {Array.from({ length: adresses }).map((val, idx) => (
-              <>
-                <GeoapifyContext apiKey="ea16b50fa61c47faa5c3cd8fc43eeb44">
-                  <GeoapifyGeocoderAutocomplete
-                    placeSelect={(e) => {
-                      console.log("LON *" + e.properties.lon);
-                      adressA.current = [...adressA.current, e.properties];
-                      //arrayAdresses[idx] = e.properties;
-                      //  setArrayAdresses([...arrayAdresses, e.properties]);
-                      console.log(adressA.current);
-                      //   setChangeDetected(true);
-                    }}
-                    value={
-                      adressA.current[idx] !== undefined
-                        ? adressA.current[idx].name
-                        : ""
-                    }
-                    placeholder="Adresse"
-                  />
-                </GeoapifyContext>
-
-                <Form.Item
-                  name={"input_adress_add_ons" + idx}
-                  label="Compléments "
-                >
-                  <Input
-                    key={"input" + idx}
-                    defaultValue={
-                      arrayAdresses[idx] !== undefined
-                        ? arrayAdresses[idx].add_ons
-                        : null
-                    }
-                    onBlur={(e) => {
-                      setArrayAdd_ons([...arrayAdd_ons, e.target.value]);
-                      setChangeDetected(true);
-                    }}
-                    placeholder="Numéro d'appartement... "
-                  />
-                </Form.Item>
-                <Button
-                  style={{ width: "10%" }}
-                  onClick={() => {
-                    setAdresses(adresses - 1);
-                    if (adresses < arrayAdresses.length) {
-                      arrayAdresses.splice(idx, 1);
-                      //arrayAdd_ons.pop();
-                      setArrayAdresses([...arrayAdresses]);
-                      console.log(JSON.stringify(arrayAdresses));
-                      setChangeDetected(true);
-                    }
-                  }}
-                >
-                  -
-                </Button>
-                <p>
-                  Ajouter une adresse:{" "}
-                  <Button
-                    style={{ width: "10%" }}
-                    onClick={() => {
-                      setAdresses(adresses + 1);
-                      setChangeDetected(true);
-                    }}
-                  >
-                    +
-                  </Button>
-                </p>
-              </>
-            ))}
           </Form.Item>
 
           <Button type="primary" htmlType="submit">

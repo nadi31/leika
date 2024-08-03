@@ -44,7 +44,6 @@ import {
   BulbOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
-import { isArrayLiteralExpression } from "typescript";
 
 const EmailVerifyGiver = (props) => {
   const [course, setCourse] = useState(null);

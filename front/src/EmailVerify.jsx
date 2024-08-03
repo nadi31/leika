@@ -45,7 +45,6 @@ import {
   BulbOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
-import { isArrayLiteralExpression } from "typescript";
 import HomeMobile from "./HomeMobile";
 
 const EmailVerify = (props) => {

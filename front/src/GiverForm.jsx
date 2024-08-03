@@ -1,13 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useNavigate, withRouter } from "react-router-dom";
-import "@geoapify/geocoder-autocomplete/styles/minimal.css";
+
 import { BrowserView, MobileView } from "react-device-detect";
-import {
-  GeoapifyGeocoderAutocomplete,
-  GeoapifyContext,
-} from "@geoapify/react-geocoder-autocomplete";
 
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -28,7 +23,6 @@ import MenuBrowser from "./MenuBrowser";
 
 import axios from "axios";
 import Footer from "./Footer";
-import queryString from "query-string";
 
 const GiverForm = (props) => {
   const [response, setResponse] = useState();
@@ -214,12 +208,6 @@ const GiverForm = (props) => {
             <Input placeholder="email" />
           </Form.Item>
           <Form.Item name="input_adress_rue" label="Adresse ">
-            <GeoapifyContext apiKey="ea16b50fa61c47faa5c3cd8fc43eeb44">
-              <GeoapifyGeocoderAutocomplete
-                placeSelect={onPlaceSelect}
-                placeholder="Adresse"
-              />
-            </GeoapifyContext>
             <Form.Item name="input_adress_add_ons" label="Compléments ">
               <Input
                 onBlur={(e) => {
@@ -245,12 +233,6 @@ const GiverForm = (props) => {
                   name={"input_adress_add_ons" + idx}
                   label="Compléments "
                 >
-                  <GeoapifyContext apiKey="YOUR_API_KEY_HERE">
-                    <GeoapifyGeocoderAutocomplete
-                      placeSelect={onPlaceSelect}
-                      placeholder=" Adresse"
-                    />
-                  </GeoapifyContext>
                   <Input
                     onBlur={(e) => {
                       setArrayAdd_ons([...arrayAdd_ons, e.target.value]);

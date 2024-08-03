@@ -53,7 +53,7 @@ const Kids = () => {
   const [card3, setcard3] = useState(<></>);
   useEffect(() => {
     {
-      axios.get("http://localhost:8000/api-course/4").then((res) => {
+      axios.get("http://localhost:8000/api-course/6").then((res) => {
         setCourseList(res.data);
         console.log(res.data);
 
@@ -81,7 +81,7 @@ const Kids = () => {
           </a>
         );
       });
-      axios.get("http://localhost:8000/api-course/1").then((res) => {
+      axios.get("http://localhost:8000/api-course/5").then((res) => {
         setCourseList(res.data);
         console.log(res.data);
 
@@ -109,7 +109,7 @@ const Kids = () => {
           </a>
         );
       });
-      axios.get("http://localhost:8000/api-course/2").then((res) => {
+      axios.get("http://localhost:8000/api-course/4").then((res) => {
         setCourseList(res.data);
         console.log(res.data);
 

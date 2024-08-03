@@ -17,7 +17,6 @@ import MenuBrowser from "./MenuBrowser";
 
 import axios from "axios";
 import Footer from "./Footer";
-import queryString from "query-string";
 const CourseOnline = (props) => {
   const [results, setResults] = useState([]);
   const [req, setReq] = useState(null);

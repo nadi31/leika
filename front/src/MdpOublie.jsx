@@ -46,7 +46,6 @@ import {
   BulbOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
-import { isArrayLiteralExpression } from "typescript";
 
 const MdpOublie = (props) => {
   const [course, setCourse] = useState(null);

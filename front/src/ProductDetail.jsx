@@ -45,7 +45,6 @@ import {
   BulbOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
-import { isArrayLiteralExpression } from "typescript";
 
 const ProductDetail = (props) => {
   const { TabPane } = Tabs;
@@ -68,6 +67,12 @@ const ProductDetail = (props) => {
   const [kids, setKids] = useState(false);
   const [wLID, setWLID] = useState(null);
   const [offers, setOffers] = useState(null);
+  const [cart, setCart] = useState(0);
+  const addTotalQuantity = (e) => {
+    console.log(e);
+    setCart(e);
+  };
+
   const deletedToWishlist = () => {
     if (localStorage.getItem("ID") !== "null" && a) {
       axios
@@ -434,6 +439,17 @@ const ProductDetail = (props) => {
       });
     });
     dataForBasket.map((itemIsole) => result.push(itemIsole));
+
+    let tot = 0;
+
+    // let itemsOrdered = refactorizedData();
+
+    result.forEach(({ seats }) => {
+      tot += seats;
+    });
+    localStorage.setItem("totalQuantity", JSON.stringify(tot));
+
+    addTotalQuantity(tot);
 
     // return console.log(arrays);
     console.log(JSON.stringify(result));

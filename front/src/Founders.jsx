@@ -7,6 +7,26 @@ import { BrowserView, MobileView } from "react-device-detect";
 import MenuBrowser from "./MenuBrowser";
 import Footer from "./Footer";
 import img1 from "./france.png";
+import Bloc from "./Bloc";
+import process from "./process.jpg";
+import founders from "./founders.jpg";
+import {
+  HomeOutlined,
+  DownCircleOutlined,
+  ShoppingCartOutlined,
+  CaretDownOutlined,
+  HeartFilled,
+  HeartTwoTone,
+  RocketTwoTone,
+  ExperimentTwoTone,
+  EnvironmentTwoTone,
+  HeartOutlined,
+  ThunderboltTwoTone,
+  BulbOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons";
+
+import processus from "./processus.jpg";
 import { Form, Select, Space, Tooltip, Typography } from "antd";
 import { Table } from "antd";
 import HomeMobile from "./HomeMobile";
@@ -36,7 +56,30 @@ const Founders = (props) => {
         }
       )
       .then(() => {
-        console.log("SUCESS");
+        console.log("SUCESS1");
+        axios
+          .post(
+            `http://localhost:8000/api/contactFormMail/`,
+
+            {
+              name: values.name,
+              email: values.email,
+              message: values.message,
+              url: values.url,
+            },
+            {
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then(() => {
+            console.log("SUCESS2");
+          })
+          .catch((err) => {
+            console.log("ERROR1", err.response);
+          });
       })
       .catch((err) => {
         console.log("ERROR1", err.response);
@@ -76,78 +119,121 @@ const Founders = (props) => {
     return (
       <div>
         <MenuBrowser width={width} />
-
-        <div style={{ display: "flex" }}>
+        <Bloc
+          yellow={true}
+          height={"400px"}
+          content={
+            " Leikka. est une petite entreprise toulousaine créée en 2023 par deux soeurs: Nadia et Nouria 👯‍♀️ .Leikka a pour ambition de simplifier le travail des professionels dumonde du loisir en proposant un système de réservation en ligne 💻.Nous avons aussi comme vocation à faciliter la recherche d activités et de cours pour tout un chacun! Nous avons à coeur de sélectionner les meilleurs professionnels pour que chaque expérience soit un souvenir unique 🥳."
+          }
+          icone={
+            <ExperimentTwoTone
+              twoToneColor="#ffa940"
+              style={{ fontSize: "25px" }}
+            />
+          }
+          titre={"Au menu de l'Expérience"}
+          width={width <= 1200 ? "80%" : "40%"}
+        />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginRight: "20%",
+          }}
+        >
           <Image
             style={{
-              marginLeft: "17%",
+              marginTop: "20%",
+              marginLeft: "-10%",
               borderRadius: "50%",
-              width: "300px",
-              height: "300px",
+              width: "200px",
+              height: "200px",
             }}
             preview={false}
-            src={img1}
+            src={founders}
           />
 
           <div
+            id="founders"
             className="pres"
-            style={{ marginTop: "3%", marginLeft: "12%", width: "50%" }}
+            style={{ marginTop: "3%", width: "50%" }}
           >
             {" "}
             <h1>Fondatrices</h1>
-            Leikka. est une petite entreprise toulousaine créée en 2023 par deux
-            soeurs: Nadia et Nouria 👯‍♀️ .
-            <br />
-            <br />
-            Leikka a pour ambition de simplifier le travail des professionels du
-            monde du loisir en proposant un système de réservation en ligne 💻.
-            <br />
-            <br /> Nous avons aussi comme vocation à faciliter la recherche
-            d'activités et de cours pour tout un chacun! Nous avons à coeur de
-            sélectionner les meilleurs professionnels pour que chaque expérience
-            soit un souvenir unique 🥳.
           </div>
         </div>
-        <div style={{ display: "flex" }}>
-          <Image
-            style={{
-              marginLeft: "17%",
-              borderRadius: "50%",
-              width: "300px",
-              height: "300px",
-            }}
-            preview={false}
-            src={img1}
-          />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginRight: "-16%",
+          }}
+        >
           <div
+            id="process"
             className="pres"
-            style={{ marginTop: "3%", marginLeft: "12%", width: "50%" }}
+            style={{
+              marginTop: "7%",
+              //marginLeft: "0%",
+              width: "50%",
+            }}
           >
-            {" "}
             <h1>Fonctionnement</h1>
-            Leika. permet à nos partenaires de simplifier le circuit de
-            réservation en offrant une plateforme qui les met directement en
-            lien avec les clients.
+            Bienvenue à Leikka. - votre nouvelle façon de découvrir et
+            d'apprendre! Leikka est bien plus qu'une simple plateforme de
+            réservation d'expériences. <br /> <br />
+            C'est une véritable communauté d'entreprises locales qui offre une
+            expérience unique aux adultes et aux enfants. Notre concept repose
+            sur l'idée de partager des moments de vie authentiques, de créer des
+            liens uniques et de permettre des aventures inoubliables. <br />{" "}
+            <br />
+            En tant qu'aventurier, Leikka. vous propose une multitude d'options
+            d'expériences, des stages de survie aux sauts de parachute, en
+            passant par des activités insolites et uniques. Vous avez la
+            possibilité de découvrir des activités 100% locales comme d'explorer
+            de nouvelles cultures. <br /> <br />
+            Pour nos partenaires, leikka. offre une opportunité exceptionnelle
+            de partager leur savoirs faire avec des personnes du monde entier.
             <br />
           </div>
-        </div>
-        <div style={{ display: "flex" }}>
           <Image
             style={{
-              marginLeft: "17%",
+              marginTop: "90%",
+              marginLeft: "3%",
               borderRadius: "50%",
-              width: "300px",
-              height: "300px",
+              width: "200px",
+              height: "200px",
             }}
             preview={false}
-            src={img1}
+            src={process}
+          />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginLeft: "-9%",
+          }}
+        >
+          <Image
+            style={{
+              marginTop: "30%",
+              marginLeft: "-6%",
+
+              borderRadius: "50%",
+              width: "200px",
+              height: "200px",
+            }}
+            preview={false}
+            src={processus}
           />
           <div
+            id="conditions"
             className="pres"
-            style={{ marginTop: "3%", marginLeft: "12%", width: "50%" }}
+            style={{ marginTop: "7%", width: "50%" }}
           >
             {" "}
-            <h1>Conditions</h1>
+            <h1>Notre philosophie</h1>
             Leika. est à destionation de professionels qui ont une réelle
             expertise dans leur domaine afuin d'offrir la meilleure expérience
             possible.
@@ -158,20 +244,11 @@ const Founders = (props) => {
           </div>{" "}
         </div>
 
-        <div style={{ display: "flex" }}>
-          <Image
-            style={{
-              marginLeft: "17%",
-              borderRadius: "50%",
-              width: "300px",
-              height: "300px",
-            }}
-            preview={false}
-            src={img1}
-          />
+        <div style={{ display: "flex", justifyContent: "center" }}>
           <div
+            id="contact"
             className="pres"
-            style={{ marginTop: "3%", marginLeft: "12%", width: "50%" }}
+            style={{ marginTop: "3%", width: "50%" }}
           >
             {" "}
             <h1>Formulaire de contact </h1>
@@ -224,6 +301,17 @@ const Founders = (props) => {
               </Form.Item>
             </Form>
           </div>
+          {/* <Image
+            style={{
+              marginTop: "30%",
+              marginLeft: "50%",
+              borderRadius: "50%",
+              width: "200px",
+              height: "200px",
+            }}
+            preview={false}
+            src={contact}
+          /> */}
         </div>
 
         <Footer width={width} />
@@ -235,7 +323,7 @@ const Founders = (props) => {
         <HomeMobile width={width} />
         <div style={{ display: "flex" }}>
           <div
-            className="pres"
+            id="founders"
             style={{ marginTop: "3%", marginLeft: "12%", width: "50%" }}
           >
             {" "}
@@ -255,7 +343,7 @@ const Founders = (props) => {
         </div>
         <div style={{ display: "flex" }}>
           <div
-            className="pres"
+            id="process"
             style={{ marginTop: "3%", marginLeft: "12%", width: "50%" }}
           >
             {" "}
@@ -268,13 +356,13 @@ const Founders = (props) => {
         </div>
         <div style={{ display: "flex" }}>
           <div
-            className="pres"
+            id="conditions"
             style={{ marginTop: "3%", marginLeft: "12%", width: "50%" }}
           >
             {" "}
             <h1>Conditions</h1>
-            Leika. est à destionation de professionels qui ont une réelle
-            expertise dans leur domaine afuin d'offrir la meilleure expérience
+            Leika. est à destination de professionels qui ont une réelle
+            expertise dans leur domaine afin d'offrir la meilleure expérience
             possible.
             <br />
             Ainsi, les professionnels sont soumis à un process de sélection
@@ -284,7 +372,7 @@ const Founders = (props) => {
         </div>
         <div style={{ display: "flex" }}>
           <div
-            className="pres"
+            id="contact"
             style={{ marginTop: "3%", marginLeft: "12%", width: "50%" }}
           >
             {" "}

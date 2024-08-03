@@ -33,7 +33,7 @@ import {
   AutoComplete,
   message,
 } from "antd";
-import { isBreakOrContinueStatement, parseJsonText } from "typescript";
+
 const UpdateCourse = () => {
   const toggle = () => {
     setDisabled(!disabled);
@@ -1039,7 +1039,7 @@ const UpdateCourse = () => {
                       // defaultValue={this.state.courses.seats}
                       //style={{ position: "absolute", marginLeft: 300 }}
                       onBlur={(e) => {
-                        listAtt === []
+                        listAtt.length < 1
                           ? setListAtt([e.target.value])
                           : setListAtt([...listAtt, e.target.value]);
                       }}

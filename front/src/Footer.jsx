@@ -3,7 +3,7 @@ import { Image, Button, Modal, InputNumber, message, Input } from "antd";
 //import "antd/dist/antd.css";
 import "./style/footer.css";
 import axios from "axios";
-import ParticleComponent from "./particules";
+
 import {
   MailOutlined,
   HeartOutlined,
@@ -92,13 +92,13 @@ const Footer = (props) => {
               </h1>
               <br />
 
-              <a href="" style={{}}>
+              <a href="http://localhost:3000/founders#process" style={{}}>
                 {" "}
                 Fonctionnement{" "}
               </a>
               <br />
               <br />
-              <a href="http://localhost:3000/founders">Fondatrices</a>
+              <a href="http://localhost:3000/founders#founders">Fondatrices</a>
               <br />
               <br />
               <a href="">Mention Légales</a>
@@ -125,7 +125,8 @@ const Footer = (props) => {
               <a href="">FAQ</a>
               <br />
               <br />
-              <a href="">Contact</a> <br />
+              <a href="http://localhost:3000/founders#contact">Contact</a>{" "}
+              <br />
               <br />
               <a href="">Face à la covid</a>
             </div>

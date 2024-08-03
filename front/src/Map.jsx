@@ -90,65 +90,59 @@ const Map = (props) => {
     iconAnchor: [5, 30],
   });
 
-  if (
-    props.centerLat !== null &&
-    props.centerLong !== null &&
-    modified !== []
-  ) {
-    return (
-      <MapContainer
-        classsName="map"
-        center={[props.centerLat, props.centerLong]}
-        zoom={13}
-        style={{ height: "400px", width: "400px", zIndex: "-1" }}
-        scrollWheelZoom={false}
-      >
-        {locs.map((location) => (
-          <Marker icon={customIcon} position={[location.lat, location.lng]}>
-            <Popup>
-              <a href={`/product/${location.id}`}>
-                <img
-                  width="210px"
-                  height="150px"
-                  alt="example"
-                  src={location.img1}
-                />{" "}
-                <div
+  return (
+    <MapContainer
+      classsName="map"
+      center={[props.centerLat, props.centerLong]}
+      zoom={13}
+      style={{ height: "400px", width: "400px", zIndex: "-1" }}
+      scrollWheelZoom={false}
+    >
+      {locs.map((location) => (
+        <Marker icon={customIcon} position={[location.lat, location.lng]}>
+          <Popup>
+            <a href={`/product/${location.id}`}>
+              <img
+                width="210px"
+                height="150px"
+                alt="example"
+                src={location.img1}
+              />{" "}
+              <div
+                style={{
+                  textDecoration: "none",
+                  width: "90%",
+                }}
+              >
+                {" "}
+                <p> {location.price + "€"}</p>
+                <p
                   style={{
                     textDecoration: "none",
-                    width: "90%",
                   }}
                 >
-                  {" "}
-                  <p> {location.price + "€"}</p>
-                  <p
-                    style={{
-                      textDecoration: "none",
-                    }}
-                  >
-                    {location.accroche}
-                  </p>
-                  <p
-                    style={{
-                      textDecoration: "none",
-                    }}
-                  >
-                    {location.content.substring(0, 35) + "..."}
-                  </p>
-                </div>
-              </a>
-            </Popup>
-          </Marker>
-        ))}
-        <TileLayer
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> 
+                  {location.accroche}
+                </p>
+                <p
+                  style={{
+                    textDecoration: "none",
+                  }}
+                >
+                  {location.content.substring(0, 35) + "..."}
+                </p>
+              </div>
+            </a>
+          </Popup>
+        </Marker>
+      ))}
+      <TileLayer
+        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> 
         contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
 
-        <ResizeMap />
-      </MapContainer>
-    );
-  } else return <>Loading</>;
+      <ResizeMap />
+    </MapContainer>
+  );
 };
 export default Map;

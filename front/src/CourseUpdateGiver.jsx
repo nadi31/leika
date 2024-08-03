@@ -1166,7 +1166,7 @@ const CourseUpdateGiver = (props) => {
                 footer={[,]}
               >
                 {" "}
-                {liste_finale.length > 0 && date !== [] && visibl ? (
+                {liste_finale.length > 0 && date.length > 1 && visibl ? (
                   <div>
                     {liste_finale[0].map(
                       (date1, index1) => (

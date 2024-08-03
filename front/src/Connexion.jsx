@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button } from "antd";
-//import emailjs from "@emailjs/browser";
-import emailjs from "emailjs-com";
-import { init } from "@emailjs/browser";
+
 import sha256 from "crypto-js/sha256";
 //Appartion du modal
-import { useCookies } from "react-cookie";
-import jwt_decode from "jwt-decode";
+
+import { jwtDecode } from "jwt-decode";
 import {
   Form,
   Input,
@@ -39,7 +37,6 @@ const Connexion = (props) => {
   //const [cookies, setCookies] = useState(new Cookies());
   const [oublie, setOublie] = useState(false);
   const [emailOublie, setEmailOublie] = useState("");
-  const [cookies, setCookie] = useCookies(["name"]);
   const [messageApi, contextHolder] = message.useMessage();
 
   const [toSend, setToSend] = useState({
@@ -50,8 +47,29 @@ const Connexion = (props) => {
   const onClose = (e) => {
     console.log(e, "I was closed.");
   };
+  const checkLocalStorageValidity = () => {
+    /* alert("checking !!!");
+    const minutes = 1;
+    //const oneHourMs = 60 * 60 * 1000;
+    const now = new Date().getTime();
+    console.log("now: " + now);
+    const setupTime = localStorage.getItem("setupTime");
+    let variable = localStorage.getItem("variable");
+    if (variable > 0) variable = variable + 1;
+    console.log(" setInterval numero ..." + variable);
+    localStorage.setItem("variable", variable);
 
-  const onOublie = (email) => {
+    if (setupTime === null) {
+      localStorage.setItem("variable", 0);
+      localStorage.setItem("setupTime", now);
+    } else {
+      if (now - setupTime > minutes * 60 * 1000) {
+        localStorage.clear();
+        //  localStorage.setItem("setupTime", now);
+      }
+    }*/
+  };
+  /* const onOublie = (email) => {
     //requete pour avoir le token
     console.log("On oublie");
     axios
@@ -101,7 +119,7 @@ const Connexion = (props) => {
           });
       })
       .catch((e) => console.log(e));
-  };
+  };*/
 
   /*const setCookie = () => {
     console.log("COOK" + cook);
@@ -126,11 +144,22 @@ const Connexion = (props) => {
   };
 
   useEffect(() => {
-    if (props.connected == false) console.log("LOG OUT");
-  }, [props.connected]);
+    //alert("???");
+    checkLocalStorageValidity();
+
+    // Set up interval to call the function every 3 minutes
+    const interval = setInterval(() => {
+      checkLocalStorageValidity();
+    }, 1 * 60 * 1000); // 3 minutes
+
+    // Cleanup function to clear the interval when component unmounts or when dependency changes
+    return () => clearInterval(interval);
+  });
+
   const navigate = useNavigate();
 
   const authLogOut = () => {
+    console.log("clearing...");
     localStorage.clear();
     navigate("/", { replace: true });
     //window.dispatchEvent(new Event("message"));
@@ -158,10 +187,10 @@ const Connexion = (props) => {
         axiosInstance.defaults.headers["Authorization"] =
           "JWT " + res.data.access;
         //localStorage.setItem("access_token", res.data.access);
-        const user_type = jwt_decode(res.data.access).user_type;
-        const ID_user = jwt_decode(res.data.access).ID_user;
-        const ID = jwt_decode(res.data.access).ID;
-        const first_name = jwt_decode(res.data.access).first_name;
+        const user_type = jwtDecode(res.data.access).user_type;
+        const ID_user = jwtDecode(res.data.access).ID_user;
+        const ID = jwtDecode(res.data.access).ID;
+        const first_name = jwtDecode(res.data.access).first_name;
         //const riddle = jwt.decode(res.data.access);
         //localStorage.setItem("user_type", res.data);
         // console.log("IDDDDDDD", ID_user);
@@ -182,15 +211,12 @@ const Connexion = (props) => {
         //console.log("cookie");
 
         console.log("COOKIE" + email);
-        setCookie("user", ID, { path: "/" });
-        console.log("COOK " + cookies["user"]);
-        alert(`User cookie is ${JSON.stringify(cookies["user"])}`);
+        //  setCookie("user", ID, { path: "/" });
+        //    console.log("COOK " + cookies["user"]);
+        //     alert(`User cookie is ${JSON.stringify(cookies["user"])}`);
 
         message.success("Connexion réussie");
-
-        setTimeout(() => {
-          authLogOut();
-        }, 60 * 60 * 1000);
+        checkLocalStorageValidity();
       })
       .catch((err) => {
         message.error("L'identifiant ou le mot de passe est erroné");
@@ -585,7 +611,7 @@ const Connexion = (props) => {
         centered
         visible={oublie}
         onOk={() => {
-          onOublie(emailOublie);
+          //onOublie(emailOublie); // emailjs depreciated !
           setOublie(false);
         }}
         onCancel={() => setOublie(false)}
@@ -638,7 +664,7 @@ const Connexion = (props) => {
                   }}
                   htmlType="submit"
                   onClick={() => {
-                    onOublie(emailOublie);
+                    //onOublie(emailOublie); // emailjs depreciated !
                     setOublie(false);
                   }}
                 >

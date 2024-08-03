@@ -17,7 +17,6 @@ import MenuBrowser from "./MenuBrowser";
 
 import axios from "axios";
 import Footer from "./Footer";
-import queryString from "query-string";
 const CoursesToModify = (props) => {
   const [results, setResults] = useState([]);
   const [req, setReq] = useState(null);
@@ -167,7 +166,12 @@ const CoursesToModify = (props) => {
                         <Card
                           hoverable
                           style={{ border: "none", width: "100%" }}
-                          cover={<img alt="example" src={res.img1} />}
+                          cover={
+                            <img
+                              alt="example"
+                              src={"http://localhost:8000" + res.img1}
+                            />
+                          }
                         >
                           <Meta
                             id="button_giver"

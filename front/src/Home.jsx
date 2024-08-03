@@ -6,7 +6,7 @@ import axios from "axios";
 import HomeMobile from "./HomeMobile";
 import Footer from "./Footer";
 
-import loop from "./loop.mp4";
+import MyMap from "./MyMap";
 import ResCard from "./ResCard";
 import MenuBrowser from "./MenuBrowser";
 
@@ -30,6 +30,28 @@ const Home = () => {
     setWidth(window.innerWidth);
     console.log(window.innerWidth);
   }
+  const checkLocalStorageValidity = () => {
+    console.log(" checkLocalStorageValidity ...");
+    const minutes = 60;
+    //const oneHourMs = 60 * 60 * 1000;
+    const now = new Date().getTime();
+    console.log("now: " + now);
+    const setupTime = localStorage.getItem("setupTime");
+    let variable = localStorage.getItem("variable");
+    if (variable > 0) variable = variable + 1;
+    console.log(" setInterval numero ..." + variable);
+    localStorage.setItem("variable", variable);
+
+    if (setupTime === null) {
+      localStorage.setItem("variable", 0);
+      localStorage.setItem("setupTime", now);
+    } else {
+      if (now - setupTime > minutes * 60 * 1000) {
+        localStorage.clear();
+        //  localStorage.setItem("setupTime", now);
+      }
+    }
+  };
   useLayoutEffect(() => {
     window.addEventListener("resize", updateSize);
     return () => window.removeEventListener("resize", updateSize);
@@ -47,8 +69,17 @@ const Home = () => {
       setcard2(<ResCard info={res.data[1]} width={width} />);
 
       setcard3(<ResCard info={res.data[2]} width={width} />);
+      checkLocalStorageValidity();
+
+      // Set up interval to call the function every 3 minutes
+      const interval = setInterval(() => {
+        checkLocalStorageValidity();
+      }, 1 * 60 * 1000); // 3 minutes
+
+      // Cleanup function to clear the interval when component unmounts or when dependency changes
+      return () => clearInterval(interval);
     });
-  }, []);
+  }, [width]);
 
   const { Meta } = Card;
 
@@ -80,7 +111,7 @@ const Home = () => {
         <Footer width={width} />
       </div>
     );
-  } else if (width > 600 && courseList !== null) {
+  } else if (width > 800 && courseList !== null) {
     return (
       <div id="root">
         <MenuBrowser
@@ -100,9 +131,9 @@ const Home = () => {
           }}
         >
           {" "}
-          <video style={{ width: "60%" }} autoPlay muted loop id="video">
+          {/* <video style={{ width: "60%" }} autoPlay muted loop id="video">
             <source src={loop} type="video/mp4" />
-          </video>
+          </video> */}
         </div>
         <div
           className="top"
@@ -204,6 +235,10 @@ const Home = () => {
           >
             {card2}
           </span>
+          <div>
+            {" "}
+            <MyMap />
+          </div>
         </div>
         <Footer width={width} />
       </div>

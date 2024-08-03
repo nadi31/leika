@@ -77,7 +77,7 @@ class ContactFormFuturGiver(APIView):
         #token = Token.objects.create(user=myu)
         print("TOK "+request.data[
             'email'])
-        # 2. envoie du mail
+        # 2. envoie du PREMIER mail 
         subject, from_email, to = 'Leikka: Contact ! ', settings.EMAIL_HOST_USER, settings.EMAIL_HOST_USER
        # verify_link = "http://localhost:3000/mdp/" + token.key
         html_content = render_to_string('contact.html', {'name': request.data['name'],
@@ -87,8 +87,34 @@ class ContactFormFuturGiver(APIView):
             subject, text_content, from_email, [to])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
+        
 
         return Response(status=status.HTTP_201_CREATED)
+
+
+class ContactFormFuturGiverMail(APIView):
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+    permission_classes = (
+            permissions.AllowAny, )
+
+    def post(self,  request, format='json'):
+        print("TIK "+request.data[
+            'email'])
+        # 2. envoie du PREMIER mail 
+        subject, from_email, to = 'Leikka: Contact 2 ! ', settings.EMAIL_HOST_USER, request.data['email']
+       # verify_link = "http://localhost:3000/mdp/" + token.key
+        html_content = render_to_string('contactPropect.html', {'name': request.data['name'],
+                                                         'email': request.data['email'], 'url': request.data['url'], 'message': request.data['message'], })
+        text_content = strip_tags(html_content)
+        msg = EmailMultiAlternatives(
+            subject, text_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+        
+
+        return Response(status=status.HTTP_201_CREATED)
+    
+
 
 
 class UserMdpOublieView(APIView):
@@ -341,20 +367,20 @@ class GiverDetailView(APIView):
             description=request.data.get("description"), phone=request.data.get("phone"), appelation=request.data.get("appelation"), siret=request.data.get("siret"))
         req = request.POST.copy()
         print("***REQ1: ", req)
-        if req.get("img1") != None:
-            req.pop("img1")
+       
         print("***REQUEST: ", request.FILES.get("img1"))
         print("***REQ2: ", req)
         # req.pop('img1')
         # req.FILES.pop('img1')
         # print("***REQ: ", req.data)
         serializer = GiverSerializer(data=req)
-        if request.FILES.get("img1") != None:
+        if request.FILES.get("img1"):
             # if request.data.get("img1") != None:
-            print("BGUYFHGF")
+            print("IMG: ", request.FILES.get("img1"))
             obj = Giver.objects.get(user=request.data.get("user"))
             print("OBJECT", obj)
-            obj.img1 = request.data.get("img1")
+            os.remove(obj.img1.path)
+            obj.img1 = request.FILES.get("img1")
             obj.save()
         if serializer.is_valid():
             json = serializer.data

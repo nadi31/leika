@@ -1,5 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import "mapbox-gl/dist/mapbox-gl.css";
+import "leaflet/dist/leaflet.css";
 
 import Layout from "./Layout";
 import reportWebVitals from "./reportWebVitals";

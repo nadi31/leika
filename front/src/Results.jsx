@@ -4,13 +4,13 @@ import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useNavigate, withRouter } from "react-router-dom";
 import { BrowserView, MobileView } from "react-device-detect";
-import { GoogleMap, MarkerF, LoadScript } from "@react-google-maps/api";
+
 import {
   CheckCircleTwoTone,
   HeartTwoTone,
   SmileTwoTone,
 } from "@ant-design/icons";
-import Geocode from "react-geocode";
+
 import Map from "./Map"; // import the map here
 
 import Maps from "./Maps"; // import the map here
@@ -43,19 +43,14 @@ import MenuBrowser from "./MenuBrowser";
 
 import axios from "axios";
 import Footer from "./Footer";
-import queryString from "query-string";
-import { filter } from "lodash";
 import MenuMobile from "./MenuMobile";
 import HomeMobile from "./HomeMobile";
 const Results = () => {
   function updateSize() {
-    setWidth(window.innerWidth);
+    //   setWidth(window.innerWidth);
     console.log(window.innerWidth);
   }
-  useLayoutEffect(() => {
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
+
   const [menuArt, setMenuArt] = useState(false);
   const [menuGames, setMenuGames] = useState(false);
   const [menuDrill, setMenuDrill] = useState(false);
@@ -87,7 +82,7 @@ const Results = () => {
   const isRemote = useRef(false);
   const prix_min = useRef(0);
   const lonCity = useRef(null);
-  const latCity = useRef(0);
+  const latCity = useRef(null);
   const classt = useRef(0);
   const prix_max = useRef(600);
   const isFree = useRef(false);
@@ -200,7 +195,6 @@ const Results = () => {
     }
   };
   const useQuery = () => new URLSearchParams(useLocation().search);
-
   const request = useQuery();
 
   const getStarted = () => {
@@ -227,7 +221,7 @@ const Results = () => {
       .get(`http://localhost:8000/api-course/search/?&${request}`)
       .then((res2) => {
         console.log("RESULTS REQUEST" + JSON.stringify(res2.data));
-        // setResults(res.data);
+        //setResults(res.data);
         if (request.get("city")) {
           const cit = request.get("city");
 
@@ -235,13 +229,19 @@ const Results = () => {
             cit + " France"
           }&apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44`;
 
-          axios.get(url).then((res) => {
-            lonCity.current = res.data.features[0].properties.lon;
-            latCity.current = res.data.features[0].properties.lat;
-            res2.data.map(async (location) => {
-              var axios = require("axios");
+          axios.get(url).then((res1) => {
+            lonCity.current = res1.data.features[0].properties.lon;
+            latCity.current = res1.data.features[0].properties.lat;
+            console.log(
+              "LAT FROM GEOPIFY: " +
+                res1.data.features[0].properties.lon +
+                " OR " +
+                lonCity.current
+            );
+
+            res2.data.map((location) => {
               console.log("213 " + latCity);
-              console.log("214" + location.lng + " " + location.lat);
+              console.log("214 " + location.lng + " " + location.lat);
 
               var data = JSON.stringify({
                 mode: "drive",
@@ -264,10 +264,12 @@ const Results = () => {
 
               axios(config)
                 .then(function (response) {
-                  console.log(response.data.sources_to_targets[0][0].distance);
+                  console.log(response.data);
                   if (response.data.sources_to_targets[0][0].distance < 20000) {
-                    setResults((res) => [...res, location]);
-                    res.current = [...res, location];
+                    console.log("WE HAVE A WINNER: " + "ici " + location.lng);
+                    setResults((prevResults) => [...prevResults, location]);
+                    res.current = [...res.current, location];
+                    console.log("RES " + JSON.stringify(res.current));
                   }
                 })
                 .catch(function (error) {
@@ -284,12 +286,13 @@ const Results = () => {
 
       .catch((err) => console.log(err));
   };
+  useEffect(() => {
+    getStarted();
+  }, []); // Call getStarted only once on mount
 
   useEffect(() => {
-    (async () => {
-      getStarted();
-    })();
-  }, []);
+    console.log("Results updated:", results);
+  }, [results]); // Handle results changes here
   console.log(results.length);
 
   const classer = () => {
@@ -408,1375 +411,1369 @@ const Results = () => {
     console.log("filter 3. " + results);
   };
 
-  if (results !== [] || results.length === 0) {
-    if (width < 800) {
-      return (
-        <>
-          <HomeMobile kids={kids} team={team} city={city} activity={activity} />
-          <div
-            key={activity}
-            style={{ width: "100%", display: "inline-block" }}
-          >
-            <div style={{ display: "flex" }}>
-              {" "}
-              <Modal
-                open={isVisible}
-                onOk={() => setIsVisible(false)}
-                //destroyOnClose={true}
-                onCancel={() => setIsVisible(false)}
-              >
-                <Form style={{ width: "100%", marginTop: "3%" }}>
-                  <h3
-                    style={{
-                      color: "grey",
-                      marginTop: "-1%",
-                      //marginLeft: "%",
-                      textDecoration: "underline",
-                    }}
-                  >
-                    Filtres
-                  </h3>
-                  <>
-                    <> </>
-                    <Form.Item
-                      label={
-                        <>
-                          <Icon
-                            style={{ width: "90%", height: "90%" }}
-                            component={() => (
-                              <img
-                                style={{
-                                  width: "90%",
-                                  height: "90%",
-                                  marginRight: "50%",
-                                }}
-                                src={euros}
-                              />
-                            )}
-                          />
-                          {"  Prix  "}
-                        </>
-                      }
-                    >
-                      <Slider
-                        range
-                        max={600}
-                        step={10}
-                        //style={{ color: "black" }}
-                        defaultValue={[0, 600]}
-                        onChange={(prix) => {
-                          prix_max.current = prix[0];
-                          prix_min.current = prix[1];
-                          filtering();
-                        }}
-                      />
-                    </Form.Item>
-                  </>
-
-                  <Form.Item
-                    name="seats"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={friends}
-                            />
-                          )}
-                        />
-                        {"  Places  "}
-                      </>
-                    }
-                  >
-                    <InputNumber
-                      defaultValue={1}
-                      style={{ width: "100%" }}
-                      onChange={(e) => {
-                        seats.current = e;
-                        filtering();
-                      }}
-                      min={0}
-                      max={1000}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="cascader_age"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={ageImage}
-                            />
-                          )}
-                        />
-                        {"  Age  "}
-                      </>
-                    }
-                  >
-                    <Cascader
-                      //defaultValue={"Tous les âges"}
-                      // value={this.state.input}
-                      onChange={(e) => {
-                        e !== undefined
-                          ? (filterAge.current = e[0])
-                          : (filterAge.current = "");
-                        filtering();
-                      }}
-                      //style={{ width: 300 }}
-                      options={age}
-                      placeholder="Sélectionner l'âge"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="cascader_level"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={levelImage}
-                            />
-                          )}
-                        />
-                        {"  Niveau  "}
-                      </>
-                    }
-                  >
-                    <Cascader
-                      defaultValue={""}
-                      onChange={(e) => {
-                        e !== undefined
-                          ? (level.current = e[0])
-                          : (level.current = "");
-                        filtering();
-                      }}
-                      // style={{ width: 300 }}
-                      options={options}
-                      placeholder="Sélectionner le niveau"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="switch_remote"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={locationImage}
-                            />
-                          )}
-                        />
-                        {"  En ligne  "}
-                      </>
-                    }
-                  >
-                    <Switch
-                      //defaultValue={true}
-                      onClick={() => {
-                        console.log("CLICK Remote");
-                        isRemote.current = !isRemote.current;
-                        console.log("remote   " + isRemote.current);
-                        filtering();
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="switch_handi"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={handi}
-                            />
-                          )}
-                        />
-                        {"  Handi-Accessible  "}
-                      </>
-                    }
-                  >
-                    <Switch
-                      //defaultValue={true}
-                      onClick={() => {
-                        console.log("CLICK handi accessible");
-                        accessible.current = !accessible.current;
-                        console.log("acces   " + accessible.current);
-                        filtering();
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="switch_free"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={free}
-                            />
-                          )}
-                        />
-                        {"  Gratuit  "}
-                      </>
-                    }
-                  >
-                    <Switch
-                      //defaultValue={true}
-                      onClick={() => {
-                        isFree.current = !isFree.current;
-                        console.log("free   " + isFree.current);
-                        filtering();
-                      }}
-                    />
-                  </Form.Item>
-                  {/*   <div style={{ width: "10%", height: "40%" }}>
-              {results.length > 0 ? (
-                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
-                  <Maps
-                    key={JSON.stringify(results.length)}
-                    locations={results}
-                  />
-                </LoadScript>
-              ) : null}
-            </div>*/}
-
-                  <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
-                    {results.length > 0 &&
-                    latCity.current !== 0 &&
-                    lonCity.current !== 0 ? (
-                      <Map
-                        key={JSON.stringify(results.length)}
-                        locations={results}
-                        centerLat={latCity.current}
-                        centerLong={lonCity.current}
-                        style={{ zIndex: "-1" }}
-                      />
-                    ) : null}
-                  </div>
-                </Form>
-              </Modal>
-              {width > 800 ? (
-                <Form
-                  style={{ width: "23%", marginTop: "3%", marginLeft: "10%" }}
+  if (width < 800) {
+    return (
+      <>
+        <HomeMobile kids={kids} team={team} city={city} activity={activity} />
+        <div key={activity} style={{ width: "100%", display: "inline-block" }}>
+          <div style={{ display: "flex" }}>
+            {" "}
+            <Modal
+              open={isVisible}
+              onOk={() => setIsVisible(false)}
+              //destroyOnClose={true}
+              onCancel={() => setIsVisible(false)}
+            >
+              <Form style={{ width: "100%", marginTop: "3%" }}>
+                <h3
+                  style={{
+                    color: "grey",
+                    marginTop: "-1%",
+                    //marginLeft: "%",
+                    textDecoration: "underline",
+                  }}
                 >
-                  <h3
-                    style={{
-                      color: "grey",
-                      marginTop: "-1%",
-                      //marginLeft: "%",
-                      textDecoration: "underline",
-                    }}
-                  >
-                    Filtres
-                  </h3>
-                  <>
-                    <> </>
-                    <Form.Item
-                      label={
-                        <>
-                          <Icon
-                            style={{ width: "90%", height: "90%" }}
-                            component={() => (
-                              <img
-                                style={{
-                                  width: "90%",
-                                  height: "90%",
-                                  marginRight: "50%",
-                                }}
-                                src={euros}
-                              />
-                            )}
-                          />
-                          {"  Prix  "}
-                        </>
-                      }
-                    >
-                      <Slider
-                        range
-                        max={600}
-                        step={10}
-                        //style={{ color: "black" }}
-                        defaultValue={[0, 600]}
-                        onChange={(prix) => {
-                          prix_max.current = prix[0];
-                          prix_min.current = prix[1];
-                          filtering();
-                        }}
-                      />
-                    </Form.Item>
-                  </>
-
-                  <Form.Item
-                    name="seats"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={friends}
-                            />
-                          )}
-                        />
-                        {"  Places  "}
-                      </>
-                    }
-                  >
-                    <InputNumber
-                      defaultValue={1}
-                      style={{ width: "100%" }}
-                      onChange={(e) => {
-                        seats.current = e;
-                        filtering();
-                      }}
-                      min={0}
-                      max={1000}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="cascader_age"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={ageImage}
-                            />
-                          )}
-                        />
-                        {"  Age  "}
-                      </>
-                    }
-                  >
-                    <Cascader
-                      //defaultValue={"Tous les âges"}
-                      // value={this.state.input}
-                      onChange={(e) => {
-                        e !== undefined
-                          ? (filterAge.current = e[0])
-                          : (filterAge.current = "");
-                        filtering();
-                      }}
-                      //style={{ width: 300 }}
-                      options={age}
-                      placeholder="Sélectionner l'âge"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="cascader_level"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={levelImage}
-                            />
-                          )}
-                        />
-                        {"  Niveau  "}
-                      </>
-                    }
-                  >
-                    <Cascader
-                      defaultValue={""}
-                      onChange={(e) => {
-                        e !== undefined
-                          ? (level.current = e[0])
-                          : (level.current = "");
-                        filtering();
-                      }}
-                      // style={{ width: 300 }}
-                      options={options}
-                      placeholder="Sélectionner le niveau"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="switch_remote"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={locationImage}
-                            />
-                          )}
-                        />
-                        {"  En ligne  "}
-                      </>
-                    }
-                  >
-                    <Switch
-                      //defaultValue={true}
-                      onClick={() => {
-                        console.log("CLICK Remote");
-                        isRemote.current = !isRemote.current;
-                        console.log("remote   " + isRemote.current);
-                        filtering();
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="switch_handi"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={handi}
-                            />
-                          )}
-                        />
-                        {"  Handi-Accessible  "}
-                      </>
-                    }
-                  >
-                    <Switch
-                      //defaultValue={true}
-                      onClick={() => {
-                        console.log("CLICK handi accessible");
-                        accessible.current = !accessible.current;
-                        console.log("acces   " + accessible.current);
-                        filtering();
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="switch_free"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={free}
-                            />
-                          )}
-                        />
-                        {"  Gratuit  "}
-                      </>
-                    }
-                  >
-                    <Switch
-                      //defaultValue={true}
-                      onClick={() => {
-                        isFree.current = !isFree.current;
-                        console.log("free   " + isFree.current);
-                        filtering();
-                      }}
-                    />
-                  </Form.Item>
-                  {/*   <div style={{ width: "10%", height: "40%" }}>
-              {results.length > 0 ? (
-                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
-                  <Maps
-                    key={JSON.stringify(results.length)}
-                    locations={results}
-                  />
-                </LoadScript>
-              ) : null}
-            </div>*/}
-                  <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
-                    {results.length > 0 &&
-                    latCity.current !== 0 &&
-                    lonCity.current !== 0 ? (
-                      <Map
-                        key={JSON.stringify(results.length)}
-                        locations={results}
-                        centerLat={latCity.current}
-                        centerLong={lonCity.current}
-                        style={{ zIndex: "-1" }}
-                      />
-                    ) : null}
-                  </div>
-                </Form>
-              ) : (
-                <></>
-              )}
-              <div
-                className="top"
-                style={{
-                  fontSize: "200%",
-                  width: width > 700 ? "70%" : "100%",
-                  // borderRightWidth: "thin",
-                }}
-              >
+                  Filtres
+                </h3>
                 <>
-                  {width < 700 ? (
-                    <Button
-                      onClick={() => {
-                        setIsVisible(!isVisible);
+                  <> </>
+                  <Form.Item
+                    label={
+                      <>
+                        <Icon
+                          style={{ width: "90%", height: "90%" }}
+                          component={() => (
+                            <img
+                              style={{
+                                width: "90%",
+                                height: "90%",
+                                marginRight: "50%",
+                              }}
+                              src={euros}
+                            />
+                          )}
+                        />
+                        {"  Prix  "}
+                      </>
+                    }
+                  >
+                    <Slider
+                      range
+                      max={600}
+                      step={10}
+                      //style={{ color: "black" }}
+                      defaultValue={[0, 600]}
+                      onChange={(prix) => {
+                        prix_max.current = prix[0];
+                        prix_min.current = prix[1];
+                        filtering();
                       }}
-                    >
-                      FILTRER
-                    </Button>
-                  ) : (
-                    <></>
-                  )}
+                    />
+                  </Form.Item>
+                </>
 
-                  <Cascader
-                    defaultValue={""}
-                    onChange={(e) => {
-                      e !== undefined
-                        ? (classt.current = e[0])
-                        : (classt.current = 0);
-                      classer();
-                    }}
-                    // style={{ width: 300 }}
-                    options={classement}
-                    placeholder="Trier"
-                  />
-                  <br />
-                  <br />
-                  {results === [] ? (
-                    <>Loading</>
-                  ) : (
-                    <div
-                      style={{ display: "inline", justifyContent: "center" }}
-                    >
-                      {results.map((res, i) => {
-                        return (
-                          <div
+                <Form.Item
+                  name="seats"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
                             style={{
                               width: "90%",
-                              margin: "3%",
+                              height: "90%",
+                              marginRight: "50%",
                             }}
-                          >
-                            <span
-                              style={
-                                {
-                                  //float: "left",
-                                }
-                              }
-                              key={res.id}
-                            >
-                              <a href={"/product/" + res.id}>
-                                <Card
-                                  key={"HEY" + res.id}
-                                  hoverable
-                                  style={{ border: "none", width: "100%" }}
-                                  cover={<img alt="example" src={res.img1} />}
-                                >
-                                  <Meta
-                                    id="button_giver"
-                                    style={{
-                                      marginTop: "-2%",
-                                      height: "160%",
-                                      border: "none",
-                                      //  width: "60%",
-                                    }}
-                                    title={res.title}
-                                    description={res.accroche}
-                                  />
-                                  <Meta
-                                    id="button_giver"
-                                    style={{
-                                      marginTop: "-2%",
-                                      height: "160%",
-                                      border: "none",
-                                      textDecoration: "none",
-                                    }}
-                                    title={
-                                      res.isDiscounted ? (
-                                        <>
-                                          <p
-                                            style={{
-                                              textDecoration: "line-through",
-                                            }}
-                                          >
-                                            {res.price + "€"}
-                                          </p>
-                                          <p>{res.discount + "€"}</p>{" "}
-                                        </>
-                                      ) : (
-                                        res.price + "€"
-                                      )
-                                    }
-                                    // description={}
-                                  />
-                                </Card>
-                              </a>
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </>
-              </div>
-            </div>
-          </div>
-          <Footer width={width} />{" "}
-        </>
-      );
-    }
-    if (width > 800) {
-      return (
-        <>
-          <MenuBrowser
-            width={width}
-            kids={kids}
-            team={team}
-            city={city}
-            datemax={datemax}
-            activity={activity}
-            style={{ zIndex: "2" }}
-          />
-          <div
-            key={activity}
-            style={{ width: "100%", display: "inline-block" }}
-          >
-            <div style={{ display: "flex" }}>
-              {" "}
-              <Modal
-                open={isVisible}
-                onOk={() => setIsVisible(false)}
-                //destroyOnClose={true}
-                onCancel={() => setIsVisible(false)}
-              >
-                <Form style={{ width: "100%", marginTop: "3%" }}>
-                  <h3
-                    style={{
-                      color: "grey",
-                      marginTop: "-1%",
-                      //marginLeft: "%",
-                      textDecoration: "underline",
-                    }}
-                  >
-                    Filtres
-                  </h3>
-                  <>
-                    <> </>
-                    <Form.Item
-                      label={
-                        <>
-                          <Icon
-                            style={{ width: "90%", height: "90%" }}
-                            component={() => (
-                              <img
-                                style={{
-                                  width: "90%",
-                                  height: "90%",
-                                  marginRight: "50%",
-                                }}
-                                src={euros}
-                              />
-                            )}
+                            src={friends}
                           />
-                          {"  Prix  "}
-                        </>
-                      }
-                    >
-                      <Slider
-                        range
-                        max={600}
-                        step={10}
-                        //style={{ color: "black" }}
-                        defaultValue={[0, 600]}
-                        onChange={(prix) => {
-                          prix_max.current = prix[0];
-                          prix_min.current = prix[1];
-                          filtering();
-                        }}
+                        )}
                       />
-                    </Form.Item>
-                  </>
-
-                  <Form.Item
-                    name="seats"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={friends}
-                            />
-                          )}
-                        />
-                        {"  Places  "}
-                      </>
-                    }
-                  >
-                    <InputNumber
-                      defaultValue={1}
-                      style={{ width: "100%" }}
-                      onChange={(e) => {
-                        seats.current = e;
-                        filtering();
-                      }}
-                      min={0}
-                      max={1000}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="cascader_age"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={ageImage}
-                            />
-                          )}
-                        />
-                        {"  Age  "}
-                      </>
-                    }
-                  >
-                    <Cascader
-                      //defaultValue={"Tous les âges"}
-                      // value={this.state.input}
-                      onChange={(e) => {
-                        e !== undefined
-                          ? (filterAge.current = e[0])
-                          : (filterAge.current = "");
-                        filtering();
-                      }}
-                      //style={{ width: 300 }}
-                      options={age}
-                      placeholder="Sélectionner l'âge"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="cascader_level"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={levelImage}
-                            />
-                          )}
-                        />
-                        {"  Niveau  "}
-                      </>
-                    }
-                  >
-                    <Cascader
-                      defaultValue={""}
-                      onChange={(e) => {
-                        e !== undefined
-                          ? (level.current = e[0])
-                          : (level.current = "");
-                        filtering();
-                      }}
-                      // style={{ width: 300 }}
-                      options={options}
-                      placeholder="Sélectionner le niveau"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="switch_remote"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={locationImage}
-                            />
-                          )}
-                        />
-                        {"  En ligne  "}
-                      </>
-                    }
-                  >
-                    <Switch
-                      //defaultValue={true}
-                      onClick={() => {
-                        console.log("CLICK Remote");
-                        isRemote.current = !isRemote.current;
-                        console.log("remote   " + isRemote.current);
-                        filtering();
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="switch_handi"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={handi}
-                            />
-                          )}
-                        />
-                        {"  Handi-Accessible  "}
-                      </>
-                    }
-                  >
-                    <Switch
-                      //defaultValue={true}
-                      onClick={() => {
-                        console.log("CLICK handi accessible");
-                        accessible.current = !accessible.current;
-                        console.log("acces   " + accessible.current);
-                        filtering();
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="switch_free"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={free}
-                            />
-                          )}
-                        />
-                        {"  Gratuit  "}
-                      </>
-                    }
-                  >
-                    <Switch
-                      //defaultValue={true}
-                      onClick={() => {
-                        isFree.current = !isFree.current;
-                        console.log("free   " + isFree.current);
-                        filtering();
-                      }}
-                    />
-                  </Form.Item>
-                  {/*   <div style={{ width: "10%", height: "40%" }}>
-              {results.length > 0 ? (
-                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
-                  <Maps
-                    key={JSON.stringify(results.length)}
-                    locations={results}
-                  />
-                </LoadScript>
-              ) : null}
-            </div>*/}
-
-                  <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
-                    {results.length > 0 &&
-                    latCity.current !== 0 &&
-                    lonCity.current !== 0 ? (
-                      <Map
-                        key={JSON.stringify(results.length)}
-                        locations={results}
-                        centerLat={latCity.current}
-                        centerLong={lonCity.current}
-                        style={{ zIndex: "-1" }}
-                      />
-                    ) : null}
-                  </div>
-                </Form>
-              </Modal>
-              {width > 800 ? (
-                <Form
-                  style={{ width: "23%", marginTop: "3%", marginLeft: "10%" }}
+                      {"  Places  "}
+                    </>
+                  }
                 >
-                  <h3
-                    style={{
-                      color: "grey",
-                      marginTop: "-1%",
-                      //marginLeft: "%",
-                      textDecoration: "underline",
+                  <InputNumber
+                    defaultValue={1}
+                    style={{ width: "100%" }}
+                    onChange={(e) => {
+                      seats.current = e;
+                      filtering();
                     }}
-                  >
-                    Filtres
-                  </h3>
-                  <>
-                    <> </>
-                    <Form.Item
-                      label={
-                        <>
-                          <Icon
-                            style={{ width: "90%", height: "90%" }}
-                            component={() => (
-                              <img
-                                style={{
-                                  width: "90%",
-                                  height: "90%",
-                                  marginRight: "50%",
-                                }}
-                                src={euros}
-                              />
-                            )}
-                          />
-                          {"  Prix  "}
-                        </>
-                      }
-                    >
-                      <Slider
-                        range
-                        max={600}
-                        step={10}
-                        //style={{ color: "black" }}
-                        defaultValue={[0, 600]}
-                        onChange={(prix) => {
-                          prix_max.current = prix[0];
-                          prix_min.current = prix[1];
-                          filtering();
-                        }}
-                      />
-                    </Form.Item>
-                  </>
-
-                  <Form.Item
-                    name="seats"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={friends}
-                            />
-                          )}
-                        />
-                        {"  Places  "}
-                      </>
-                    }
-                  >
-                    <InputNumber
-                      defaultValue={1}
-                      style={{ width: "100%" }}
-                      onChange={(e) => {
-                        seats.current = e;
-                        filtering();
-                      }}
-                      min={0}
-                      max={1000}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="cascader_age"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={ageImage}
-                            />
-                          )}
-                        />
-                        {"  Age  "}
-                      </>
-                    }
-                  >
-                    <Cascader
-                      //defaultValue={"Tous les âges"}
-                      // value={this.state.input}
-                      onChange={(e) => {
-                        e !== undefined
-                          ? (filterAge.current = e[0])
-                          : (filterAge.current = "");
-                        filtering();
-                      }}
-                      //style={{ width: 300 }}
-                      options={age}
-                      placeholder="Sélectionner l'âge"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="cascader_level"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={levelImage}
-                            />
-                          )}
-                        />
-                        {"  Niveau  "}
-                      </>
-                    }
-                  >
-                    <Cascader
-                      defaultValue={""}
-                      onChange={(e) => {
-                        e !== undefined
-                          ? (level.current = e[0])
-                          : (level.current = "");
-                        filtering();
-                      }}
-                      // style={{ width: 300 }}
-                      options={options}
-                      placeholder="Sélectionner le niveau"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="switch_remote"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={locationImage}
-                            />
-                          )}
-                        />
-                        {"  En ligne  "}
-                      </>
-                    }
-                  >
-                    <Switch
-                      //defaultValue={true}
-                      onClick={() => {
-                        console.log("CLICK Remote");
-                        isRemote.current = !isRemote.current;
-                        console.log("remote   " + isRemote.current);
-                        filtering();
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="switch_handi"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={handi}
-                            />
-                          )}
-                        />
-                        {"  Handi-Accessible  "}
-                      </>
-                    }
-                  >
-                    <Switch
-                      //defaultValue={true}
-                      onClick={() => {
-                        console.log("CLICK handi accessible");
-                        accessible.current = !accessible.current;
-                        console.log("acces   " + accessible.current);
-                        filtering();
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="switch_free"
-                    label={
-                      <>
-                        <Icon
-                          style={{ width: "90%", height: "90%" }}
-                          component={() => (
-                            <img
-                              style={{
-                                width: "90%",
-                                height: "90%",
-                                marginRight: "50%",
-                              }}
-                              src={free}
-                            />
-                          )}
-                        />
-                        {"  Gratuit  "}
-                      </>
-                    }
-                  >
-                    <Switch
-                      //defaultValue={true}
-                      onClick={() => {
-                        isFree.current = !isFree.current;
-                        console.log("free   " + isFree.current);
-                        filtering();
-                      }}
-                    />
-                  </Form.Item>
-                  {/*   <div style={{ width: "10%", height: "40%" }}>
-              {results.length > 0 ? (
-                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
-                  <Maps
-                    key={JSON.stringify(results.length)}
-                    locations={results}
+                    min={0}
+                    max={1000}
                   />
-                </LoadScript>
-              ) : null}
-            </div>*/}
-                  <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
-                    {results.length > 0 &&
-                    latCity.current !== 0 &&
-                    lonCity.current !== 0 ? (
-                      <Map
-                        key={JSON.stringify(results.length)}
-                        locations={results}
-                        centerLat={latCity.current}
-                        centerLong={lonCity.current}
-                        style={{ zIndex: "-1" }}
-                      />
-                    ) : null}
-                  </div>
-                </Form>
-              ) : (
-                <></>
-              )}
-              <div
-                className="top"
-                style={{
-                  fontSize: "200%",
-                  width: width > 700 ? "70%" : "100%",
-                  // borderRightWidth: "thin",
-                }}
-              >
-                <>
-                  {width < 700 ? (
-                    <Button
-                      onClick={() => {
-                        setIsVisible(!isVisible);
-                      }}
-                    >
-                      TRIER
-                    </Button>
-                  ) : (
-                    <></>
-                  )}
+                </Form.Item>
 
+                <Form.Item
+                  name="cascader_age"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={ageImage}
+                          />
+                        )}
+                      />
+                      {"  Age  "}
+                    </>
+                  }
+                >
+                  <Cascader
+                    //defaultValue={"Tous les âges"}
+                    // value={this.state.input}
+                    onChange={(e) => {
+                      e !== undefined
+                        ? (filterAge.current = e[0])
+                        : (filterAge.current = "");
+                      filtering();
+                    }}
+                    //style={{ width: 300 }}
+                    options={age}
+                    placeholder="Sélectionner l'âge"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="cascader_level"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={levelImage}
+                          />
+                        )}
+                      />
+                      {"  Niveau  "}
+                    </>
+                  }
+                >
                   <Cascader
                     defaultValue={""}
                     onChange={(e) => {
                       e !== undefined
-                        ? (classt.current = e[0])
-                        : (classt.current = 0);
-                      classer();
+                        ? (level.current = e[0])
+                        : (level.current = "");
+                      filtering();
                     }}
                     // style={{ width: 300 }}
-                    options={classement}
-                    placeholder="Trier"
+                    options={options}
+                    placeholder="Sélectionner le niveau"
                   />
-                  <br />
-                  <br />
-                  {results === [] ? (
-                    <>Loading</>
-                  ) : (
-                    <div
-                      style={{
-                        display: "flex",
-                        width: "80%",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      {results.map((res, i) => {
-                        return (
-                          <div
+                </Form.Item>
+                <Form.Item
+                  name="switch_remote"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
                             style={{
-                              width: "40%",
-                              margin: "3%",
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
                             }}
-                          >
-                            <span
-                              style={
-                                {
-                                  //float: "left",
-                                }
-                              }
-                              key={res.id}
-                            >
-                              <a href={"/product/" + res.id}>
-                                <Card
-                                  key={"HEY" + res.id}
-                                  hoverable
-                                  style={{ border: "none", width: "100%" }}
-                                  cover={<img alt="example" src={res.img1} />}
-                                >
-                                  <Meta
-                                    id="button_giver"
-                                    style={{
-                                      marginTop: "-2%",
-                                      height: "160%",
-                                      border: "none",
-                                      //  width: "60%",
-                                    }}
-                                    title={res.title}
-                                    description={res.accroche}
-                                  />
-                                  <Meta
-                                    id="button_giver"
-                                    style={{
-                                      marginTop: "-2%",
-                                      height: "160%",
-                                      border: "none",
-                                      textDecoration: "none",
-                                    }}
-                                    title={
-                                      res.isDiscounted ? (
-                                        <>
-                                          <p
-                                            style={{
-                                              textDecoration: "line-through",
-                                            }}
-                                          >
-                                            {res.price + "€"}
-                                          </p>
-                                          <p>{res.discount + "€"}</p>{" "}
-                                        </>
-                                      ) : (
-                                        res.price + "€"
-                                      )
-                                    }
-                                    // description={}
-                                  />
-                                </Card>
-                              </a>
-                            </span>
-                          </div>
-                        );
-                      })}
+                            src={locationImage}
+                          />
+                        )}
+                      />
+                      {"  En ligne  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      console.log("CLICK Remote");
+                      isRemote.current = !isRemote.current;
+                      console.log("remote   " + isRemote.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="switch_handi"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={handi}
+                          />
+                        )}
+                      />
+                      {"  Handi-Accessible  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      console.log("CLICK handi accessible");
+                      accessible.current = !accessible.current;
+                      console.log("acces   " + accessible.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="switch_free"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={free}
+                          />
+                        )}
+                      />
+                      {"  Gratuit  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      isFree.current = !isFree.current;
+                      console.log("free   " + isFree.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+                {/*
+                    <div style={{ width: "10%", height: "40%" }}>
+                      {results.length > 0 ? (
+                        <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
+                          <Maps
+                            key={JSON.stringify(results.length)}
+                            locations={results}
+                          />
+                        </LoadScript>
+                      ) : null}
                     </div>
-                  )}
+                    */}
+
+                <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
+                  {results.length > 0 &&
+                  latCity.current !== null &&
+                  lonCity.current !== null ? (
+                    <Map
+                      key={JSON.stringify(results.length)}
+                      locations={results}
+                      centerLat={latCity.current}
+                      centerLong={lonCity.current}
+                      style={{ zIndex: "-1" }}
+                    />
+                  ) : null}
+                </div>
+              </Form>
+            </Modal>
+            {width > 800 ? (
+              <Form
+                style={{ width: "23%", marginTop: "3%", marginLeft: "10%" }}
+              >
+                <h3
+                  style={{
+                    color: "grey",
+                    marginTop: "-1%",
+                    //marginLeft: "%",
+                    textDecoration: "underline",
+                  }}
+                >
+                  Filtres
+                </h3>
+                <>
+                  <> </>
+                  <Form.Item
+                    label={
+                      <>
+                        <Icon
+                          style={{ width: "90%", height: "90%" }}
+                          component={() => (
+                            <img
+                              style={{
+                                width: "90%",
+                                height: "90%",
+                                marginRight: "50%",
+                              }}
+                              src={euros}
+                            />
+                          )}
+                        />
+                        {"  Prix  "}
+                      </>
+                    }
+                  >
+                    <Slider
+                      range
+                      max={600}
+                      step={10}
+                      //style={{ color: "black" }}
+                      defaultValue={[0, 600]}
+                      onChange={(prix) => {
+                        prix_max.current = prix[0];
+                        prix_min.current = prix[1];
+                        filtering();
+                      }}
+                    />
+                  </Form.Item>
                 </>
-              </div>
+
+                <Form.Item
+                  name="seats"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={friends}
+                          />
+                        )}
+                      />
+                      {"  Places  "}
+                    </>
+                  }
+                >
+                  <InputNumber
+                    defaultValue={1}
+                    style={{ width: "100%" }}
+                    onChange={(e) => {
+                      seats.current = e;
+                      filtering();
+                    }}
+                    min={0}
+                    max={1000}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="cascader_age"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={ageImage}
+                          />
+                        )}
+                      />
+                      {"  Age  "}
+                    </>
+                  }
+                >
+                  <Cascader
+                    //defaultValue={"Tous les âges"}
+                    // value={this.state.input}
+                    onChange={(e) => {
+                      e !== undefined
+                        ? (filterAge.current = e[0])
+                        : (filterAge.current = "");
+                      filtering();
+                    }}
+                    //style={{ width: 300 }}
+                    options={age}
+                    placeholder="Sélectionner l'âge"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="cascader_level"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={levelImage}
+                          />
+                        )}
+                      />
+                      {"  Niveau  "}
+                    </>
+                  }
+                >
+                  <Cascader
+                    defaultValue={""}
+                    onChange={(e) => {
+                      e !== undefined
+                        ? (level.current = e[0])
+                        : (level.current = "");
+                      filtering();
+                    }}
+                    // style={{ width: 300 }}
+                    options={options}
+                    placeholder="Sélectionner le niveau"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="switch_remote"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={locationImage}
+                          />
+                        )}
+                      />
+                      {"  En ligne  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      console.log("CLICK Remote");
+                      isRemote.current = !isRemote.current;
+                      console.log("remote   " + isRemote.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="switch_handi"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={handi}
+                          />
+                        )}
+                      />
+                      {"  Handi-Accessible  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      console.log("CLICK handi accessible");
+                      accessible.current = !accessible.current;
+                      console.log("acces   " + accessible.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="switch_free"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={free}
+                          />
+                        )}
+                      />
+                      {"  Gratuit  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      isFree.current = !isFree.current;
+                      console.log("free   " + isFree.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+                {/*   <div style={{ width: "10%", height: "40%" }}>
+              {results.length > 0 ? (
+                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
+                  <Maps
+                    key={JSON.stringify(results.length)}
+                    locations={results}
+                  />
+                </LoadScript>
+              ) : null}
+            </div>*/}
+                <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
+                  {results.length > 0 &&
+                  latCity.current !== 0 &&
+                  lonCity.current !== 0 ? (
+                    <Map
+                      key={JSON.stringify(results.length)}
+                      locations={results}
+                      centerLat={latCity.current}
+                      centerLong={lonCity.current}
+                      style={{ zIndex: "-1" }}
+                    />
+                  ) : null}
+                </div>
+              </Form>
+            ) : (
+              <></>
+            )}
+            <div
+              className="top"
+              style={{
+                fontSize: "200%",
+                width: width > 700 ? "70%" : "100%",
+                // borderRightWidth: "thin",
+              }}
+            >
+              <>
+                {width < 700 ? (
+                  <Button
+                    onClick={() => {
+                      setIsVisible(!isVisible);
+                    }}
+                  >
+                    FILTRER
+                  </Button>
+                ) : (
+                  <></>
+                )}
+
+                <Cascader
+                  defaultValue={""}
+                  onChange={(e) => {
+                    e !== undefined
+                      ? (classt.current = e[0])
+                      : (classt.current = 0);
+                    classer();
+                  }}
+                  // style={{ width: 300 }}
+                  options={classement}
+                  placeholder="Trier"
+                />
+                <br />
+                <br />
+                {results.length < 1 ? (
+                  <>Loading</>
+                ) : (
+                  <div style={{ display: "inline", justifyContent: "center" }}>
+                    {results.map((res, i) => {
+                      return (
+                        <div
+                          style={{
+                            width: "90%",
+                            margin: "3%",
+                          }}
+                        >
+                          <span
+                            style={
+                              {
+                                //float: "left",
+                              }
+                            }
+                            key={res.id}
+                          >
+                            <a href={"/product/" + res.id}>
+                              <Card
+                                key={"HEY" + res.id}
+                                hoverable
+                                style={{ border: "none", width: "100%" }}
+                                cover={<img alt="example" src={res.img1} />}
+                              >
+                                <Meta
+                                  id="button_giver"
+                                  style={{
+                                    marginTop: "-2%",
+                                    height: "160%",
+                                    border: "none",
+                                    //  width: "60%",
+                                  }}
+                                  title={res.title}
+                                  description={res.accroche}
+                                />
+                                <Meta
+                                  id="button_giver"
+                                  style={{
+                                    marginTop: "-2%",
+                                    height: "160%",
+                                    border: "none",
+                                    textDecoration: "none",
+                                  }}
+                                  title={
+                                    res.isDiscounted ? (
+                                      <>
+                                        <p
+                                          style={{
+                                            textDecoration: "line-through",
+                                          }}
+                                        >
+                                          {res.price + "€"}
+                                        </p>
+                                        <p>{res.discount + "€"}</p>{" "}
+                                      </>
+                                    ) : (
+                                      res.price + "€"
+                                    )
+                                  }
+                                  // description={}
+                                />
+                              </Card>
+                            </a>
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
             </div>
           </div>
-          <Footer width={width} />{" "}
-        </>
-      );
-    }
-  } else {
+        </div>
+        <Footer width={width} />{" "}
+      </>
+    );
+  }
+  if (width > 800) {
+    return (
+      <>
+        <MenuBrowser
+          width={width}
+          kids={kids}
+          team={team}
+          city={city}
+          datemax={datemax}
+          activity={activity}
+          style={{ zIndex: "2" }}
+        />
+        <div key={activity} style={{ width: "100%", display: "inline-block" }}>
+          <div style={{ display: "flex" }}>
+            {" "}
+            <Modal
+              open={isVisible}
+              onOk={() => setIsVisible(false)}
+              //destroyOnClose={true}
+              onCancel={() => setIsVisible(false)}
+            >
+              <Form style={{ width: "100%", marginTop: "3%" }}>
+                <h3
+                  style={{
+                    color: "grey",
+                    marginTop: "-1%",
+                    //marginLeft: "%",
+                    textDecoration: "underline",
+                  }}
+                >
+                  Filtres
+                </h3>
+                <>
+                  <> </>
+                  <Form.Item
+                    label={
+                      <>
+                        <Icon
+                          style={{ width: "90%", height: "90%" }}
+                          component={() => (
+                            <img
+                              style={{
+                                width: "90%",
+                                height: "90%",
+                                marginRight: "50%",
+                              }}
+                              src={euros}
+                            />
+                          )}
+                        />
+                        {"  Prix  "}
+                      </>
+                    }
+                  >
+                    <Slider
+                      range
+                      max={600}
+                      step={10}
+                      //style={{ color: "black" }}
+                      defaultValue={[0, 600]}
+                      onChange={(prix) => {
+                        prix_max.current = prix[0];
+                        prix_min.current = prix[1];
+                        filtering();
+                      }}
+                    />
+                  </Form.Item>
+                </>
+
+                <Form.Item
+                  name="seats"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={friends}
+                          />
+                        )}
+                      />
+                      {"  Places  "}
+                    </>
+                  }
+                >
+                  <InputNumber
+                    defaultValue={1}
+                    style={{ width: "100%" }}
+                    onChange={(e) => {
+                      seats.current = e;
+                      filtering();
+                    }}
+                    min={0}
+                    max={1000}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="cascader_age"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={ageImage}
+                          />
+                        )}
+                      />
+                      {"  Age  "}
+                    </>
+                  }
+                >
+                  <Cascader
+                    //defaultValue={"Tous les âges"}
+                    // value={this.state.input}
+                    onChange={(e) => {
+                      e !== undefined
+                        ? (filterAge.current = e[0])
+                        : (filterAge.current = "");
+                      filtering();
+                    }}
+                    //style={{ width: 300 }}
+                    options={age}
+                    placeholder="Sélectionner l'âge"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="cascader_level"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={levelImage}
+                          />
+                        )}
+                      />
+                      {"  Niveau  "}
+                    </>
+                  }
+                >
+                  <Cascader
+                    defaultValue={""}
+                    onChange={(e) => {
+                      e !== undefined
+                        ? (level.current = e[0])
+                        : (level.current = "");
+                      filtering();
+                    }}
+                    // style={{ width: 300 }}
+                    options={options}
+                    placeholder="Sélectionner le niveau"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="switch_remote"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={locationImage}
+                          />
+                        )}
+                      />
+                      {"  En ligne  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      console.log("CLICK Remote");
+                      isRemote.current = !isRemote.current;
+                      console.log("remote   " + isRemote.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="switch_handi"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={handi}
+                          />
+                        )}
+                      />
+                      {"  Handi-Accessible  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      console.log("CLICK handi accessible");
+                      accessible.current = !accessible.current;
+                      console.log("acces   " + accessible.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="switch_free"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={free}
+                          />
+                        )}
+                      />
+                      {"  Gratuit  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      isFree.current = !isFree.current;
+                      console.log("free   " + isFree.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+                {/*   <div style={{ width: "10%", height: "40%" }}>
+              {results.length > 0 ? (
+                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
+                  <Maps
+                    key={JSON.stringify(results.length)}
+                    locations={results}
+                  />
+                </LoadScript>
+              ) : null}
+            </div>*/}
+
+                <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
+                  {results.length > 0 &&
+                  latCity.current !== 0 &&
+                  lonCity.current !== 0 ? (
+                    <Map
+                      key={JSON.stringify(results.length)}
+                      locations={results}
+                      centerLat={latCity.current}
+                      centerLong={lonCity.current}
+                      style={{ zIndex: "-1" }}
+                    />
+                  ) : null}
+                </div>
+              </Form>
+            </Modal>
+            {width > 800 ? (
+              <Form
+                style={{ width: "23%", marginTop: "3%", marginLeft: "10%" }}
+              >
+                <h3
+                  style={{
+                    color: "grey",
+                    marginTop: "-1%",
+                    //marginLeft: "%",
+                    textDecoration: "underline",
+                  }}
+                >
+                  Filtres
+                </h3>
+                <>
+                  <> </>
+                  <Form.Item
+                    label={
+                      <>
+                        <Icon
+                          style={{ width: "90%", height: "90%" }}
+                          component={() => (
+                            <img
+                              style={{
+                                width: "90%",
+                                height: "90%",
+                                marginRight: "50%",
+                              }}
+                              src={euros}
+                            />
+                          )}
+                        />
+                        {"  Prix  "}
+                      </>
+                    }
+                  >
+                    <Slider
+                      range
+                      max={600}
+                      step={10}
+                      //style={{ color: "black" }}
+                      defaultValue={[0, 600]}
+                      onChange={(prix) => {
+                        prix_max.current = prix[0];
+                        prix_min.current = prix[1];
+                        filtering();
+                      }}
+                    />
+                  </Form.Item>
+                </>
+
+                <Form.Item
+                  name="seats"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={friends}
+                          />
+                        )}
+                      />
+                      {"  Places  "}
+                    </>
+                  }
+                >
+                  <InputNumber
+                    defaultValue={1}
+                    style={{ width: "100%" }}
+                    onChange={(e) => {
+                      seats.current = e;
+                      filtering();
+                    }}
+                    min={0}
+                    max={1000}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="cascader_age"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={ageImage}
+                          />
+                        )}
+                      />
+                      {"  Age  "}
+                    </>
+                  }
+                >
+                  <Cascader
+                    //defaultValue={"Tous les âges"}
+                    // value={this.state.input}
+                    onChange={(e) => {
+                      e !== undefined
+                        ? (filterAge.current = e[0])
+                        : (filterAge.current = "");
+                      filtering();
+                    }}
+                    //style={{ width: 300 }}
+                    options={age}
+                    placeholder="Sélectionner l'âge"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="cascader_level"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={levelImage}
+                          />
+                        )}
+                      />
+                      {"  Niveau  "}
+                    </>
+                  }
+                >
+                  <Cascader
+                    defaultValue={""}
+                    onChange={(e) => {
+                      e !== undefined
+                        ? (level.current = e[0])
+                        : (level.current = "");
+                      filtering();
+                    }}
+                    // style={{ width: 300 }}
+                    options={options}
+                    placeholder="Sélectionner le niveau"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="switch_remote"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={locationImage}
+                          />
+                        )}
+                      />
+                      {"  En ligne  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      console.log("CLICK Remote");
+                      isRemote.current = !isRemote.current;
+                      console.log("remote   " + isRemote.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="switch_handi"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={handi}
+                          />
+                        )}
+                      />
+                      {"  Handi-Accessible  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      console.log("CLICK handi accessible");
+                      accessible.current = !accessible.current;
+                      console.log("acces   " + accessible.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="switch_free"
+                  label={
+                    <>
+                      <Icon
+                        style={{ width: "90%", height: "90%" }}
+                        component={() => (
+                          <img
+                            style={{
+                              width: "90%",
+                              height: "90%",
+                              marginRight: "50%",
+                            }}
+                            src={free}
+                          />
+                        )}
+                      />
+                      {"  Gratuit  "}
+                    </>
+                  }
+                >
+                  <Switch
+                    //defaultValue={true}
+                    onClick={() => {
+                      isFree.current = !isFree.current;
+                      console.log("free   " + isFree.current);
+                      filtering();
+                    }}
+                  />
+                </Form.Item>
+                {/*   <div style={{ width: "10%", height: "40%" }}>
+              {results.length > 0 ? (
+                <LoadScript googleMapsApiKey="AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4">
+                  <Maps
+                    key={JSON.stringify(results.length)}
+                    locations={results}
+                  />
+                </LoadScript>
+              ) : null}
+            </div>*/}
+                <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
+                  {results.length > 0 &&
+                  latCity.current !== 0 &&
+                  lonCity.current !== 0 ? (
+                    <Map
+                      key={JSON.stringify(results.length)}
+                      locations={results}
+                      centerLat={latCity.current}
+                      centerLong={lonCity.current}
+                      style={{ zIndex: "-1" }}
+                    />
+                  ) : null}
+                </div>
+              </Form>
+            ) : (
+              <></>
+            )}
+            <div
+              className="top"
+              style={{
+                fontSize: "200%",
+                width: width > 700 ? "70%" : "100%",
+                // borderRightWidth: "thin",
+              }}
+            >
+              <>
+                {width < 700 ? (
+                  <Button
+                    onClick={() => {
+                      setIsVisible(!isVisible);
+                    }}
+                  >
+                    TRIER
+                  </Button>
+                ) : (
+                  <></>
+                )}
+
+                <Cascader
+                  defaultValue={""}
+                  onChange={(e) => {
+                    e !== undefined
+                      ? (classt.current = e[0])
+                      : (classt.current = 0);
+                    classer();
+                  }}
+                  // style={{ width: 300 }}
+                  options={classement}
+                  placeholder="Trier"
+                />
+                <br />
+                <br />
+                {results.length < 1 ? (
+                  <>Loading</>
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      width: "80%",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {results.map((res, i) => {
+                      return (
+                        <div
+                          style={{
+                            width: "40%",
+                            margin: "3%",
+                          }}
+                        >
+                          <span
+                            style={
+                              {
+                                //float: "left",
+                              }
+                            }
+                            key={res.id}
+                          >
+                            <a href={"/product/" + res.id}>
+                              <Card
+                                key={"HEY" + res.id}
+                                hoverable
+                                style={{ border: "none", width: "100%" }}
+                                cover={<img alt="example" src={res.img1} />}
+                              >
+                                <Meta
+                                  id="button_giver"
+                                  style={{
+                                    marginTop: "-2%",
+                                    height: "160%",
+                                    border: "none",
+                                    //  width: "60%",
+                                  }}
+                                  title={res.title}
+                                  description={res.accroche}
+                                />
+                                <Meta
+                                  id="button_giver"
+                                  style={{
+                                    marginTop: "-2%",
+                                    height: "160%",
+                                    border: "none",
+                                    textDecoration: "none",
+                                  }}
+                                  title={
+                                    res.isDiscounted ? (
+                                      <>
+                                        <p
+                                          style={{
+                                            textDecoration: "line-through",
+                                          }}
+                                        >
+                                          {res.price + "€"}
+                                        </p>
+                                        <p>{res.discount + "€"}</p>{" "}
+                                      </>
+                                    ) : (
+                                      res.price + "€"
+                                    )
+                                  }
+                                  // description={}
+                                />
+                              </Card>
+                            </a>
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            </div>
+          </div>
+        </div>
+        <Footer width={width} />{" "}
+      </>
+    );
+  }
+  if (results.length === 0) {
     return <>Loading</>;
   }
 };
+
 export default Results;

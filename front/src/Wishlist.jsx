@@ -5,7 +5,7 @@ import MenuBrowser from "./MenuBrowser";
 
 import axios from "axios";
 import Footer from "./Footer";
-import queryString from "query-string";
+
 const Wishlist = (props) => {
   const [results, setResults] = useState([]);
   const [cubId, setCubId] = useState(null);
@@ -35,7 +35,7 @@ const Wishlist = (props) => {
           marginRight: "10%",
         }}
       >
-        {props.results === [] ? (
+        {results.length < 1 ? (
           <>Pas de favoris sauvegardés</>
         ) : (
           <>

@@ -1,16 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
-
+import { Input, Tooltip } from "antd";
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useNavigate, withRouter } from "react-router-dom";
 import { BrowserView, MobileView } from "react-device-detect";
-import { GoogleMap, MarkerF, LoadScript } from "@react-google-maps/api";
-import {
-  CheckCircleTwoTone,
-  HeartTwoTone,
-  SmileTwoTone,
-} from "@ant-design/icons";
-import Geocode from "react-geocode";
+
+import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
+
 import Map from "./Map"; // import the map here
 import euros from "./euros.png";
 
@@ -25,19 +21,17 @@ import {
   Breadcrumb,
   InputNumber,
   Image,
-  Input,
   Switch,
   Button,
 } from "antd";
 import dancee from "./star.png";
-import gift from "./giftCard.png";
+import gift from "./giftCard.jpg";
 import dayjs from "dayjs";
 
 import MenuBrowser from "./MenuBrowser";
 
 import axios from "axios";
 import Footer from "./Footer";
-import queryString from "query-string";
 import { filter } from "lodash";
 import MenuMobile from "./MenuMobile";
 
@@ -49,6 +43,12 @@ const GiftCard = () => {
 
   const [key, setKey] = useState(uuid.v4());
   const [quant, setQuant] = useState(1);
+  const [cart, setCart] = useState(0);
+  const addTotalQuantity = (e) => {
+    console.log(e);
+    setCart(e);
+  };
+
   function updateSize() {
     setWidth(window.innerWidth);
   }
@@ -139,32 +139,42 @@ const GiftCard = () => {
     });
     let itemsOrdered = refactorizedData(items, init_cart);
     localStorage.setItem("cart", JSON.stringify(itemsOrdered));
+    let tot = 0;
+
+    // let itemsOrdered = refactorizedData();
+
+    itemsOrdered.forEach(({ seats }) => {
+      tot += seats;
+    });
+    localStorage.setItem("totalQuantity", JSON.stringify(tot));
+
+    addTotalQuantity(tot);
   };
   return (
-    <div>
+    <div style={{}}>
       <>
         {width < 800 ? (
-          <>
+          <div>
             <MenuMobile />
-          </>
+          </div>
         ) : (
           <BrowserView>
             <MenuBrowser width={width} />
           </BrowserView>
         )}{" "}
       </>
-      <Card
-        className="product_card"
-        style={{ width: "40%", left: "12%" }}
-        cover={
-          <Image
-            preview={false}
-            style={{ width: "100%", height: "30%" }}
-            src={gift}
-          />
-        }
-      ></Card>
-      <Form style={{ width: "23%", marginTop: "3%", marginLeft: "10%" }}>
+      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+        <Image
+          preview={false}
+          style={{
+            // width: "50%",
+            display: "flex",
+            justifyContent: "center",
+          }}
+          src={gift}
+        />
+      </div>
+      <Form style={{ width: "23%", marginTop: "3%", marginLeft: "27%" }}>
         <Form.Item label={<>{"  Prix  "}</>}>
           <InputNumber
             onChange={(e) => {
@@ -173,9 +183,9 @@ const GiftCard = () => {
               const id = uuid.v4();
               setKey(id);
             }}
-            defaultValue={1}
+            defaultValue={20}
             style={{ width: "100%" }}
-            min={0}
+            min={20}
             max={1000}
           />
         </Form.Item>

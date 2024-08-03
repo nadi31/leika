@@ -31,7 +31,6 @@ import {
   AutoComplete,
   message,
 } from "antd";
-import { isBreakOrContinueStatement, parseJsonText } from "typescript";
 import dayjs from "dayjs";
 const CoursesCheck = () => {
   const toggle = () => {
@@ -537,7 +536,7 @@ const CoursesCheck = () => {
     //await ().then(async () => {
 
     getItNow();
-  }, []);
+  }, [getItNow]);
   const convert = (input) => {
     if (input) {
       return "True";

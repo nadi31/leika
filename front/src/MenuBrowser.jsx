@@ -1,31 +1,21 @@
 import React, {
   useState,
-  useLayoutEffect,
+  useSyncExternalStore,
   useCallback,
   useEffect,
   useRef,
 } from "react";
 import axios from "axios";
 
+import Autocomplete, { usePlacesWidget } from "react-google-autocomplete";
+
 import locale from "antd/es/date-picker/locale/fr_FR";
-import { ConfigProvider } from "antd";
+
 //import frFR from "antd/lib/locale-provider/fr_FR";
 import Menu2 from "./Menu2";
 import MenuKids2 from "./MenuKids2";
 import MenuTeamBuilding from "./MenuTeam2";
 
-import board from "./board.png";
-import drill from "./drill.png";
-import eiffel from "./eiffel.png";
-import museum from "./museum.png";
-import noodles from "./noodles.png";
-import sculpture from "./sculpture.png";
-import sewing from "./sewing.png";
-import spa from "./spa.png";
-import sport from "./sport.png";
-import theatre from "./theatre.png";
-import duo from "./duo.png";
-import team from "./team.png";
 import gift from "./gift.png";
 import {
   RocketOutlined,
@@ -37,8 +27,9 @@ import { browserHistory } from "react-router";
 import Icon from "@ant-design/icons";
 import { BrowserView, MobileView } from "react-device-detect";
 import {
-  Card,
-  Tabs,
+  Avatar,
+  Badge,
+  Space,
   Menu,
   Breadcrumb,
   Tag,
@@ -73,13 +64,16 @@ import kidIcon from "./kids.png";
 //import Form from "antd/lib/form/Form";
 import Results from "./Results";
 import { typeOf } from "react-responsive";
-import { isBreakOrContinueStatement, nodeModuleNameResolver } from "typescript";
+
 import dayjs from "dayjs";
 import MenuMobile from "./MenuMobile";
 
 //Panier shopping
 
 const MenuBrowser = (props) => {
+  const inputRef = useRef(null);
+  const antInputRef = useRef(null);
+  const [data, setData] = useState([]);
   const [categoryFinale, setCategoryFinale] = useState(null);
   const [kids, setKids] = useState(false);
   const [team, setTeam] = useState(false);
@@ -106,6 +100,37 @@ const MenuBrowser = (props) => {
   const [menuSports, setMenuSports] = useState(false);
   const [menuTheatre, setMenuTheatre] = useState(false);
   const [menuLanguage, setMenuLanguage] = useState(false);
+  const [totalQuantity, setTotalQuantity] = useState(0);
+  const [city, setCity] = useState("");
+  const antRef = useRef(null);
+  /*const { ref: antRef } = usePlacesWidget({
+    apiKey: "AIzaSyDNvRrdKaNa67E4OFRsZGsmrbpqsQLUAUM",
+    defaultValue: "Paris",
+    onPlaceSelected: (place) => {
+      console.log(place.formatted_address);
+      setCity(place.formatted_address);
+    },
+
+    options: {
+      types: ["(regions)"],
+      componentRestrictions: { country: "fr" },
+    },
+  });*/
+  const handleChange = (event) => {
+    const inputValue = event.target.value;
+    if (inputValue && event.nativeEvent.inputType === "insertText") {
+      console.log("Input value:", inputValue);
+    }
+  };
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      console.log("Enter key pressed");
+
+      setCity(event.target.value);
+      handleSubmit(event.target.value, null);
+    }
+  };
+
   useEffect(() => {
     console.log("Activité " + dayjs(props.date_max).format("DD/MM/YYYY"));
     setKids(props.kids);
@@ -124,7 +149,24 @@ const MenuBrowser = (props) => {
     setCity(props.city);
     setDatemax(props.date_max);
     setActivity(acti);
+    setData(JSON.parse(localStorage.getItem("cart") || "[]"));
+    setTotalQuantity(JSON.parse(localStorage.getItem("totalQuantity") || 0));
+    const storageEventHandler = () => {
+      let tot = 0;
+      console.log("hi from storageEventHandler from the MenuBrowser");
+      // let itemsOrdered = refactorizedData();
+      const storedData = JSON.parse(localStorage.getItem("cart") || "[]");
+      setData(storedData);
+      storedData.forEach(({ seats }) => {
+        tot += seats;
+      });
+
+      setTotalQuantity(tot);
+      localStorage.setItem("totalQuantity", JSON.stringify(tot));
+    };
+    window.addEventListener("storage", storageEventHandler);
   }, [props]);
+
   const cat = (cat) => {
     setMenuConnected(true);
 
@@ -171,7 +213,16 @@ const MenuBrowser = (props) => {
         break;
     }
   };
-  const [city, setCity] = useState("");
+
+  useEffect(() => {
+    console.log("activated");
+  }, [city]);
+  const handlePlaceSelected = (place) => {
+    if (place && place.formatted_address) {
+      console.log(place.formatted_address);
+      setCity(place.formatted_address);
+    }
+  };
 
   let history = useNavigate();
 
@@ -189,7 +240,7 @@ const MenuBrowser = (props) => {
       pathname: "/search/",
       search: `?${searchParams}`,
     });
-  const handleSubmit = (activi) => {
+  const handleSubmit = (city, activi) => {
     console.log("Received values of form: " + activity + city);
 
     //Faire en sorte, pour que ça marche, que les sub_category ne contiennent pas de mots clés similaires à category
@@ -743,6 +794,7 @@ const MenuBrowser = (props) => {
           <Menu
             mode="horizontal"
             style={{
+              marginTop: "5px",
               position: "flex",
               justifyContent: "flex-end",
               marginLeft: props.width <= "1100" ? "43%" : "10%",
@@ -809,7 +861,11 @@ const MenuBrowser = (props) => {
               style={{ fontSize: "25px" }}
               onClick={() => handleCart()}
               key="cart"
-              icon={<ShoppingCartOutlined style={{ fontSize: "90%" }} />}
+              icon={
+                <Badge count={totalQuantity}>
+                  <ShoppingCartOutlined style={{ fontSize: "180%" }} />
+                </Badge>
+              }
             ></Menu.Item>
           </Menu>
         </div>
@@ -848,48 +904,110 @@ const MenuBrowser = (props) => {
               //justifyContent: "center",
               borderRadius: "25px",
               padding: 0,
-              width: "40%",
+              width: "60%",
               marginTop: "2%",
             }}
           >
-            {/*      <AutoComplete
-            className="dashboardSearch"
-            onChange={(e) => {
-              setActivity(e);
-              console.log("ACTIVITYYYY...: " + e);
-              console.log("ACTIVITYYYY2...: " + activity);
-              //  handleSubmit();
-            }}
-            defaultValue={props.activity}
-            //prefix={props.width >= 650 ? "Quelle Expérience ?" : ""}
-            style={{ width: "30%", borderRadius: "25px", border: 0 }}
-            options={options}
-            //defaultValue={"Risotto"}
-            filterOption={(inputValue, option) =>
-              option.value
-                ? option.value
-                    .toUpperCase()
-                    .indexOf(inputValue.toUpperCase()) !== -1
-                : null
-            }
+            <div
+              style={{
+                position: "relative",
+                width: "70%",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <span
+                style={{
+                  color: "black",
+                  position: "absolute",
+                  left: "10px",
+                  fontFamily: "Dosis",
+                }}
+              >
+                Où?
+              </span>
+              <Autocomplete
+                apiKey={"AIzaSyDNvRrdKaNa67E4OFRsZGsmrbpqsQLUAUM"}
+                style={{
+                  borderRadius: "25px",
+                  marginLeft: "30px",
+                  width: "70%",
+                  height: "100%",
+                  color: "#999",
+                  border: 0,
+                  fontFamily: "Dosis",
+                  padding: "0 10px", // Adjust padding as needed
+                }}
+                onPlaceSelected={handlePlaceSelected}
+                options={{
+                  types: ["(regions)"],
+                  componentRestrictions: { country: "fr" },
+                }}
+                onChange={handleChange}
+                onKeyDown={handleKeyPress}
+                //onKeyDown={handleKeyPress}
+                // defaultValue="Paris, Toulouse..."
+              />
+            </div>
+            {/*<AutoComplete
+              className="dashboardSearch"
+              onChange={(e) => {
+                setActivity(e);
+                console.log("ACTIVITYYYY...: " + e);
+                console.log("ACTIVITYYYY2...: " + activity);
+                //  handleSubmit();
+              }}
+              defaultValue={props.activity}
+              //prefix={props.width >= 650 ? "Quelle Expérience ?" : ""}
+              style={{ width: "30%", borderRadius: "25px", border: 0 }}
+              options={options}
+              //defaultValue={"Risotto"}
+              filterOption={(inputValue, option) =>
+                option.value
+                  ? option.value
+                      .toUpperCase()
+                      .indexOf(inputValue.toUpperCase()) !== -1
+                  : null
+              }
 
-            // onChange={handleSubmit}
-          >
+              // onChange={handleSubmit}
+            >
+              <Input
+                style={{
+                  borderRadius: "25px",
+                  width: "100%",
+                  height: "100%",
+                  border: 0,
+                  fontFamily: "Dosis",
+                }}
+                size="large"
+                // defaultValue={activity}
+                prefix={props.width >= 650 ? "Quelle Expérience ?" : ""}
+                placeholder="Parachutisme, tricot..."
+              />
+            </AutoComplete>*/}
+            {/* 
+            
+            //google
+            
             <Input
+              ref={(c) => {
+                antInputRef.current = c;
+                if (c) antRef.current = c.input;
+              }}
               style={{
                 borderRadius: "25px",
-                width: "100%",
+                width: "70%",
                 height: "100%",
                 border: 0,
                 fontFamily: "Dosis",
               }}
               size="large"
-              // defaultValue={activity}
-              prefix={props.width >= 650 ? "Quelle Expérience ?" : ""}
-              placeholder="Parachutisme, tricot..."
-            />
-          </AutoComplete> */}
-            <AutoComplete
+              prefix={"Où?"}
+              placeholder="Toulouse, Paris, Genève..."
+              onPressEnter={handleSubmit}
+            />*/}
+            {/*  <AutoComplete
               className="dashboardSearch"
               onChange={(e) => {
                 setCity(e);
@@ -915,14 +1033,13 @@ const MenuBrowser = (props) => {
                 prefix={"Où?"}
                 placeholder="Toulouse, Paris, Genève..."
               />
-            </AutoComplete>
+            </AutoComplete> */}
             <div
               style={{ width: "10%", paddingTop: "1%", fontSize: "16px" }}
               className="dashboardSearch"
             >
               Quel jour?{" "}
             </div>
-
             <DatePicker
               locale={locale}
               style={{ width: "50%", paddingTop: "" }}
@@ -942,11 +1059,7 @@ const MenuBrowser = (props) => {
                   setDatemax(dayjs(newDate, "DD/MM/YYYY").format("YYYY-MM-DD"));
                 } else setDatemax(undefined);
               }}
-              //HH:mm
-              // onChange={(newDate) => setRange(newDate)}
-              //disabledDate={(d) => !d || d.isBefore(moment().add(-1, "days"))}
             ></DatePicker>
-
             <Button
               onClick={handleSubmit}
               htmlType="submit"

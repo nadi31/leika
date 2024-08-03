@@ -24,6 +24,7 @@ import GiftCard from "./GiftCard";
 import Founders from "./Founders";
 import HomeMobile from "./HomeMobile";
 import Map from "./Map";
+
 const BaseRouter = () => (
   <Routes>
     <Route exact path="/" element={<Home />} />
@@ -50,6 +51,7 @@ const BaseRouter = () => (
     <Route exact path="/email-verify/:token" element={<EmailVerify />} />
     <Route exact path="/giver/:giverID" element={<GiverView />} />
     <Route exact path="/map" element={<Map />} />
+
     <Route exact path="/gift" element={<GiftCard />} />
     <Route exact path="/founders" element={<Founders />} />
     <Route

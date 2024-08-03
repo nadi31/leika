@@ -5,6 +5,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Dosis:wght@300&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap");
+
+/* beginning test:  added for map !!!! */
+
+@import "~mapbox-gl/dist/mapbox-gl.css";
+@import "~leaflet/dist/leaflet.css";
+
+/* end testing map */
+
 #icons {
   line-height: 19px;
 }
@@ -178,4 +187,13 @@
   .header ul li {
     padding-right: 2%;
   }
+}
+h1 {
+  font-family: "Noto Sans JP", sans-serif;
+}
+.pres {
+  font-family: "Noto Sans KR", sans-serif;
+}
+.autocomplete-container {
+  position: relative;
 }

@@ -19,6 +19,7 @@ const Bloc = (props) => {
           display: width === "40%" ? "flex:" : "",
           justifyContent: "center",
           margin: "auto",
+          marginTop: "20px",
           width: width,
         }}
       >
@@ -53,7 +54,9 @@ const Bloc = (props) => {
             </div>
           </div>
 
-          <div className="content">{content}</div>
+          <div style={{ lineHeight: "2" }} className="content">
+            {content}
+          </div>
         </div>
       </div>
     </>

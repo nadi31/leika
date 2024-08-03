@@ -1,5 +1,5 @@
 import React from "react";
-import { CookiesProvider } from "react-cookie";
+
 import "./style/style.css";
 import { BrowserRouter as Router } from "react-router-dom";
 import BaseRouter from "./routes";
@@ -13,9 +13,7 @@ import "antd/dist/reset.css";
 function Layout() {
   return (
     <Router>
-      <CookiesProvider>
-        <BaseRouter />
-      </CookiesProvider>
+      <BaseRouter />
     </Router>
   );
 }
