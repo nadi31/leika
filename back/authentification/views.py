@@ -3,6 +3,8 @@ from django.shortcuts import render
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 import json
+
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import authentication_classes
 from .models import MyUser, Giver, Adress, Cub, Prospect
@@ -29,8 +31,9 @@ from rest_framework.authtoken.models import Token
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+import logging
 
-
+logger = logging.getLogger(__name__)
 class UserOublieView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = (
@@ -196,12 +199,9 @@ class TokenView(APIView):
         return Response(res)
 
     def post(self, request, *args, **kwargs):
-        myuser = MyUser.objects.filter(username=request.data['email'])
-        myus = MyUser.objects.get(username=request.data['email'])
-        myuser.update(is_active=True)
-        token = Token.objects.filter(user=myus.user_id)
+        print("I AM here")
 
-        token.delete()
+        #token.delete()
         return Response(status=status.HTTP_201_CREATED)
 
 
@@ -417,7 +417,20 @@ class GiverDetailView(APIView):
         # user.save()
         #    user.save(commit=False)
 
-# vue pour obtenir les tokens=> pour tout le monde
+class CustomTokenRefreshView(APIView):
+    parser_classes = (JSONParser, MultiPartParser, FormParser)
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = CustomTokenRefreshSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+
+        try:
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        except InvalidToken as e:
+            return Response({'detail': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 class ObtainTokenPairWithColorView(TokenObtainPairView):
@@ -433,8 +446,10 @@ class ObtainTokenPairWithColorView(TokenObtainPairView):
 
         print('Connecting')
         print(request.data)
-        user = authenticate(username=request.data['email'],
-                            password=request.data['password'])
+       
+        user = authenticate(email = request.data.get('email'),
+                            password=request.data.get('password'))
+
         if user is not None:
             print('Login')
             login(request, user)
@@ -444,15 +459,68 @@ class ObtainTokenPairWithColorView(TokenObtainPairView):
           #  return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if serializer.is_valid():
+           
+            access = serializer.validated_data.get("access", None)
+            refresh = serializer.validated_data.get("refresh", None)
+            email = serializer.validated_data.get("email", None)
+            user_type =serializer.validated_data.get("user_type", None)
+            id_user = serializer.validated_data.get("id_user", None)
+            first_name= serializer.validated_data.get("first_name", None)
 
-            return Response(
-                serializer.validated_data,
-                status=status.HTTP_200_OK
-            )
-        else:
+    # build your response and set cookie
+         #   current_time = timezone.now()
+          #  expires_at = expires_at.strftime("%a, %d-%b-%Y %H:%M:%S GMT")
+         #   print ("EXPIRE "+ str(expires_at))  
+            response = Response({"access": access,  "email": email, "user_type": user_type,  "id_user":id_user, "first_name":first_name}, status=200)
+                #response.set_cookie('token', access, httponly=True)
+            logger.info("Setting cookie 'cookie_name' with a 15-minute expiry.")
+            response.set_cookie(key="refresh",value=refresh,max_age=15*60,httponly=True,secure=True,samesite='None')
+
+
+            return response
+
+        else : 
             print('error', serializer.errors)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
+class RefreshTokenWithCookieView(APIView):
+    permission_classes = (permissions.AllowAny,)  # Allow any user to access this view
+
+    def post(self, request, *args, **kwargs):
+        print('Checking for refresh token in cookies...')
+        
+        # Get refresh token from cookies
+        refresh_token = request.COOKIES.get('cookie_name', None)
+        
+        if not refresh_token:
+            
+            print('No refresh token found in cookies.')
+            return Response({"error": "No refresh token provided."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            print("Cook"+refresh_token)
+            # Attempt to validate the refresh token
+            token = RefreshToken(refresh_token)
+            user = MyUser.objects.get(id=token["user_id"])
+            print('Refresh token is valid. Issuing new access token...')
+            
+            # Create a new access token
+            serializer = TokenObtainPairSerializer(data={"email": user.email,
+            
+            "user_type": user.user_type,
+            "id_user" : user.id_user,
+            "first_name":user.first_name })
+            serializer.is_valid(raise_exception=True)
+            access_token = serializer.validated_data.get('access')
+
+            # Respond with the new access token
+            return Response({"access": access_token}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+
+           
+            print('error', e)
+            return Response({"error": "Invalid or expired refresh token."}, status=status.HTTP_400_BAD_REQUEST)
 
 # class MyUser(ListAPIView):
 

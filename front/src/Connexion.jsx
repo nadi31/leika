@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button } from "antd";
+import { useAuth } from "./AuthContext";
 
 import sha256 from "crypto-js/sha256";
 //Appartion du modal
@@ -38,7 +39,7 @@ const Connexion = (props) => {
   const [oublie, setOublie] = useState(false);
   const [emailOublie, setEmailOublie] = useState("");
   const [messageApi, contextHolder] = message.useMessage();
-
+  const { login } = useAuth();
   const [toSend, setToSend] = useState({
     from_name: "leikka",
     to_name: "",
@@ -163,6 +164,25 @@ const Connexion = (props) => {
     localStorage.clear();
     navigate("/", { replace: true });
     //window.dispatchEvent(new Event("message"));
+  };
+
+  const handleSubmit = (email, password) => {
+    props.setConnexion(false);
+    login(email, password);
+    props.setConnected(true);
+    //dispatch(checkAuthTimeout(expirationDate));
+    //dispatch(checkAuthTimeout(expirationDate));
+    window.dispatchEvent(new Event("message"));
+    //setCookie();
+    //console.log("cookie");
+
+    console.log("COOKIE" + email);
+    //  setCookie("user", ID, { path: "/" });
+    //    console.log("COOK " + cookies["user"]);
+    //     alert(`User cookie is ${JSON.stringify(cookies["user"])}`);
+
+    message.success("Connexion réussie");
+    checkLocalStorageValidity();
   };
   const authLogin = (email, password) => {
     props.setConnexion(false);
@@ -321,37 +341,6 @@ const Connexion = (props) => {
                 <Input
                   onChange={(e) => {
                     setEmail1(e.target.value);
-                  }}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Confirmation email"
-                name="email2"
-                rules={[
-                  {
-                    type: "email",
-                    message: "Doit être un email!",
-                  },
-                  {
-                    required: true,
-                    message: "Veuillez renseigner votre email",
-                  },
-                  {
-                    validator: (_, value) => {
-                      if (email1 == email2) {
-                        return Promise.resolve();
-                      } else {
-                        return Promise.reject(
-                          "Les emails doivent être identiques"
-                        );
-                      }
-                    },
-                  },
-                ]}
-              >
-                <Input
-                  onChange={(e) => {
                     setEmail2(e.target.value);
                   }}
                 />
@@ -370,32 +359,6 @@ const Connexion = (props) => {
                 <Input.Password
                   onChange={(e) => {
                     setPassword1(e.target.value);
-                  }}
-                />
-              </Form.Item>
-              <Form.Item
-                label="Confirmation mot de passe"
-                name="password2"
-                rules={[
-                  {
-                    required: true,
-                    message: "Veuillez renseigner votre mot de passe",
-                  },
-                  {
-                    validator: (_, value) => {
-                      if (password1 == password2) {
-                        return Promise.resolve();
-                      } else {
-                        return Promise.reject(
-                          "Les mots de passe doivent être identiques"
-                        );
-                      }
-                    },
-                  },
-                ]}
-              >
-                <Input.Password
-                  onChange={(e) => {
                     setPassword2(e.target.value);
                   }}
                 />
@@ -451,18 +414,6 @@ const Connexion = (props) => {
                 />
               </Form.Item>
 
-              <Form.Item
-                name="remember"
-                valuePropName="checked"
-                wrapperCol={{
-                  offset: 8,
-                  span: 16,
-                }}
-              >
-                <Checkbox checked={cook} onChange={() => setCook(!cook)}>
-                  Se souvenir de moi
-                </Checkbox>
-              </Form.Item>
               <span
                 style={{ position: "flex", width: "100%", display: "inline" }}
               >
@@ -535,17 +486,6 @@ const Connexion = (props) => {
               </Form.Item>
 
               <Form.Item
-                name="remember"
-                valuePropName="checked"
-                wrapperCol={{
-                  offset: 7,
-                  span: 16,
-                }}
-              >
-                <Checkbox>Se souvenir de moi</Checkbox>
-              </Form.Item>
-
-              <Form.Item
                 name="oublie"
                 //valuePropName="checked"
                 wrapperCol={{
@@ -594,7 +534,7 @@ const Connexion = (props) => {
                   }}
                   htmlType="submit"
                   onClick={() => {
-                    authLogin(email1, password1);
+                    handleSubmit(email1, password1, true);
                     //setSubcribe((current) => !current);
                   }}
                 >

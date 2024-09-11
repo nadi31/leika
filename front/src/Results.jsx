@@ -50,7 +50,7 @@ const Results = () => {
     //   setWidth(window.innerWidth);
     console.log(window.innerWidth);
   }
-
+  const [map, setMap] = useState(false);
   const [menuArt, setMenuArt] = useState(false);
   const [menuGames, setMenuGames] = useState(false);
   const [menuDrill, setMenuDrill] = useState(false);
@@ -210,6 +210,7 @@ const Results = () => {
       setTeam(true);
     }
     setCity(request.get("city"));
+
     setDatemax(request.get("date_max"));
     //setState(JSON.stringify(props.location.state));
     //console.log("STATE " + state);
@@ -221,8 +222,10 @@ const Results = () => {
       .get(`http://localhost:8000/api-course/search/?&${request}`)
       .then((res2) => {
         console.log("RESULTS REQUEST" + JSON.stringify(res2.data));
-        //setResults(res.data);
-        if (request.get("city")) {
+        console.log("HERE : " + request.get("city"));
+        if (request.get("city") !== null) {
+          setMap(true);
+          console.log("HERE : IF IF IF  ");
           const cit = request.get("city");
 
           const url = `https://api.geoapify.com/v1/geocode/search?text=${
@@ -230,8 +233,38 @@ const Results = () => {
           }&apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44`;
 
           axios.get(url).then((res1) => {
-            lonCity.current = res1.data.features[0].properties.lon;
-            latCity.current = res1.data.features[0].properties.lat;
+            let firstLongitude;
+            let firstLatitude;
+
+            // First attempt to get lon and lat from properties
+            if (res1.data.features[0].properties) {
+              if (res1.data.features[0].properties.lon !== undefined) {
+                firstLongitude = res1.data.features[0].properties.lon;
+              }
+              if (res1.data.features[0].properties.lat !== undefined) {
+                firstLatitude = res1.data.features[0].properties.lat;
+              }
+            }
+            // If that fails, try to get lon and lat from the coordinates array
+            if (
+              (firstLongitude === undefined || firstLatitude === undefined) &&
+              res1.data.features[0].geometry &&
+              res1.data.features[0].geometry.coordinates
+            ) {
+              // coordinates[0] is lon, coordinates[1] is lat
+              firstLongitude =
+                firstLongitude === undefined
+                  ? res1.data.features[0].geometry.coordinates[0]
+                  : firstLongitude;
+              firstLatitude =
+                firstLatitude === undefined
+                  ? res1.data.features[0].geometry.coordinates[1]
+                  : firstLatitude;
+            }
+
+            lonCity.current = firstLongitude;
+            latCity.current = firstLatitude;
+
             console.log(
               "LAT FROM GEOPIFY: " +
                 res1.data.features[0].properties.lon +
@@ -240,7 +273,7 @@ const Results = () => {
             );
 
             res2.data.map((location) => {
-              console.log("213 " + latCity);
+              console.log("213 " + latCity.current);
               console.log("214 " + location.lng + " " + location.lat);
 
               var data = JSON.stringify({
@@ -684,7 +717,8 @@ const Results = () => {
                 <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
                   {results.length > 0 &&
                   latCity.current !== null &&
-                  lonCity.current !== null ? (
+                  lonCity.current !== null &&
+                  map === true ? (
                     <Map
                       key={JSON.stringify(results.length)}
                       locations={results}
@@ -956,6 +990,7 @@ const Results = () => {
                 <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
                   {results.length > 0 &&
                   latCity.current !== 0 &&
+                  map === true &&
                   lonCity.current !== 0 ? (
                     <Map
                       key={JSON.stringify(results.length)}
@@ -1364,6 +1399,7 @@ const Results = () => {
                 <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
                   {results.length > 0 &&
                   latCity.current !== 0 &&
+                  map === true &&
                   lonCity.current !== 0 ? (
                     <Map
                       key={JSON.stringify(results.length)}
@@ -1636,6 +1672,7 @@ const Results = () => {
                 <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
                   {results.length > 0 &&
                   latCity.current !== 0 &&
+                  map === true &&
                   lonCity.current !== 0 ? (
                     <Map
                       key={JSON.stringify(results.length)}

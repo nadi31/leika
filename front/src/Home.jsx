@@ -3,6 +3,7 @@ import { ConfigProvider } from "antd";
 import { BrowserView, MobileView } from "react-device-detect";
 import { Card } from "antd";
 import axios from "axios";
+import { useAuth } from "./Connexion";
 import HomeMobile from "./HomeMobile";
 import Footer from "./Footer";
 
@@ -69,7 +70,7 @@ const Home = () => {
       setcard2(<ResCard info={res.data[1]} width={width} />);
 
       setcard3(<ResCard info={res.data[2]} width={width} />);
-      checkLocalStorageValidity();
+      /*  checkLocalStorageValidity();
 
       // Set up interval to call the function every 3 minutes
       const interval = setInterval(() => {
@@ -77,7 +78,7 @@ const Home = () => {
       }, 1 * 60 * 1000); // 3 minutes
 
       // Cleanup function to clear the interval when component unmounts or when dependency changes
-      return () => clearInterval(interval);
+      return () => clearInterval(interval);*/
     });
   }, [width]);
 

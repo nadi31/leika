@@ -47,6 +47,7 @@ import {
 } from "@ant-design/icons";
 
 const ProductDetail = (props) => {
+  const [width, setWidth] = useState(undefined);
   const { TabPane } = Tabs;
   const [course, setCourse] = useState(null);
   const [giver, setGiver] = useState(null);
@@ -383,7 +384,7 @@ const ProductDetail = (props) => {
   //const courseID = useParams();
   const { Step } = Steps;
   const [imagePrincipale, setImagePrincipale] = useState(null);
-  const [width, setWidth] = useState(window.innerWidth);
+
   const [small, setSmall] = useState("horizontal");
   const refactorizedData = (dataForBasket, initBasket) => {
     //let dataForBasket = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -600,6 +601,7 @@ const ProductDetail = (props) => {
   };
 
   useEffect(() => {
+    setWidth(window.innerWidth);
     console.log("ID " + course_id["courseID"]);
     if (!myRef.current === null) {
       executeScroll();

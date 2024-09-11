@@ -1,6 +1,6 @@
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
-
 from rest_framework import serializers
 from .models import MyUser, Giver, Adress, Cub, Administrator, Prospect
 import datetime
@@ -13,7 +13,42 @@ class TokenSerializer(serializers.ModelSerializer):
         model = Token
 
         fields = '__all__'
+class CustomTokenRefreshSerializer(TokenRefreshSerializer):
+    def validate(self, attrs):
+        # Fetch the refresh token from cookies instead of request data
+        request = self.context['request']
+        refresh_token = request.COOKIES.get('refresh')
 
+        if not refresh_token:
+            raise InvalidToken('No valid refresh token found in cookies.')
+
+        # Validate the refresh token
+        try:
+            refresh = RefreshToken(refresh_token)
+            
+
+
+        except TokenError:
+            raise InvalidToken('Invalid refresh token or token expired.')
+          
+        # If valid, generate a new access token
+        data = {'access': str(refresh.access_token)}
+        data = {
+            'access': str(refresh.access_token),
+            'email': refresh.payload.get('user_email'),  
+            'user_type' : refresh.payload.get('user_type'),  
+            'id_user' : refresh.payload.get('ID'),  
+            'first_name' : refresh.payload.get('first_name'),  
+            'user_type' : refresh.payload.get('user_type'),  
+    
+      
+        }
+
+        # If you want to include additional user data, you can add it here.
+        return data
+
+#authenticate 
+#validate
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
@@ -46,7 +81,25 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         token['ID'] = user.user_id
         token['first_name'] = user.first_name
+        token['email'] = user.email
         return token
+
+
+#validate function triggered whenever there is data ENTERING the db used 
+#to check whether the data is valid before processed further 
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+        data["refresh"] = str(refresh) # need to ckeck:  refresh.refresh_token
+        data["access"] = str(refresh.access_token)
+        data["email"] = self.user.email
+        data["user_type"] = self.user.user_type1
+        data['id_user'] = self.user.user_id
+        data["first_name"] = self.user.first_name
+
+
+        return data
 
 
 class MyUserSerializer(serializers.ModelSerializer):

@@ -6,6 +6,7 @@ import React, {
   useRef,
 } from "react";
 import axios from "axios";
+import { useAuth } from "./AuthContext";
 
 import Autocomplete, { usePlacesWidget } from "react-google-autocomplete";
 
@@ -71,6 +72,8 @@ import MenuMobile from "./MenuMobile";
 //Panier shopping
 
 const MenuBrowser = (props) => {
+  const { userData } = useAuth();
+  const { logout } = useAuth();
   const inputRef = useRef(null);
   const antInputRef = useRef(null);
   const [data, setData] = useState([]);
@@ -232,8 +235,9 @@ const MenuBrowser = (props) => {
   const navigate = useNavigate();
 
   const authLogOut = () => {
-    localStorage.clear();
-    window.dispatchEvent(new Event("message"));
+    logout();
+
+    window.dispatchEvent(new Event("Déconnexion"));
   };
   const goToPosts = () =>
     navigate({
@@ -803,13 +807,13 @@ const MenuBrowser = (props) => {
             }}
             className="menu"
           >
-            {localStorage.getItem("connected") === "true" ? (
+            {userData ? (
               <>
                 <Dropdown
                   trigger={["click"]}
                   overlay={() => (
                     <Menu>
-                      {localStorage.getItem("user_type") === "1" ? (
+                      {userData.userType === "1" ? (
                         <Menu onClick={(e) => handleMenuConnexionAdmin(e)}>
                           <Menu.Item key="1">Créer un giver</Menu.Item>
                           <Menu.Item key="2">Créer une expérience</Menu.Item>
@@ -817,7 +821,7 @@ const MenuBrowser = (props) => {
                           <Menu.Item key="4">Se déconnecter</Menu.Item>
                           <Menu.Item key="5">Cours à vérifier</Menu.Item>
                         </Menu>
-                      ) : localStorage.getItem("user_type") === "2" ? (
+                      ) : userData.userType === "2" ? (
                         <Menu onClick={(e) => handleMenuConnexionCub(e)}>
                           <Menu.Item key="1">Mes commandes</Menu.Item>
                           <Menu.Item key="2">Mon profil</Menu.Item>
@@ -840,10 +844,7 @@ const MenuBrowser = (props) => {
                     key="connexion"
                     icon={<UserOutlined style={{ fontSize: "90%" }} />}
                   >
-                    Hello{" "}
-                    {localStorage.getItem("user_type" === 2)
-                      ? ", " + localStorage.getItem("first_name")
-                      : ""}{" "}
+                    Hello {userData.firstName}
                   </Menu.Item>
                 </Dropdown>
               </>
@@ -1061,7 +1062,9 @@ const MenuBrowser = (props) => {
               }}
             ></DatePicker>
             <Button
-              onClick={handleSubmit}
+              onClick={() => {
+                handleSubmit(city, null);
+              }}
               htmlType="submit"
               style={{
                 border: "none",

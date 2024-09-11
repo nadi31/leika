@@ -7,7 +7,7 @@ urlpatterns = [
     #  path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     path('user/create/', CustomUserCreate.as_view(), name="create_user"),
     path('token/obtain/', ObtainTokenPairWithColorView.as_view(), name='token_create'),
-    path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
     path('giver/<pk>', GiverDetailView.as_view()),
     path('adress/<pk>', AdressDetailView.as_view()),
     path('cub/<pk>', CubView.as_view()),
