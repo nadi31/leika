@@ -459,19 +459,19 @@ class ObtainTokenPairWithColorView(TokenObtainPairView):
           #  return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if serializer.is_valid():
-           
+            print ("<<<<<<<< "+ str(serializer.validated_data))
             access = serializer.validated_data.get("access", None)
             refresh = serializer.validated_data.get("refresh", None)
             email = serializer.validated_data.get("email", None)
             user_type =serializer.validated_data.get("user_type", None)
             id_user = serializer.validated_data.get("id_user", None)
             first_name= serializer.validated_data.get("first_name", None)
-
+            id_obj_user = serializer.validated_data.get("id_obj_user", None)
     # build your response and set cookie
          #   current_time = timezone.now()
           #  expires_at = expires_at.strftime("%a, %d-%b-%Y %H:%M:%S GMT")
          #   print ("EXPIRE "+ str(expires_at))  
-            response = Response({"access": access,  "email": email, "user_type": user_type,  "id_user":id_user, "first_name":first_name}, status=200)
+            response = Response({"access": access,  "email": email, "user_type": user_type,  "id_user":id_user, "first_name":first_name, "id_obj_user":id_obj_user }, status=200)
                 #response.set_cookie('token', access, httponly=True)
             logger.info("Setting cookie 'cookie_name' with a 15-minute expiry.")
             response.set_cookie(key="refresh",value=refresh,max_age=15*60,httponly=True,secure=True,samesite='None')
@@ -508,6 +508,7 @@ class RefreshTokenWithCookieView(APIView):
             serializer = TokenObtainPairSerializer(data={"email": user.email,
             
             "user_type": user.user_type,
+
             "id_user" : user.id_user,
             "first_name":user.first_name })
             serializer.is_valid(raise_exception=True)

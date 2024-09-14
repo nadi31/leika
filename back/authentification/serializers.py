@@ -30,7 +30,29 @@ class CustomTokenRefreshSerializer(TokenRefreshSerializer):
 
         except TokenError:
             raise InvalidToken('Invalid refresh token or token expired.')
-          
+
+        user = MyUser.objects.get(user_id=refresh.payload.get('ID'))
+        if refresh.payload.get('user_type') == 2:
+
+            obj = Cub.objects.get(user=user.user_id)
+            id_obj_user = obj.id
+        elif user.user_type1 == 3:
+
+            obj = Giver.objects.get(user=user.user_id)
+            id_obj_user = obj.id
+        elif user.user_type1 == 1:
+
+            obj = Administrator.objects.get(user=user.user_id)
+            id_obj_user = obj.id
+        else:
+            obj = MyUser.objects.get(user_id=user.user_id)
+            id_obj_user = obj.user_id
+            
+
+        # print("OBJ" + str(obj))
+        
+        # print("OBJ _ IDDD" + str(obj_id))
+       
         # If valid, generate a new access token
         data = {'access': str(refresh.access_token)}
         data = {
@@ -40,6 +62,8 @@ class CustomTokenRefreshSerializer(TokenRefreshSerializer):
             'id_user' : refresh.payload.get('ID'),  
             'first_name' : refresh.payload.get('first_name'),  
             'user_type' : refresh.payload.get('user_type'),  
+            'id_obj_user' : obj.user_id ,  
+
     
       
         }
@@ -60,23 +84,29 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         print("USER***", token['user_type'])
         #print("USER " + (user.id))
         print("USER_ID " + str(user.user_id))
-        if token['user_type'] == 2:
+        if user.user_type1 == 2:
 
             obj = Cub.objects.get(user=user.user_id)
-            token['ID_user'] = obj.id
-        if token['user_type'] == 3:
-
+            id_obj_user = obj.id
+        elif user.user_type1 == 3:
+            print("GIVER ¨**¨3")
             obj = Giver.objects.get(user=user.user_id)
-            token['ID_user'] = obj.id
-        if token['user_type'] == 1:
+            id_obj_user = obj.id
+            print("GIVER "+ str(id_obj_user))
+        elif user.user_type1 == 1:
 
             obj = Administrator.objects.get(user=user.user_id)
-            token['ID_user'] = obj.id
+            id_obj_user = obj.id
         else:
             obj = MyUser.objects.get(user_id=user.user_id)
+            id_obj_user = obj.user_id
+            
 
         # print("OBJ" + str(obj))
-        obj_id = obj.user_id
+        
+        # print("OBJ _ IDDD" + str(obj_id))
+        token["id_obj_user"]=  id_obj_user
+        print("********>>>>>>  "+str (id_obj_user))
         # print("OBJ _ IDDD" + str(obj_id))
 
         token['ID'] = user.user_id
@@ -97,6 +127,28 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data["user_type"] = self.user.user_type1
         data['id_user'] = self.user.user_id
         data["first_name"] = self.user.first_name
+        
+        if self.user.user_type1 == 2:
+
+            obj = Cub.objects.get(user=self.user.user_id)
+            id_obj_user = obj.id
+        elif self.user.user_type1 == 3:
+
+            obj = Giver.objects.get(user=self.user.user_id)
+            id_obj_user = obj.id
+        elif self.user.user_type1 == 1:
+
+            obj = Administrator.objects.get(user=self.user.user_id)
+            id_obj_user = obj.id
+        else:
+            obj = MyUser.objects.get(user_id=self.user.user_id)
+            id_obj_user = obj.user_id
+            
+
+        # print("OBJ" + str(obj))
+        
+        # print("OBJ _ IDDD" + str(obj_id))
+        data["id_obj_user"]=  id_obj_user
 
 
         return data

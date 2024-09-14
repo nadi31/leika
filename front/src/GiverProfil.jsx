@@ -6,9 +6,11 @@ import "./style/review.css";
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import Footer from "./Footer";
+import { useAuth } from "./AuthContext";
 import { UserOutlined } from "@ant-design/icons";
 
 const GiverProfil = (props) => {
+  const { userData } = useAuth();
   const handleModify = (values) => {
     console.log(values);
     console.log(values.upload.fileList[0].originFileObj);
@@ -147,21 +149,19 @@ upload: */
 
   const [changeDetected, setChangeDetected] = useState(false);
   useEffect(() => {
-    if (localStorage.getItem("ID_user")) {
+    console.log("userData " + JSON.stringify(userData));
+    if (userData.user_type === 3) {
+      console.log("ET VOILA USER !!");
       axios
-        .get(
-          `http://localhost:8000/api/giver/${localStorage.getItem("ID_user")}`,
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("token"),
-            },
-          }
-        )
+        .get(`http://localhost:8000/api/giver/${userData.id_obj_user}`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        })
 
         .then((res) => {
-          const idGiver = localStorage.getItem("ID");
           axios
-            .get(`http://localhost:8000/api/giver/adress/${idGiver}`, {
+            .get(`http://localhost:8000/api/giver/adress/${userData.id_user}`, {
               headers: {
                 Authorization: "Bearer " + localStorage.getItem("token"),
               },

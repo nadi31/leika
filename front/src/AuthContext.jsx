@@ -21,7 +21,7 @@ const AuthProvider = ({ children }) => {
 
       const newToken = response.data.access_token;
       const expiresIn = 15 * 60 * 1000; // 15 minutes in milliseconds
-
+      localStorage.setItem("token", newToken);
       setToken(newToken);
       setTokenExpiry(Date.now() + expiresIn);
       if (response.status === 200) {
@@ -97,13 +97,16 @@ const AuthProvider = ({ children }) => {
   // Helper function to set tokens and user data after a successful login or token refresh
   const handleSuccessfulLogin = (data) => {
     const expiresIn = 15 * 60 * 1000; // Token expiration time in milliseconds (15 minutes)
+    console.log("ID USER " + data.id_obj_user);
     setToken(data.access);
+    localStorage.setItem("token", data.access);
     setTokenExpiry(Date.now() + expiresIn);
     setUserData({
       firstName: data.first_name,
       email: data.email,
       id_user: data.id_user,
       user_type: data.user_type,
+      id_obj_user: data.id_obj_user,
     });
   };
 

@@ -6,7 +6,7 @@ import MenuBrowser from "./MenuBrowser";
 
 import Footer from "./Footer";
 import { BrowserView, MobileView } from "react-device-detect";
-
+import { useAuth } from "./AuthContext";
 import {
   Form,
   Modal,
@@ -118,6 +118,7 @@ class CourseForm extends React.Component {
     window.removeEventListener("resize", () => {});
   }
   componentDidMount() {
+    const { userData } = useAuth();
     const idGiver = localStorage.getItem("ID");
     axios
       .get(`http://localhost:8000/api/giver/adress/${idGiver}`)
