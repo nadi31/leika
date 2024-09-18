@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { Suspense, useState, useEffect, useRef } from "react";
 import MenuBrowser from "./MenuBrowser";
 import { Form, Input, Image, Upload, Button, message } from "antd";
 import "./style/review.css";
@@ -10,7 +10,8 @@ import { useAuth } from "./AuthContext";
 import { UserOutlined } from "@ant-design/icons";
 
 const GiverProfil = (props) => {
-  const { userData } = useAuth();
+  const userData = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
   const handleModify = (values) => {
     console.log(values);
     console.log(values.upload.fileList[0].originFileObj);
@@ -34,7 +35,7 @@ const GiverProfil = (props) => {
 
     axios
       .post(
-        `http://localhost:8000/api/giver/${localStorage.getItem("ID_user")}`,
+        `http://localhost:8000/api/giver/${userData.id_obj_user}`,
         form_data,
         {
           headers: {
@@ -47,9 +48,7 @@ const GiverProfil = (props) => {
         console.log(changeDetected);
         if (changeDetected) {
           axios.delete(
-            `http://localhost:8000/api/update/adress/${localStorage.getItem(
-              "ID"
-            )}`,
+            `http://localhost:8000/api/update/adress/${userData.id_user}`,
             form_data,
             {
               headers: {
@@ -84,7 +83,7 @@ const GiverProfil = (props) => {
               form.append("lat", adress.lat);
               form.append("lng", adress.lng);
               form.append("name", adress.name);
-              form.append("giver", localStorage.getItem("ID"));
+              form.append("giver", userData.id_user);
               form.append("city", adress.city);
               //form.append("apartment_number", values.input_adress_apt_number);
               form.append("country", adress.country);
@@ -141,67 +140,64 @@ upload: */
   const [adress, setAdress] = useState(null);
   const [width, setWidth] = useState(window.innerWidth);
   const [resultsAdress, setResultsAdress] = useState(null);
-  const [adresses, setAdresses] = useState(0);
+  const [adresses, setAdresses] = useState();
   const [arrayAdresses, setArrayAdresses] = useState([]);
   const [arrayAdd_ons, setArrayAdd_ons] = useState([]);
   const [mdp, setMdp] = useState(false);
   const [upload, setUpload] = useState(false);
-
-  const [changeDetected, setChangeDetected] = useState(false);
-  useEffect(() => {
-    console.log("userData " + JSON.stringify(userData));
-    if (userData.user_type === 3) {
-      console.log("ET VOILA USER !!");
-      axios
-        .get(`http://localhost:8000/api/giver/${userData.id_obj_user}`, {
+  const fetchUserData = async () => {
+    console.log(
+      "ET VOILA USER !!" + JSON.stringify(userData.userData.id_obj_user)
+    );
+    try {
+      const res = await axios.get(
+        `http://localhost:8000/api/giver/${userData.userData.id_obj_user}`,
+        {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
-        })
+        }
+      );
+      setResultsGiver(res.data[0]);
+      console.log("******* REQUEST" + JSON.stringify(res.data));
 
-        .then((res) => {
-          axios
-            .get(`http://localhost:8000/api/giver/adress/${userData.id_user}`, {
-              headers: {
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              },
-            })
-            .then((res2) => {
-              setArrayAdresses(res2.data);
-              adressA.current = res2.data;
-              console.log("RESULTS REQUEST" + JSON.stringify(res2.data));
-              //  console.log("RESULTS REQUEST" + JSON.stringify(res.data));
-              setAdresses(res2.data.length);
-              setResultsGiver(res.data[0]);
-              //setFilters(res.data);
-              console.log("ADRESS" + adresses);
-              //s
+      const res2 = await axios.get(
+        `http://localhost:8000/api/giver/adress/${userData.userData.id_user}`,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
 
-              /* let array = [];
-              let arrayAdd = [];
-              if (res2.data.length > 0) {
-                res2.data.map((adress) => {
-                  //console.log(adress.name);
-                  array.push(adress.name);
-                });
-
-                res2.data.map((adress) => {
-                  arrayAdd.push(adress.add_ons);
-                });
-
-                setArrayAdd_ons(arrayAdd);
-                console.log(arrayAdresses);
-                console.log(arrayAdd_ons);
-              }*/
-            })
-
-            .catch((err) => console.log(err));
-        })
-
-        .catch((err) => console.log(err));
+      setArrayAdresses(res2.data);
+      adressA.current = res2.data;
+      console.log("RESULTS REQUEST" + JSON.stringify(res2.data));
+      //  console.log("RESULTS REQUEST" + JSON.stringify(res.data));
+      setAdresses(res2.data.length);
+      setIsLoading(false);
+      //setFilters(res.data);
+      console.log("ADRESS" + adresses);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
     }
-  }, [adresses]);
-  return resultsGiver !== null && arrayAdresses.length > 0 && adresses > 0 ? (
+  };
+
+  const [changeDetected, setChangeDetected] = useState(false);
+  useEffect(() => {
+    if (userData) {
+      // When userData is available, we stop loading
+
+      try {
+        fetchUserData();
+      } catch (err) {
+        console.error("Error in useEffect:", err);
+      }
+    }
+  }, [userData]);
+  return !isLoading ? (
     <>
       <MenuBrowser width={width} />
       <div

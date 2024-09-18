@@ -6,7 +6,7 @@ import MenuBrowser from "./MenuBrowser";
 
 import Footer from "./Footer";
 import { BrowserView, MobileView } from "react-device-detect";
-import { useAuth } from "./AuthContext";
+
 import {
   Form,
   Modal,
@@ -33,8 +33,18 @@ import {
   PlusSquareOutlined,
   PoundOutlined,
 } from "@ant-design/icons";
+import { useAuth } from "./AuthContext";
 
-//import Password from "antd/lib/input/Password";
+function WithHooks(WrappedComponent) {
+  // The function returned is a React functional component
+  const EnhancedComponent = (props) => {
+    const { userData } = useAuth(); // Now useAuth is called inside the functional component
+
+    return <WrappedComponent userData={userData} {...props} />;
+  };
+
+  return EnhancedComponent;
+}
 
 const { RangePicker } = DatePicker;
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
@@ -111,47 +121,14 @@ const rangeConfig = {
   ],
 };
 
-//const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY"];
-
 class CourseForm extends React.Component {
-  componentWillUnmount() {
-    window.removeEventListener("resize", () => {});
-  }
-  componentDidMount() {
-    const { userData } = useAuth();
-    const idGiver = localStorage.getItem("ID");
-    axios
-      .get(`http://localhost:8000/api/giver/adress/${idGiver}`)
-      .then((res) => {
-        let mapArray = [];
-        console.log("RESULTS REQUEST" + JSON.stringify(res.data));
-        this.setState({ results: res.data });
-        this.state.results.map((res) =>
-          mapArray.push({ label: res.name, value: res.id })
-        );
-        //mapArray = JSON.stringify(mapArray);
-        this.setState({ mapResults: mapArray });
-        console.log("RESULTS ****" + JSON.stringify(mapArray));
-      });
-
-    this.setState({ ID_user: localStorage.getItem("ID_user") });
-
-    window.addEventListener("resize", () => {
-      this.setState({ width: window.innerWidth });
-      console.log(window.innerWidth);
-    });
-
-    if (!this.state.isAuthenficated == true && this.state.user_type == 3) {
-      console.log("***PAS CONNECTEE");
-      return Modal.error({
-        title: "Pas connecté(e)",
-        content: "Veillez vous connecter pour ajouter des cours",
-      });
-    }
-  }
-
   constructor(props) {
     super(props);
+
+    this.state = {
+      userData: null,
+    };
+
     this.input = React.createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSub = this.handleSub.bind(this);
@@ -197,10 +174,56 @@ class CourseForm extends React.Component {
       selectedValue: 0,
       width: window.innerWidth,
       mapResults: null,
-
-      isAuthenficated: localStorage.getItem("isAuthenficated"),
     };
   }
+  componentWillUnmount() {
+    window.removeEventListener("resize", () => {});
+  }
+  componentDidMount() {
+    const { userData } = this.props;
+    if (userData) {
+      // Set the userData in state once it's available
+      this.setState({ userData });
+    }
+    if (userData && userData.id_obj_user) {
+      // Make the API request without setting state
+      axios
+        .get(`http://localhost:8000/api/giver/adress/${userData.id_user}`)
+        .then((res) => {
+          console.log(res.data);
+          let mapArray = [];
+          console.log("RESULTS REQUEST" + JSON.stringify(res.data));
+          this.setState({ results: res.data });
+          this.state.results.map((res) =>
+            mapArray.push({ label: res.name, value: res.id })
+          );
+          //mapArray = JSON.stringify(mapArray);
+          this.setState({ mapResults: mapArray });
+          console.log("RESULTS ****" + JSON.stringify(mapArray));
+        })
+        .catch((err) => {
+          console.error("Error fetching address:", err);
+        });
+    } else {
+      console.error("userData or id_obj_user is undefined");
+    }
+
+    this.setState({ ID_user: userData.id_obj_user });
+
+    window.addEventListener("resize", () => {
+      this.setState({ width: window.innerWidth });
+      console.log(window.innerWidth);
+    });
+
+    if (!this.state.isAuthenficated == true && this.state.user_type == 3) {
+      console.log("***PAS CONNECTEE");
+      return Modal.error({
+        title: "Pas connecté(e)",
+        content: "Veillez vous connecter pour ajouter des cours",
+      });
+    }
+  }
+
   /*
   props_upload = {
     onChange({ file, fileList }) {
@@ -211,6 +234,7 @@ class CourseForm extends React.Component {
       }
     },
   };*/
+
   add = () => {
     console.log("hey");
     if (this.state.addLine && this.state.mapResults) {
@@ -800,7 +824,7 @@ class CourseForm extends React.Component {
 
   //const tasks = Object.values(data.tasks);
 
-  handleSubmit(fieldsValue) {
+  handleSubmit(fieldsValue, userData) {
     console.log("MOMENT " + fieldsValue["time_picker_b"].format("HH:mm"));
     console.log("DATE1 " + fieldsValue["range_date"][0].format("YYYY-MM-DD"));
     const convert = (input) => {
@@ -1016,7 +1040,7 @@ class CourseForm extends React.Component {
 
     form_data.append("category", category);
     form_data.append("sub_category", fieldsValue.autocomplete);
-    form_data.append("owner", localStorage.getItem("ID_user"));
+    form_data.append("owner", userData.id_user);
 
     form_data.append(" courseHourIsCreated", convert(true));
 
@@ -1322,6 +1346,7 @@ class CourseForm extends React.Component {
   }
 
   render() {
+    const { userData } = this.props;
     const { visible, loading, value } = this.state;
     const radioStyle = {
       display: "block",
@@ -1331,6 +1356,9 @@ class CourseForm extends React.Component {
     let errorMessage = null;
     if (this.props.error_add_course) {
       errorMessage = <p>{this.props.error_add_course.message}</p>;
+    }
+    if (!userData) {
+      return <div>Loading...</div>;
     }
     return (
       <>
@@ -1354,8 +1382,9 @@ class CourseForm extends React.Component {
             <Form
               name="time_related_controls"
               {...formItemLayout}
-              onSubmit={this.handleSubmit}
-              onFinish={this.handleSubmit}
+              onFinish={(values) =>
+                this.handleSubmit(values, this.state.userData)
+              }
             >
               <Form.Item
                 name="title_input"
@@ -2104,5 +2133,4 @@ class CourseForm extends React.Component {
     );
   }
 }
-
-export default CourseForm;
+export default WithHooks(CourseForm);

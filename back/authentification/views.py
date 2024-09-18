@@ -498,17 +498,33 @@ class RefreshTokenWithCookieView(APIView):
             return Response({"error": "No refresh token provided."}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
+            user = MyUser.objects.get(id=token["user_id"])
+            if user.user_type == 2:
+
+                obj = Cub.objects.get(user=user.user_id)
+                id_obj_user = obj.id
+            elif user.user_type1 == 3:
+
+                obj = Giver.objects.get(user=user.user_id)
+                id_obj_user = obj.id
+            elif user.user_type1 == 1:
+
+                obj = Administrator.objects.get(user=user.user_id)
+                id_obj_user = obj.id
+            else:
+                obj = MyUser.objects.get(user_id=user.user_id)
+            id_obj_user = obj.user_id
             print("Cook"+refresh_token)
             # Attempt to validate the refresh token
             token = RefreshToken(refresh_token)
-            user = MyUser.objects.get(id=token["user_id"])
+            
             print('Refresh token is valid. Issuing new access token...')
             
             # Create a new access token
             serializer = TokenObtainPairSerializer(data={"email": user.email,
             
             "user_type": user.user_type,
-
+            "id_obj_user" : id_obj_user,
             "id_user" : user.id_user,
             "first_name":user.first_name })
             serializer.is_valid(raise_exception=True)
