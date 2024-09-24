@@ -125,14 +125,12 @@ class CourseForm extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      userData: null,
-    };
-
     this.input = React.createRef();
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSub = this.handleSub.bind(this);
     this.state = {
+      userData: null,
+      isLoading: false,
       results: null,
       addLine: true,
       listAtt: [],
@@ -181,48 +179,49 @@ class CourseForm extends React.Component {
   }
   componentDidMount() {
     const { userData } = this.props;
-    if (userData) {
-      // Set the userData in state once it's available
-      this.setState({ userData });
-    }
-    if (userData && userData.id_obj_user) {
-      // Make the API request without setting state
-      axios
-        .get(`http://localhost:8000/api/giver/adress/${userData.id_user}`)
-        .then((res) => {
-          console.log(res.data);
-          let mapArray = [];
-          console.log("RESULTS REQUEST" + JSON.stringify(res.data));
-          this.setState({ results: res.data });
-          this.state.results.map((res) =>
-            mapArray.push({ label: res.name, value: res.id })
-          );
-          //mapArray = JSON.stringify(mapArray);
-          this.setState({ mapResults: mapArray });
-          console.log("RESULTS ****" + JSON.stringify(mapArray));
-        })
-        .catch((err) => {
-          console.error("Error fetching address:", err);
-        });
-    } else {
-      console.error("userData or id_obj_user is undefined");
-    }
 
-    this.setState({ ID_user: userData.id_obj_user });
-
+    // Call fetch_data initially if userData is available on mount
+    if (userData && userData.id_user) {
+      this.fetchData(userData.id_user);
+    }
     window.addEventListener("resize", () => {
       this.setState({ width: window.innerWidth });
       console.log(window.innerWidth);
     });
+  }
 
-    if (!this.state.isAuthenficated == true && this.state.user_type == 3) {
-      console.log("***PAS CONNECTEE");
-      return Modal.error({
-        title: "Pas connecté(e)",
-        content: "Veillez vous connecter pour ajouter des cours",
-      });
+  componentDidUpdate(prevProps) {
+    const { userData } = this.props;
+
+    // Check if userData has changed and was previously null
+    if (userData && userData.id_user && prevProps.userData !== userData) {
+      this.fetchData(userData.id_user);
     }
   }
+
+  fetchData = async (id_user) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:8000/api/giver/adress/${id_user}`
+      );
+      console.log("RESULTS REQUEST" + JSON.stringify(res.data));
+
+      const mapArray = res.data.map((res) => ({
+        label: res.name,
+        value: res.id,
+      }));
+
+      this.setState({
+        results: res.data,
+        mapResults: mapArray,
+        isLoading: true,
+      });
+
+      console.log("RESULTS ****" + JSON.stringify(mapArray));
+    } catch (err) {
+      console.error("Error fetching address:", err);
+    }
+  };
 
   /*
   props_upload = {
@@ -978,8 +977,8 @@ class CourseForm extends React.Component {
         return dayjs(date_selected).format("YYYY-MM-DD");
       }
     };
-    console.log("USER: " + this.state.ID_user);
-    console.log("type: " + typeof this.state.ID_user);
+    console.log("USER: " + this.state.userData.id_obj_user);
+    console.log("type: " + typeof this.state.userData.id_obj_user);
 
     let form_data = new FormData();
     form_data.append("accroche", fieldsValue.accroche_input);
@@ -1040,7 +1039,7 @@ class CourseForm extends React.Component {
 
     form_data.append("category", category);
     form_data.append("sub_category", fieldsValue.autocomplete);
-    form_data.append("owner", userData.id_user);
+    form_data.append("owner", this.state.userData.id_user);
 
     form_data.append(" courseHourIsCreated", convert(true));
 
@@ -1051,7 +1050,7 @@ class CourseForm extends React.Component {
       .post("http://localhost:8000/api-course/create/course/api/", form_data, {
         headers: {
           "content-type": "multipart/form-data",
-          Authorization: "Bearer " + localStorage.getItem("token"),
+          Authorization: "Bearer " + userData.access,
         },
       })
       .then((res) => {
@@ -1067,7 +1066,7 @@ class CourseForm extends React.Component {
               .post("http://localhost:8000/api-course/create/offers/", form, {
                 headers: {
                   "content-type": "multipart/form-data",
-                  Authorization: "Bearer " + localStorage.getItem("token"),
+                  Authorization: "Bearer " + userData.access,
                 },
               })
 
@@ -1148,7 +1147,7 @@ class CourseForm extends React.Component {
             headers: {
               "content-type": "multipart/form-data",
 
-              Authorization: "Bearer " + localStorage.getItem("token"),
+              Authorization: "Bearer " + userData.access,
             },
           })
           .then((res2) => {})
@@ -1357,7 +1356,11 @@ class CourseForm extends React.Component {
     if (this.props.error_add_course) {
       errorMessage = <p>{this.props.error_add_course.message}</p>;
     }
-    if (!userData) {
+    if (
+      userData === null ||
+      userData.token === null ||
+      userData.userData === null
+    ) {
       return <div>Loading...</div>;
     }
     return (

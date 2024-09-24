@@ -6,7 +6,10 @@ from .models import MyUser, Giver, Adress, Cub, Administrator, Prospect
 import datetime
 from rest_framework.generics import ListAPIView
 from rest_framework.authtoken.models import Token
-
+import requests
+import jwt 
+import pytz
+from datetime import datetime, timedelta
 
 class TokenSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,65 +18,23 @@ class TokenSerializer(serializers.ModelSerializer):
         fields = '__all__'
 class CustomTokenRefreshSerializer(TokenRefreshSerializer):
     def validate(self, attrs):
-        # Fetch the refresh token from cookies instead of request data
-        request = self.context['request']
-        refresh_token = request.COOKIES.get('refresh')
-
-        if not refresh_token:
-            raise InvalidToken('No valid refresh token found in cookies.')
-
-        # Validate the refresh token
-        try:
-            refresh = RefreshToken(refresh_token)
-            
-
-
-        except TokenError:
-            raise InvalidToken('Invalid refresh token or token expired.')
-
-        user = MyUser.objects.get(user_id=refresh.payload.get('ID'))
-        if refresh.payload.get('user_type') == 2:
-
-            obj = Cub.objects.get(user=user.user_id)
-            id_obj_user = obj.id
-        elif user.user_type1 == 3:
-
-            obj = Giver.objects.get(user=user.user_id)
-            id_obj_user = obj.id
-        elif user.user_type1 == 1:
-
-            obj = Administrator.objects.get(user=user.user_id)
-            id_obj_user = obj.id
-        else:
-            obj = MyUser.objects.get(user_id=user.user_id)
-            id_obj_user = obj.user_id
-            
-
-        # print("OBJ" + str(obj))
+        paris_tz = pytz.timezone('Europe/Paris')
         
-        # print("OBJ _ IDDD" + str(obj_id))
-       
-        # If valid, generate a new access token
-        data = {'access': str(refresh.access_token)}
-        data = {
-            'access': str(refresh.access_token),
-            'email': refresh.payload.get('user_email'),  
-            'user_type' : refresh.payload.get('user_type'),  
-            'id_user' : refresh.payload.get('ID'),  
-            'first_name' : refresh.payload.get('first_name'),  
-            'user_type' : refresh.payload.get('user_type'),  
-            'id_obj_user' : obj.user_id ,  
+        # Get current time in UTC and convert it to Paris time
+        current_time = datetime.now(pytz.utc)
+        current_time_paris = current_time.astimezone(paris_tz)
+        
+        # Set token expiration to 1 hour from now (adjust as needed)
+        expiration_time = current_time_paris + timedelta(hours=1)
+        
+        # Log or store the expiration time in Paris timezone
+        attrs['expiration_time'] = expiration_time
+        
+        # Proceed with the usual validation
+        return super().validate(attrs)
+        
 
-    
-      
-        }
-
-        # If you want to include additional user data, you can add it here.
-        return data
-
-#authenticate 
-#validate
-
+   
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     @classmethod
@@ -109,7 +70,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         print("********>>>>>>  "+str (id_obj_user))
         # print("OBJ _ IDDD" + str(obj_id))
 
-        token['ID'] = user.user_id
+        token['id_user'] = user.user_id
         token['first_name'] = user.first_name
         token['email'] = user.email
         return token
@@ -121,7 +82,11 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
         refresh = self.get_token(self.user)
-        data["refresh"] = str(refresh) # need to ckeck:  refresh.refresh_token
+       
+        refresh = self.get_token(self.user)
+
+        
+        data["refresh"] = str(refresh) 
         data["access"] = str(refresh.access_token)
         data["email"] = self.user.email
         data["user_type"] = self.user.user_type1

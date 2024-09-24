@@ -8,6 +8,7 @@ const AuthContext = createContext();
 // Define the provider component
 const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
+  const [access_token, setAccessToken] = useState(null);
   const [userData, setUserData] = useState(null);
   const [tokenExpiry, setTokenExpiry] = useState();
 
@@ -15,11 +16,18 @@ const AuthProvider = ({ children }) => {
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/api/token/refresh/",
-        { refresh: "wtf" },
+        {
+          headers: {
+            "content-type": "multipart/form-data",
+            Authorization: "Bearer " + access_token,
+          },
+          refresh: localStorage.getItem("token"),
+        },
+
         { withCredentials: true } // This ensures cookies are sent with the request
       );
 
-      const newToken = response.data.access_token;
+      const newToken = response.data.refresh;
       const expiresIn = 15 * 60 * 1000; // 15 minutes in milliseconds
       localStorage.setItem("token", newToken);
       setToken(newToken);
@@ -49,11 +57,15 @@ const AuthProvider = ({ children }) => {
       try {
         // Check for the presence of the refresh token by attempting to use the refresh endpoint.
         const refreshResponse = await axios.post(
-          "http://127.0.0.1:8000/api/token/obtain",
-          {},
-          { withCredentials: true } // Ensure cookies are sent with the request.
+          "http://127.0.0.1:8000/api/token/refresh/",
+          { refresh: localStorage.getItem("token") }, // Ensure this is the correct refresh token
+          {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "application/json", // This is the default for axios but good to specify
+            },
+          }
         );
-
         // If the refresh is successful, update tokens and user data from the refresh response.
         if (refreshResponse.status === 200) {
           console.log("Token refreshed successfully:", refreshResponse.data);
@@ -96,12 +108,15 @@ const AuthProvider = ({ children }) => {
 
   // Helper function to set tokens and user data after a successful login or token refresh
   const handleSuccessfulLogin = (data) => {
-    const expiresIn = 15 * 60 * 1000; // Token expiration time in milliseconds (15 minutes)
+    const expiresIn = 15 * 60 * 1000;
+    console.log("access token" + data.access);
     console.log("ID USER " + data.id_obj_user);
     setToken(data.access);
-    localStorage.setItem("token", data.access);
+    localStorage.setItem("token", data.refresh);
     setTokenExpiry(Date.now() + expiresIn);
+    setAccessToken(data.access);
     setUserData({
+      access: data.access,
       firstName: data.first_name,
       email: data.email,
       id_user: data.id_user,

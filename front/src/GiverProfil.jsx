@@ -18,10 +18,10 @@ const GiverProfil = (props) => {
     console.log(values.upload.fileList[0].originFileObj.name);
     let form_data = new FormData();
     form_data.append("appelation", values.input_appelation);
-    form_data.append("email", localStorage.getItem("email"));
+    form_data.append("email", userData.userData.email);
     form_data.append("description", values.input_description);
     form_data.append("phone", values.input_phone);
-    form_data.append("user", localStorage.getItem("ID"));
+    form_data.append("user", userData.userData.id_user);
     if (mdp) {
       form_data.append("password", values.mdp);
     }
@@ -35,11 +35,11 @@ const GiverProfil = (props) => {
 
     axios
       .post(
-        `http://localhost:8000/api/giver/${userData.id_obj_user}`,
+        `http://localhost:8000/api/giver/${userData.userData.id_obj_user}`,
         form_data,
         {
           headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
+            Authorization: "Bearer " + userData.userData.access,
           },
         }
       )
@@ -48,11 +48,11 @@ const GiverProfil = (props) => {
         console.log(changeDetected);
         if (changeDetected) {
           axios.delete(
-            `http://localhost:8000/api/update/adress/${userData.id_user}`,
+            `http://localhost:8000/api/update/adress/${userData.userData.id_user}`,
             form_data,
             {
               headers: {
-                Authorization: "Bearer " + localStorage.getItem("token"),
+                Authorization: "Bearer " + userData.userData.access,
               },
             }
           );
@@ -93,7 +93,7 @@ const GiverProfil = (props) => {
               axios
                 .post(`http://localhost:8000/api/create/adress`, form, {
                   headers: {
-                    Authorization: "Bearer " + localStorage.getItem("token"),
+                    Authorization: "Bearer " + userData.userData.access,
                   },
                 })
                 .then(() => {
@@ -140,21 +140,19 @@ upload: */
   const [adress, setAdress] = useState(null);
   const [width, setWidth] = useState(window.innerWidth);
   const [resultsAdress, setResultsAdress] = useState(null);
-  const [adresses, setAdresses] = useState();
+  const [adresses, setAdresses] = useState(0);
   const [arrayAdresses, setArrayAdresses] = useState([]);
   const [arrayAdd_ons, setArrayAdd_ons] = useState([]);
   const [mdp, setMdp] = useState(false);
   const [upload, setUpload] = useState(false);
   const fetchUserData = async () => {
-    console.log(
-      "ET VOILA USER !!" + JSON.stringify(userData.userData.id_obj_user)
-    );
+    console.log("ET VOILA USER !!" + JSON.stringify(userData.userData));
     try {
       const res = await axios.get(
         `http://localhost:8000/api/giver/${userData.userData.id_obj_user}`,
         {
           headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
+            Authorization: "Bearer " + userData.userData.access,
           },
         }
       );
@@ -165,7 +163,7 @@ upload: */
         `http://localhost:8000/api/giver/adress/${userData.userData.id_user}`,
         {
           headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
+            Authorization: "Bearer " + userData.userData.access,
           },
         }
       );
@@ -173,11 +171,13 @@ upload: */
       setArrayAdresses(res2.data);
       adressA.current = res2.data;
       console.log("RESULTS REQUEST" + JSON.stringify(res2.data));
+
       //  console.log("RESULTS REQUEST" + JSON.stringify(res.data));
-      setAdresses(res2.data.length);
-      setIsLoading(false);
+      // setAdresses(res2.data.length);
+
       //setFilters(res.data);
-      console.log("ADRESS" + adresses);
+      //  console.log("ADRESS" + adresses);
+      setIsLoading(false);
     } catch (err) {
       console.log(err);
     } finally {
@@ -187,9 +187,8 @@ upload: */
 
   const [changeDetected, setChangeDetected] = useState(false);
   useEffect(() => {
-    if (userData) {
-      // When userData is available, we stop loading
-
+    console.log("USER :" + JSON.stringify(userData));
+    if (userData.token !== null && userData.userData !== null) {
       try {
         fetchUserData();
       } catch (err) {
