@@ -278,7 +278,8 @@ class CourseListGiverCubView(ListAPIView):
 
 
 class CourseCreateView(APIView):
-    permission_classes = (IsGiver,)
+    
+    permission_classes = ( IsGiver,)
    # queryset = Course.objects.all()
   #  serializer_class = CourseSerializer
     parser_classes = (MultiPartParser, FormParser, JSONParser)

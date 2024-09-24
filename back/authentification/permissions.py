@@ -88,6 +88,7 @@ class IsAdminOrSuperUser(permissions.BasePermission):
 class IsGiver(permissions.BasePermission):
 
     def has_permission(self, request, view):
+        print(request)
         if request.user.is_authenticated:
             if request.user.user_type1 == 3 or request.user.user_type1 == 1:
                 return True

@@ -14,7 +14,7 @@ import {
 } from "antd";
 
 import MenuBrowser from "./MenuBrowser";
-
+import { useAuth } from "./AuthContext";
 import axios from "axios";
 import Footer from "./Footer";
 const CoursesToModify = (props) => {
@@ -34,7 +34,7 @@ const CoursesToModify = (props) => {
   const [city, setCity] = useState(null);
   const [datemax, setDatemax] = useState(null);
   const [state, setState] = useState(null);
-
+  const userData = useAuth();
   const onChangePrice = (price) => {
     console.log("LOW" + price[0]);
 
@@ -96,30 +96,36 @@ const CoursesToModify = (props) => {
 
   //  const request = useQuery();
   useEffect(() => {
-    localStorage.getItem("ID_user")
-      ? axios
+    const fetchUserData = async () => {
+      console.log("USER :" + JSON.stringify(userData));
+      await axios
 
-          .get(
-            `http://localhost:8000/api-course/giver/course/${localStorage.getItem(
-              "ID_user"
-            )}`,
-            {
-              headers: {
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              },
-            }
-          )
-          .then((res) => {
-            console.log("RESULTS REQUEST" + JSON.stringify(res.data));
-            setResults(res.data);
-            setFilters(res.data);
-          })
+        .get(
+          `http://localhost:8000/api-course/giver/course/${userData.userData.id_obj_user}`,
+          {
+            headers: {
+              Authorization: "Bearer " + userData.userData.access,
+            },
+          }
+        )
+        .then((res) => {
+          console.log("RESULTS REQUEST" + JSON.stringify(res.data));
+          setResults(res.data);
+          setFilters(res.data);
+        })
 
-          .catch((err) => console.log(err))
-      : setResults(null);
-  }, []);
+        .catch((err) => console.log(err));
+    };
+    if (userData !== null) {
+      try {
+        fetchUserData();
+      } catch (err) {
+        console.error("Error in useEffect:", err);
+      }
+    }
+  }, [userData]);
 
-  return (
+  return userData.access !== null && userData !== null ? (
     <BrowserView>
       <div key={activity} style={{ width: "100%", display: "inline-block" }}>
         <MenuBrowser
@@ -191,6 +197,8 @@ const CoursesToModify = (props) => {
         <Footer width={width} />{" "}
       </div>
     </BrowserView>
+  ) : (
+    <>Loading</>
   );
 };
 export default CoursesToModify;

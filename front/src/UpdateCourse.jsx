@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import MenuBrowser from "./MenuBrowser";
 
 import * as dayjs from "dayjs";
-
+import { useAuth } from "./AuthContext";
 import Footer from "./Footer";
 import { BrowserView, MobileView } from "react-device-detect";
 import {
@@ -424,7 +424,7 @@ const UpdateCourse = () => {
   const [imgs, setImgs] = useState([]);
   const [duoActivity, setDuoActivity] = useState(false);
   const [changeValue, setChangeValue] = useState(false);
-  const [free, setFree] = useState(courseDetails.free);
+  const [free, setFree] = useState(null);
   const [accessible, setAccessible] = useState(false);
   //offres
   const [modal_offre_visible, setModal_offre_visible] = useState(false);
@@ -502,59 +502,70 @@ const UpdateCourse = () => {
     });*/
     // console.log("HEY, PARAMS: " + JSON.stringify(params["courseID"]));
   }
+  const userData = useAuth();
   useEffect(() => {
-    const idGiver = localStorage.getItem("ID");
-    axios
-      .get(`http://localhost:8000/api/giver/adress/${idGiver}`)
-      .then((res) => {
-        setResults(res.data);
-        let mapArray = [];
-        console.log("RESULTS REQUEST" + JSON.stringify(res.data));
-        // setResults(res.data);
-        res.data.map((res) =>
-          mapArray.push({ label: res.name, value: res.id })
-        );
-        //mapArray = JSON.stringify(mapArray);
-        setMapResults(mapArray);
-        console.log("RESULTS ****" + JSON.stringify(mapArray));
-      });
-
     const courseID = params["courseID"];
-    try {
-      axios
-        .get(`http://localhost:8000/api-course/${courseID}`)
+    console.log("USER :" + JSON.stringify(userData));
+    const fetch_data = async () => {
+      await axios
+        .get(
+          `http://localhost:8000/api/giver/adress/${userData.userData.id_user}`
+        )
         .then((res) => {
-          console.log(res.data);
-          axios
-            .get(`http://localhost:8000/api-course/hours/${courseID}`)
-            .then((res2) => {
-              console.log("DAYJS " + res.data.date);
-              setDate_selected(res.data.value !== 0 ? res.data.date_fin : "");
-              console.log("WHY WHY " + res.data.date);
-              console.log("WHY WHY " + res.data.dateFin);
-              setDate(res.data.date);
-              setDateFin(res.data.dateFin);
-              setValue(res.data.value);
-              setCourseDetails(res.data);
-              setCategoryFinale(res.data.category);
-              setSelectedValue(res.data.seats);
-              //setValue(res.data.value);
-              setSeats(res.data.seats);
+          setResults(res.data);
+          let mapArray = [];
+          console.log("RESULTS REQUEST" + JSON.stringify(res.data));
+          // setResults(res.data);
+          res.data.map((res) =>
+            mapArray.push({ label: res.name, value: res.id })
+          );
+          //mapArray = JSON.stringify(mapArray);
+          setMapResults(mapArray);
+          console.log("RESULTS ****" + JSON.stringify(mapArray));
+        });
+      try {
+        await axios
+          .get(`http://localhost:8000/api-course/${courseID}`)
+          .then((res) => {
+            console.log(res.data);
+            axios
+              .get(`http://localhost:8000/api-course/hours/${courseID}`)
+              .then((res2) => {
+                console.log("DAYJS " + res.data.date);
+                setDate_selected(res.data.value !== 0 ? res.data.date_fin : "");
+                console.log("WHY WHY " + res.data.date);
+                console.log("WHY WHY " + res.data.dateFin);
+                setDate(res.data.date);
+                setDateFin(res.data.dateFin);
+                setValue(res.data.value);
+                setCourseDetails(res.data);
+                setCategoryFinale(res.data.category);
+                setSelectedValue(res.data.seats);
+                setFree(res.data.free);
+                setSeats(res.data.seats);
 
-              console.log("HOURSHOURSHOURS" + res2.data[0].seats);
-              setHours(res2.data);
-            })
-            .catch((e) => console.log(e));
-        })
-        .catch((e) => console.log(e));
+                console.log("HOURSHOURSHOURS" + res2.data[0].seats);
+                setHours(res2.data);
+              })
+              .catch((e) => console.log(e));
+          })
+          .catch((e) => console.log(e));
 
-      //setCategory(category_courseDetails(res.data.category));
+        //setCategory(category_courseDetails(res.data.category));
 
-      //console.log("RES 3   " + JSON.stringify(course));
-    } catch (error) {
-      console.log(error);
+        //console.log("RES 3   " + JSON.stringify(course));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (userData.token !== null && userData.userData !== null) {
+      try {
+        fetch_data();
+      } catch (err) {
+        console.error("Error in useEffect:", err);
+      }
     }
-  }, []);
+  }, [params, userData]);
   const convert = (input) => {
     if (input) {
       return "True";
@@ -563,27 +574,27 @@ const UpdateCourse = () => {
     }
   };
   const onFinish = (values) => {
-    if (this.state.listAtt.length > 0) {
+    if (listAtt.length > 0) {
       axios.delete(
         `http://localhost:8000/api-course/del/offers/${params["courseID"]}`,
         {
           headers: {
             "content-type": "multipart/form-data",
-            Authorization: "Bearer " + localStorage.getItem("token"),
+            Authorization: "Bearer " + userData.userData.access,
           },
         }
       );
-      for (let i = 0; i < this.state.listAtt.length; i += 3) {
+      for (let i = 0; i < listAtt.length; i += 3) {
         let form = new FormData();
-        form.append("seatsFirst", this.state.listAtt[i]);
+        form.append("seatsFirst", listAtt[i]);
         form.append("course", params["courseID"]);
-        form.append("seatsLast", this.state.listAtt[i + 1]);
-        form.append("price", this.state.listAtt[i + 2]);
+        form.append("seatsLast", listAtt[i + 1]);
+        form.append("price", listAtt[i + 2]);
         axios
           .post("http://localhost:8000/api-course/create/offers/", form, {
             headers: {
               "content-type": "multipart/form-data",
-              Authorization: "Bearer " + localStorage.getItem("token"),
+              Authorization: "Bearer " + userData.userData.access,
             },
           })
 
@@ -731,7 +742,7 @@ const UpdateCourse = () => {
     values.autocomplete != null
       ? form_data.append("sub_category", values.autocomplete)
       : form_data.append("sub_category", courseDetails.sub_category);
-    form_data.append("owner", 1);
+    form_data.append("owner", userData.userData.id_obj_user);
 
     form_data.append(" courseHourIsCreated", "True");
     // console.log("***isIntermediate", convert(isIntermediate));
@@ -768,11 +779,14 @@ const UpdateCourse = () => {
             form.append("hourFin", time2);
 
             form.append("seats", list2[2][iteration_list1]);
+            console.log("COURS HOURS " + JSON.stringify(form));
             axios
               .post("http://localhost:8000/api-course/create/hours/", form, {
                 headers: { "content-type": "multipart/form-data" },
               })
-              .then((res1) => {})
+              .then((res1) => {
+                message("COURS CREE ");
+              })
               .catch((err) => {
                 console.log("ERROR1", err.response);
               });

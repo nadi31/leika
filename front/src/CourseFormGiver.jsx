@@ -179,11 +179,13 @@ class CourseForm extends React.Component {
   }
   componentDidMount() {
     const { userData } = this.props;
+    this.setState({ userData: userData });
 
     // Call fetch_data initially if userData is available on mount
     if (userData && userData.id_user) {
       this.fetchData(userData.id_user);
     }
+
     window.addEventListener("resize", () => {
       this.setState({ width: window.innerWidth });
       console.log(window.innerWidth);
@@ -824,6 +826,7 @@ class CourseForm extends React.Component {
   //const tasks = Object.values(data.tasks);
 
   handleSubmit(fieldsValue, userData) {
+    console.log("userData " + userData.access);
     console.log("MOMENT " + fieldsValue["time_picker_b"].format("HH:mm"));
     console.log("DATE1 " + fieldsValue["range_date"][0].format("YYYY-MM-DD"));
     const convert = (input) => {
@@ -977,8 +980,8 @@ class CourseForm extends React.Component {
         return dayjs(date_selected).format("YYYY-MM-DD");
       }
     };
-    console.log("USER: " + this.state.userData.id_obj_user);
-    console.log("type: " + typeof this.state.userData.id_obj_user);
+    console.log("USER: " + userData.access);
+    console.log("type: " + userData.id_obj_user);
 
     let form_data = new FormData();
     form_data.append("accroche", fieldsValue.accroche_input);
@@ -1039,7 +1042,7 @@ class CourseForm extends React.Component {
 
     form_data.append("category", category);
     form_data.append("sub_category", fieldsValue.autocomplete);
-    form_data.append("owner", this.state.userData.id_user);
+    form_data.append("owner", userData.id_obj_user);
 
     form_data.append(" courseHourIsCreated", convert(true));
 
@@ -1112,7 +1115,7 @@ class CourseForm extends React.Component {
               .post("http://localhost:8000/api-course/create/hours/", form, {
                 headers: {
                   "content-type": "multipart/form-data",
-                  Authorization: "Bearer " + localStorage.getItem("token"),
+                  Authorization: "Bearer " + userData.access,
                 },
               })
               .then((res1) => {})
@@ -1383,11 +1386,13 @@ class CourseForm extends React.Component {
             <Spin />
           ) : (
             <Form
-              name="time_related_controls"
               {...formItemLayout}
-              onFinish={(values) =>
-                this.handleSubmit(values, this.state.userData)
-              }
+              name="time_related_controls"
+              onFinish={(values) => {
+                this.setState({ userData: this.props }, () => {
+                  this.handleSubmit(values, userData);
+                });
+              }}
             >
               <Form.Item
                 name="title_input"
