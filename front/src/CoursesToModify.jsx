@@ -125,7 +125,10 @@ const CoursesToModify = (props) => {
     }
   }, [userData]);
 
-  return userData.access !== null && userData !== null ? (
+  return userData.userData.id_obj_user !== null ||
+    (userData.userData.id_obj_user !== undefined &&
+      userData.access !== null &&
+      userData !== null) ? (
     <BrowserView>
       <div key={activity} style={{ width: "100%", display: "inline-block" }}>
         <MenuBrowser

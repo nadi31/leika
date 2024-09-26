@@ -1153,9 +1153,12 @@ class CourseForm extends React.Component {
               Authorization: "Bearer " + userData.access,
             },
           })
-          .then((res2) => {})
+          .then((res2) => {
+            message.success("Cours crée avec succés !", 10);
+          })
           .catch((err1) => {
             console.log("ERROR2", err1);
+            message.error("Aie: Erreur", 10);
           });
       })
       .catch((err) => {

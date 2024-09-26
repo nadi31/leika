@@ -94,7 +94,7 @@ class Course(models.Model):
     #  'authentification.Adress', related_name='courses', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.title
+        return  "#"+ str(self.id) + "- "+ self.title 
 
   #  def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
   #      prev_name = str(self.img.url).split('/media/')
@@ -114,6 +114,9 @@ class CourseHour(models.Model):
     dateFin = models.DateField(default=None, blank=False, null=False)
     hourFin = models.TimeField(null=True, blank=True)
     seats = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return str( self.course) + " course_hour" 
 
 
 class Offers(models.Model):
