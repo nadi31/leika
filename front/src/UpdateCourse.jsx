@@ -1,5 +1,5 @@
 import React from "react";
-import { fromUnixTime, format } from "date-fns";
+import { fromUnixTime, format, parse } from "date-fns";
 
 import axios from "axios";
 import { useState, useEffect, useLayoutEffect } from "react";
@@ -629,10 +629,11 @@ const UpdateCourse = () => {
     const date3 = (date2, date_selected) => {
       if (date_selected === "") {
         console.log("DATE3333", date2);
-        return date2;
+
+        return format(date2, "yyyy-MM-dd");
       } else {
         console.log("DATE3", typeof date_selected);
-        return date_selected;
+        return format(date_selected, "yyyy-MM-dd");
       }
     };
 
@@ -777,6 +778,42 @@ const UpdateCourse = () => {
         console.log("**VALUE**", value);
         console.log("LENGTH" + list2);
 
+        let form = new FormData();
+        form.append("course", params["courseID"]);
+        form.append(
+          "date",
+          values["range_date_debut"] ? dateDeb : courseDetails.date
+        );
+        form.append(
+          "dateFin",
+          values["range_date_fin"] ? dateFin : courseDetails.dateFin
+        );
+        form.append(
+          "hour",
+          values["time_picker_b"] ? time1 : courseDetails.hour
+        );
+        form.append(
+          "hourFin",
+          values["time_picker_e"] ? time2 : courseDetails.hourFin
+        );
+
+        form.append("seats", courseDetails.seats);
+        console.log("COURS HOURS " + JSON.stringify(form));
+        axios
+          .post("http://localhost:8000/api-course/create/hours/", form, {
+            headers: {
+              "content-type": "multipart/form-data",
+              Authorization: "Bearer " + userData.userData.access,
+            },
+          })
+          .then(() => {
+            message.success("Cours modifié avec succès! ", 10);
+          })
+          .catch((err) => {
+            console.log("ERROR1", err);
+            message.error("Aie : Erreur ", 10);
+          });
+
         if (value > 0 && changeValue) {
           for (
             let iteration_list1 = 0;
@@ -785,9 +822,24 @@ const UpdateCourse = () => {
           ) {
             //console.log("SEATS, "+list2[2][iteration_list1]);
             let form = new FormData();
+            console.log("Première valeur " + list2[0][iteration_list1]);
+            console.log("Deuxième valeur " + list2[1][iteration_list1]);
             form.append("course", params["courseID"]);
-            form.append("date", list2[0][iteration_list1]);
-            form.append("dateFin", list2[1][iteration_list1]);
+            form.append(
+              "date",
+              format(
+                parse(list2[0][iteration_list1], "dd/MM/yyyy", new Date()),
+                "yyyy-MM-dd"
+              )
+            );
+            form.append(
+              "dateFin",
+              format(
+                parse(list2[0][iteration_list1], "dd/MM/yyyy", new Date()),
+                "yyyy-MM-dd"
+              )
+            );
+
             form.append("hour", time1);
             form.append("hourFin", time2);
 
@@ -795,52 +847,21 @@ const UpdateCourse = () => {
             console.log("COURS HOURS " + JSON.stringify(form));
             axios
               .post("http://localhost:8000/api-course/create/hours/", form, {
-                headers: { "content-type": "multipart/form-data" },
+                headers: {
+                  "content-type": "multipart/form-data",
+                  Authorization: "Bearer " + userData.userData.access,
+                },
               })
               .then((res1) => {
                 console.log("COURS CREE");
+
+                message.success("Périodicité modifiée avec succès! ", 10);
               })
               .catch((err) => {
-                console.log("ERROR1", err.response);
+                console.log("ERROR1", err);
+                message.error("Aie : Erreur ", 10);
               });
           }
-        }
-        if (value === 0 || value === undefined || value === null) {
-          let form = new FormData();
-          form.append("course", params["courseID"]);
-          form.append(
-            "date",
-            values["range_date_debut"] ? dateDeb : courseDetails.date
-          );
-          form.append(
-            "dateFin",
-            values["range_date_fin"] ? dateFin : courseDetails.dateFin
-          );
-          form.append(
-            "hour",
-            values["time_picker_b"] ? time1 : courseDetails.hour
-          );
-          form.append(
-            "hourFin",
-            values["time_picker_e"] ? time2 : courseDetails.hourFin
-          );
-
-          form.append("seats", courseDetails.seats);
-          console.log("COURS HOURS " + JSON.stringify(form));
-          axios
-            .post("http://localhost:8000/api-course/create/hours/", form, {
-              headers: {
-                "content-type": "multipart/form-data",
-                Authorization: "Bearer " + userData.userData.access,
-              },
-            })
-            .then(() => {
-              message.success("Cours modifié avec succès! ", 10);
-            })
-            .catch((err) => {
-              console.log("ERROR1", err);
-              message.error("Aie : Erreur ", 10);
-            });
         }
       });
   };
@@ -1006,7 +1027,7 @@ const UpdateCourse = () => {
                 maxCount={3}
                 listType="picture"
                 multiple
-                accept=".jpeg, .png"
+                accept=".jpeg, .png, .jpg"
                 beforeUpload={() => false}
               >
                 <Button>

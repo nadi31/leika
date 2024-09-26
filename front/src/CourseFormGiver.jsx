@@ -1730,7 +1730,7 @@ class CourseForm extends React.Component {
                   maxCount={3}
                   listType="picture"
                   multiple
-                  accept=".jpeg, .png"
+                  accept=".jpeg, .png, .jpg"
                   beforeUpload={() => false}
                 >
                   <Button>

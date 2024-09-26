@@ -243,7 +243,7 @@ upload: */
               listType="picture"
               //multiple
               onChange={() => setUpload(true)}
-              accept=".jpeg, .png"
+              accept=".jpeg, .png, .jpg"
               beforeUpload={() => false}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
