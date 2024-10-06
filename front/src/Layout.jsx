@@ -3,7 +3,7 @@ import AuthProvider from "./AuthContext";
 import "./style/style.css";
 import { BrowserRouter as Router } from "react-router-dom";
 import BaseRouter from "./routes";
-
+import { LoadScript } from "@react-google-maps/api";
 import "antd/dist/reset.css";
 
 //import DeviceEmulator from 'react-device-emulator';
@@ -15,7 +15,7 @@ function Layout() {
   return (
     <Router>
       <AuthProvider>
-        <BaseRouter />,
+        <BaseRouter />
       </AuthProvider>
     </Router>
   );

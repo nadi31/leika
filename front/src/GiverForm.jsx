@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useSearchParams, useLocation } from "react-router-dom";
-import { useNavigate, withRouter } from "react-router-dom";
 
-import { BrowserView, MobileView } from "react-device-detect";
+import GooglePlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng,
+} from "react-google-places-autocomplete";
+
+import { BrowserView } from "react-device-detect";
 
 import { UploadOutlined } from "@ant-design/icons";
 import {
@@ -18,13 +21,31 @@ import {
   Switch,
   Button,
 } from "antd";
-
+import { APIProvider, useMapsLibrary } from "@vis.gl/react-google-maps";
 import MenuBrowser from "./MenuBrowser";
-
+import { useAuth } from "./AuthContext";
 import axios from "axios";
 import Footer from "./Footer";
 
 const GiverForm = (props) => {
+  const userData = useAuth();
+  const [valueAdress, setValueAdress] = useState(null);
+  const API_KEY = "AIzaSyDNvRrdKaNa67E4OFRsZGsmrbpqsQLUAUM";
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [placeAutocomplete, setPlaceAutocomplete] = useState(null);
+  const inputRef = useRef(null);
+  const places = useMapsLibrary("places");
+  const onPlaceSelect = (value) => {
+    console.log("Adresse: " + JSON.stringify(value));
+    setValueAdress(value.label);
+
+    setArrayAdresses([...arrayAdresses, value.label]);
+    tabAdress.current = [...tabAdress.current, value.label];
+  };
+  const handleSelectAddress = (address) => {
+    setSelectedAddress(address);
+  };
   const [response, setResponse] = useState();
   const tabAdress = useRef([]);
   const [results, setResults] = useState([]);
@@ -34,11 +55,29 @@ const GiverForm = (props) => {
   const [adresses, setAdresses] = useState(0);
   const [arrayAdresses, setArrayAdresses] = useState([]);
   const [arrayAdd_ons, setArrayAdd_ons] = useState([]);
-  const onPlaceSelect = (value) => {
-    console.log(JSON.stringify(value));
-    setArrayAdresses([...arrayAdresses, value]);
-    tabAdress.current = [...tabAdress.current, value];
-    console.log(JSON.stringify(tabAdress.current));
+  const [city, setCity] = useState("");
+  const adressA = useRef([]);
+  const placeSelect = (e) => {
+    console.log("LON *" + e.properties.lon);
+    adressA.current = [...adressA.current, e.properties];
+    //arrayAdresses[idx] = e.properties;
+    //  setArrayAdresses([...arrayAdresses, e.properties]);
+    console.log(adressA.current);
+    //   setChangeDetected(true);
+  };
+  const handlePlaceSelected = (place) => {
+    if (place && place.formatted_address) {
+      console.log(place.formatted_address);
+
+      setArrayAdresses([...arrayAdresses, place.formatted_address]);
+      tabAdress.current = [...tabAdress.current, place.formatted_address];
+      console.log(JSON.stringify(tabAdress.current));
+    }
+  };
+  const options = {
+    componentRestrictions: { country: "fr" },
+    fields: ["address_components", "geometry", "icon", "name"],
+    strictBounds: false,
   };
 
   const getResponse = (value) => {
@@ -47,10 +86,8 @@ const GiverForm = (props) => {
   };
 
   const [width, setWidth] = useState(window.innerWidth);
-  const [value, setValue] = useState(null);
-  useEffect(() => {
-    //await ().then(async () => {
 
+  useEffect(() => {
     const pass =
       Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
     setPassword(pass);
@@ -100,62 +137,54 @@ const GiverForm = (props) => {
       .post(`http://localhost:8000/api/create/giver`, form_data, {
         headers: {
           "content-type": "multipart/form-data",
-          Authorization: "Bearer " + localStorage.getItem("token"),
+          Authorization: "Bearer " + userData.userData.access,
         },
       })
+
       .then((res) => {
         console.log("TABADRESS", tabAdress);
+
         arrayAdresses.map(
           (adress, idx) => {
-            console.log("ADR" + JSON.stringify(tabAdress.current[idx]));
-            console.log(
-              "ADRESS" +
-                JSON.stringify(tabAdress.current[idx].geometry.coordinates[1])
-            );
-            console.log(password);
-            const lat = tabAdress.current[idx].properties.lat;
-            const lng = tabAdress.current[idx].properties.lon;
-            console.log(
-              "lat1 : " +
-                tabAdress.current[idx].properties.lat +
-                "long " +
-                tabAdress.current[idx].properties.lon
-            );
+            console.log("ADREE :" + adress);
+            geocodeByAddress(adress).then((results) => {
+              console.log(
+                "GEO RESULT :" + JSON.stringify(results[0].geometry.location)
+              );
+              const lat = results[0].geometry.location.lat();
+              const lng = results[0].geometry.location.lng();
 
-            setLat(lat);
-            setLng(lng);
-            //const keyGeo = "ea16b50fa61c47faa5c3cd8fc43eeb44";
-            //const url = `https://api.geoapify.com/v1/geocode/search?text=1214-1224${adress}&format=json&apiKey=${keyGeo}`;
-            form.append("lat", lat);
-            form.append("lng", lng);
-            form.append("name", tabAdress.current[idx].properties.formatted);
-            form.append("giver", res.data[0]);
-            form.append("city", tabAdress.current[idx].properties.city);
-            //form.append("apartment_number", values.input_adress_apt_number);
-            form.append("country", tabAdress.current[idx].properties.country);
-            form.append("add_ons", arrayAdd_ons[idx]);
-            //  Geocode.setApiKey("AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4");
-            //Geocode.fromAddress(adress.value.description).then(
-            //(response) => {
+              const parts = tabAdress.current[idx].split(",");
+              console.log("LAT :" + lat);
 
-            console.log("lat2 : " + lat + "long " + lng);
+              form.append("lat", lat);
+              form.append("lng", lng);
+              const city = parts[parts.length - 2]?.trim();
+              const country = parts[parts.length - 1]?.trim();
 
-            //OULA
-            console.log(values);
-            axios
-              .post(`http://localhost:8000/api/create/adress`, form, {
-                headers: {
-                  "content-type": "multipart/form-data",
-                  Authorization: "Bearer " + localStorage.getItem("token"),
-                },
-              })
-              .then((res) => {
-                message.success("Profil créé avec succès", 10);
-              })
-              .catch((err) => {
-                message.error("Erreur", 10);
-                console.log(err);
-              });
+              form.append("name", tabAdress.current[idx]);
+              form.append("giver", res.data[0]);
+              form.append("city", city);
+              //form.append("apartment_number", values.input_adress_apt_number);
+              form.append("country", country);
+              form.append("add_ons", arrayAdd_ons[idx]);
+
+              console.log(values);
+              axios
+                .post(`http://localhost:8000/api/create/adress`, form, {
+                  headers: {
+                    "content-type": "multipart/form-data",
+                    Authorization: "Bearer " + userData.userData.access,
+                  },
+                })
+                .then((res) => {
+                  message.success("Profil créé avec succès", 10);
+                })
+                .catch((err) => {
+                  message.error("Erreur", 10);
+                  console.log(err);
+                });
+            });
           },
           (error) => {
             console.error(error);
@@ -189,7 +218,7 @@ const GiverForm = (props) => {
               maxCount={1}
               listType="picture"
               //multiple
-              accept=".jpeg, .png"
+              accept=".jpeg, .png, .jpg"
               beforeUpload={() => false}
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
@@ -208,65 +237,83 @@ const GiverForm = (props) => {
             <Input placeholder="email" />
           </Form.Item>
           <Form.Item name="input_adress_rue" label="Adresse ">
-            <Form.Item name="input_adress_add_ons" label="Compléments ">
-              <Input
-                onBlur={(e) => {
-                  setArrayAdd_ons([...arrayAdd_ons, e.target.value]);
-                }}
-                placeholder="Numéro d'appartement... "
-              />
-            </Form.Item>
-            <p>
-              Ajouter une adresse:{" "}
+            <GooglePlacesAutocomplete
+              apiKey={API_KEY}
+              selectProps={{
+                valueAdress,
+                onChange: onPlaceSelect,
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item name="input_adress_add_ons" label="Compléments ">
+            <Input
+              onBlur={(e) => {
+                setArrayAdd_ons([...arrayAdd_ons, e.target.value]);
+              }}
+              placeholder="Numéro d'appartement... "
+            />
+          </Form.Item>
+          <p>
+            Ajouter une adresse:{" "}
+            <Button
+              style={{ width: "10%" }}
+              onClick={() => {
+                setAdresses(adresses + 1);
+              }}
+            >
+              +
+            </Button>
+          </p>
+          {Array.from({ length: adresses }).map((idx) => (
+            <>
+              <Form.Item name="input_adress_rue" label="Adresse ">
+                <GooglePlacesAutocomplete
+                  apiKey={API_KEY}
+                  selectProps={{
+                    valueAdress,
+                    onChange: onPlaceSelect,
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name={"input_adress_add_ons" + idx}
+                label="Compléments "
+              >
+                <Input
+                  onBlur={(e) => {
+                    setArrayAdd_ons([...arrayAdd_ons, e.target.value]);
+                  }}
+                  placeholder="Numéro d'appartement... "
+                />
+              </Form.Item>
               <Button
                 style={{ width: "10%" }}
                 onClick={() => {
-                  setAdresses(adresses + 1);
+                  setAdresses(adresses - 1);
+                  if (adresses < arrayAdresses.length) {
+                    arrayAdresses.pop();
+                    arrayAdd_ons.pop();
+                    console.log(JSON.stringify(arrayAdresses));
+                  }
                 }}
               >
-                +
+                -
               </Button>
-            </p>
-            {Array.from({ length: adresses }).map((idx) => (
-              <>
-                <Form.Item
-                  name={"input_adress_add_ons" + idx}
-                  label="Compléments "
-                >
-                  <Input
-                    onBlur={(e) => {
-                      setArrayAdd_ons([...arrayAdd_ons, e.target.value]);
-                    }}
-                    placeholder="Numéro d'appartement... "
-                  />
-                </Form.Item>
+              <p>
+                Ajouter une adresse:{" "}
                 <Button
                   style={{ width: "10%" }}
                   onClick={() => {
-                    setAdresses(adresses - 1);
-                    if (adresses < arrayAdresses.length) {
-                      arrayAdresses.pop();
-                      arrayAdd_ons.pop();
-                      console.log(JSON.stringify(arrayAdresses));
-                    }
+                    setAdresses(adresses + 1);
                   }}
                 >
-                  -
+                  +
                 </Button>
-                <p>
-                  Ajouter une adresse:{" "}
-                  <Button
-                    style={{ width: "10%" }}
-                    onClick={() => {
-                      setAdresses(adresses + 1);
-                    }}
-                  >
-                    +
-                  </Button>
-                </p>
-              </>
-            ))}
-          </Form.Item>
+              </p>
+            </>
+          ))}
 
           <Form.Item>
             <Button type="primary" htmlType="submit">

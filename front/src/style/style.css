@@ -13,6 +13,10 @@
 @import "~leaflet/dist/leaflet.css";
 
 /* end testing map */
+.autocomplete-input::placeholder {
+  color: lightgrey; /* Change placeholder text color to light grey */
+  opacity: 1; /* Ensure full opacity on all browsers */
+}
 
 #icons {
   line-height: 19px;

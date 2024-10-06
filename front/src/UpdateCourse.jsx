@@ -426,6 +426,7 @@ const UpdateCourse = () => {
   const [duoActivity, setDuoActivity] = useState(false);
   const [changeValue, setChangeValue] = useState(false);
   const [free, setFree] = useState(null);
+  const [price, setPrice] = useState(null);
   const [accessible, setAccessible] = useState(false);
   //offres
   const [modal_offre_visible, setModal_offre_visible] = useState(false);
@@ -593,12 +594,14 @@ const UpdateCourse = () => {
           },
         }
       );
+      console.log("HERE THE COMPLETE LIST : " + JSON.stringify(listAtt));
       for (let i = 0; i < listAtt.length; i += 3) {
         let form = new FormData();
         form.append("seatsFirst", listAtt[i]);
         form.append("course", params["courseID"]);
         form.append("seatsLast", listAtt[i + 1]);
         form.append("price", listAtt[i + 2]);
+        console.log("HERE **** OFFERS" + form);
         axios
           .post("http://localhost:8000/api-course/create/offers/", form, {
             headers: {
@@ -1058,7 +1061,7 @@ const UpdateCourse = () => {
               <></>
             )}
             {/*ofress*/}
-            <span style={{ marginLeft: 150 }}>
+            {/*     <span style={{ marginLeft: 150 }}>
               Offres de groupe:{" "}
               <Button
                 type="primary"
@@ -1073,8 +1076,8 @@ const UpdateCourse = () => {
                   marginTop: -60,
                 }}
               ></Button>{" "}
-            </span>
-            <Modal
+            </span> */}
+            {/*      <Modal
               title="Offres si réservations de plusieurs places"
               footer={[
                 <Button
@@ -1157,7 +1160,12 @@ const UpdateCourse = () => {
                       //style={{ position: "absolute", marginLeft: 300 }}
                       onBlur={(e) => {
                         console.log("VAL" + e.target.value);
-                        setListAtt([...listAtt, e.target.value]);
+                        setListAtt((prevState) => [
+                          ...prevState,
+                          e.target.value,
+                        ]);
+                        //setListAtt([...listAtt, e.target.value]);
+                        console.log("THE LIST WITH THE PRICE *** : " + listAtt);
                       }}
                       min={0}
                       max={10000}
@@ -1223,7 +1231,7 @@ const UpdateCourse = () => {
                   </p>
                 ))}
               </Form>
-            </Modal>
+            </Modal> */}
             <Form.Item name="switch_remote" label="Activité en ligne">
               <Switch defaultChecked={courseDetails.isRemote} />
             </Form.Item>

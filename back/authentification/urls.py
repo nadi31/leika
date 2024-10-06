@@ -14,6 +14,7 @@ urlpatterns = [
     path('cub/phone/<pk>', CubPhoneView.as_view()),
     path('cub/mdp/<pk>', CubUpdateMdpView.as_view()),
     path('cub/', CubList.as_view()),
+   
     path('create/giver', GiverCreateView.as_view()),
     path('create/adress', AdressCreateView.as_view()),
     path('update/adress/<pk>', AdressUpdateCreateView.as_view()),
@@ -28,6 +29,7 @@ urlpatterns = [
     path('pros/add', ProspectView.as_view()),
     path('user', UserOublieView.as_view()),
     path('giver/adress/<pk>', AdressesGiverView.as_view()),
+   
   
     
     #

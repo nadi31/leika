@@ -819,7 +819,7 @@ const ProductDetail = (props) => {
                 {course.price} € pour 1 place
               </span>
               <br /> <br />
-              <span>
+              {/* <span>
                 {offers !== null ? (
                   <>
                     <ThunderboltTwoTone twoToneColor="ffa940 " />
@@ -841,7 +841,7 @@ const ProductDetail = (props) => {
                     ))}
                   </>
                 ) : null}
-              </span>
+              </span> */}
               <br />
               <br />
               {width <= 1200 ? (

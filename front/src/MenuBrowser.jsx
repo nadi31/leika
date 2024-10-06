@@ -813,7 +813,7 @@ const MenuBrowser = (props) => {
                   trigger={["click"]}
                   overlay={() => (
                     <Menu>
-                      {userData.userType === "1" ? (
+                      {userData.user_type === 1 ? (
                         <Menu onClick={(e) => handleMenuConnexionAdmin(e)}>
                           <Menu.Item key="1">Créer un giver</Menu.Item>
                           <Menu.Item key="2">Créer une expérience</Menu.Item>
@@ -821,20 +821,20 @@ const MenuBrowser = (props) => {
                           <Menu.Item key="4">Se déconnecter</Menu.Item>
                           <Menu.Item key="5">Cours à vérifier</Menu.Item>
                         </Menu>
-                      ) : userData.userType === "2" ? (
+                      ) : userData.user_type === 2 ? (
                         <Menu onClick={(e) => handleMenuConnexionCub(e)}>
                           <Menu.Item key="1">Mes commandes</Menu.Item>
                           <Menu.Item key="2">Mon profil</Menu.Item>
                           <Menu.Item key="3">Se déconnecter</Menu.Item>
                         </Menu>
-                      ) : (
+                      ) : userData.user_type === 3 ? (
                         <Menu onClick={(e) => handleMenuConnexionGiver(e)}>
                           <Menu.Item key="1">Créer un cours</Menu.Item>
                           <Menu.Item key="2">Modifier un cours </Menu.Item>
                           <Menu.Item key="3">Mon Compte </Menu.Item>
                           <Menu.Item key="5">Se déconnecter</Menu.Item>
                         </Menu>
-                      )}
+                      ) : null}
                     </Menu>
                   )}
                 >

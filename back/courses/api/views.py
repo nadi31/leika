@@ -705,11 +705,25 @@ class OfferssDelView(APIView):
 
     def delete(self, request, *args, **kwargs):
         print("FILTER " + self.kwargs['pk'])
-        Offers.objects.filter(course=self.kwargs['pk']).delete()
-        #courses = CourseHour.objects.filter(course=self.kwargs['pk'])
-        #serializer = OffersSerializer(off, many=True)
-        status = status.HTTP_204_NO_CONTENT
-        return Response(status)
+    
+    # Filter the offers associated with the course
+        offers = Offers.objects.filter(course=self.kwargs['pk'])
+    
+        if offers.exists():
+        # If offers exist, delete them
+            offers.delete()
+        # Return 204 No Content to indicate successful deletion
+            status_code = status.HTTP_204_NO_CONTENT
+            message = {"detail": "Offers successfully deleted."}
+        else:
+        # If no offers exist, return 404 Not Found
+            status_code = status.HTTP_200
+            message = {"detail": "No offers found for the given course."}
+    
+        return Response(data=message, status=status_code)
+
+
+
 
 
 class CourseHoursCreateView(APIView):

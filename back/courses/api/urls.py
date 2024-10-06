@@ -33,6 +33,7 @@ urlpatterns = [
     path('giver/online/course/<pk>', CourseGiveOnlineView.as_view(),),
     path('admin/course/verify/', CourseAdminOnlineView.as_view(),),
     path('wishlist/<pk>', WishlistView.as_view(),),
+     
 
 
 ]

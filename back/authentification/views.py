@@ -190,9 +190,13 @@ class TokenView(APIView):
         t = Token.objects.get(
             key=self.kwargs['token'])
         print(t.user)
-        myser = MyUser.objects.filter(
+        myUser = MyUser.objects.filter(
             email=t.user)
-        serializer = MyUserSerializer(myser, many=True)
+       
+        myUser.update(
+            is_active=True)
+        print("USER ACTIVATED")
+        serializer = MyUserSerializer(myUser, many=True)
         print("SERIALIZER2**", serializer)
         res = serializer.data
 
@@ -597,7 +601,7 @@ class CustomUserCreate(APIView):
             user = serializer.save()
             print("USER_ID" + str(user.user_id))
             # 1. créer le token
-
+            myu = MyUser.objects.get(email=request.data['email'])
             token = Token.objects.create(user=user)
             print("TOK "+request.data[
                 'email'])
@@ -606,8 +610,7 @@ class CustomUserCreate(APIView):
                 'email']
 
             verify_link = "http://localhost:3000/email-verify/" + token.key
-            html_content = render_to_string('email.html', {'first_name': request.data[
-                'first_name'],
+            html_content = render_to_string('emailGiver.html', {'first_name': myy.first_name,
                 'verify_link': verify_link, 'base_url': "http://localhost:3000/", })
             text_content = strip_tags(html_content)
             msg = EmailMultiAlternatives(
@@ -627,6 +630,15 @@ class CustomUserCreate(APIView):
         else:
             print('error', serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class MyUsers(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request, *args, **kwargs):
+        # user = MyUser.objects.all()
+        user = MyUser.objects.all()
+        serializer = MyUserSerializer(user, many=True)
+        # cub = user.cub_set.all()
+        return Response(serializer.data)
 
 
 class CubList(APIView):
@@ -801,12 +813,12 @@ class GiverCreateView(APIView):
                 'email'])
             # 2. envoie du mail
             password = request.data.get("password")
-            subject, from_email, to = 'Inscription Leikka: ' + password, settings.EMAIL_HOST_USER, request.data[
+            subject, from_email, to = 'Inscription Leikka: ' + request.data.get("appelation"), settings.EMAIL_HOST_USER, request.data[
                 'email']
 
             verify_link = "http://localhost:3000/email-verify-giver/" + token.key
-            html_content = render_to_string('email.html', {'first_name':  "GIVER",
-                                                           'verify_link': verify_link, 'base_url': "http://localhost:3000/", })
+            html_content = render_to_string('email.html', {'first_name':  request.data.get("appelation") ,
+                                                          'password': password, 'verify_link': verify_link, 'base_url': "http://localhost:3000/", })
             text_content = strip_tags(html_content)
             msg = EmailMultiAlternatives(
                 subject, text_content, from_email, [to])

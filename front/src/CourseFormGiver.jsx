@@ -1820,7 +1820,7 @@ class CourseForm extends React.Component {
               <span style={{ marginLeft: 150 }}>
                 {" "}
                 Offres de groupe:{" "}
-                <Button
+                {/*   <Button
                   type="primary"
                   onClick={() => {
                     var list = [];
@@ -1835,7 +1835,7 @@ class CourseForm extends React.Component {
                   }}
                 >
                   <PoundOutlined />
-                </Button>{" "}
+                </Button>{" "} */}
               </span>
               <Modal
                 title="Offres si réservations de plusieurs places"
