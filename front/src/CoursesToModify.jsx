@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useLocation } from "react-router-dom";
-import { useNavigate, withRouter } from "react-router-dom";
+
 import { BrowserView, MobileView } from "react-device-detect";
 import {
   Card,
@@ -19,15 +19,9 @@ import axios from "axios";
 import Footer from "./Footer";
 const CoursesToModify = (props) => {
   const [results, setResults] = useState([]);
-  const [req, setReq] = useState(null);
-  const [range, setRange] = useState(null);
-  const [resFilters, setResFilters] = useState(null);
-  const [prix, setPrix] = useState(null);
-  const [seats, setSeats] = useState(null);
+
   const [filters, setFilters] = useState(false);
-  const [prix_min, setPrix_min] = useState(null);
-  const [prix_max, setPrix_max] = useState(null);
-  const [resultForm, setResultForm] = useState(null);
+
   const [width, setWidth] = useState(window.innerWidth);
   const [display, setDisplay] = useState(false);
   const [activity, setActivity] = useState(null);

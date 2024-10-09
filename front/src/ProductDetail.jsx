@@ -45,8 +45,9 @@ import {
   BulbOutlined,
   InfoCircleOutlined,
 } from "@ant-design/icons";
-
+import { useAuth } from "./AuthContext";
 const ProductDetail = (props) => {
+  const userData = useAuth();
   const [width, setWidth] = useState(undefined);
   const { TabPane } = Tabs;
   const [course, setCourse] = useState(null);
@@ -102,9 +103,7 @@ const ProductDetail = (props) => {
     if (localStorage.getItem("ID") !== "null") {
       axios
         .post(
-          `http://localhost:8000/api-course/wishlist/${localStorage.getItem(
-            "ID"
-          )}`,
+          `http://localhost:8000/api-course/wishlist/${userData.userData.id_user}`,
 
           {
             cub: localStorage.getItem("ID_user"),
@@ -506,28 +505,32 @@ const ProductDetail = (props) => {
     }
   };
   const requests = async () => {
+    setComments([]);
+
     try {
       const res4 = await axios.get(
         `http://localhost:8000/api-course/review/course/${courseID}`
       );
 
       console.log(res4.data.length);
-      await setNombreRating(res4.data.length);
+      setNombreRating(res4.data.length);
       let sumRatings = 0;
-      async function first_function() {
-        res4.data.map((single) => {
-          console.log("NOTE**" + single.note);
+      const first_function = async () => {
+        console.log("RES 4" + JSON.stringify(res4.data));
+        res4.data.forEach((single) => {
+          console.log("NOTE**" + JSON.stringify(single));
           sumRatings += single.note;
-          if (single.commentOn) {
-            comments.push(single);
-          }
+          comments.push(single);
         });
+        setComments(comments);
+
+        console.log("COMMENTS" + JSON.stringify(comments));
         let division = sumRatings / nombreRating;
         setRatings(division);
         console.log(
           "SUM " + sumRatings + "nombre " + nombreRating + " == " + division
         );
-      }
+      };
       await first_function().then(async () => {
         console.log("COMMENTS" + JSON.stringify(comments));
 
@@ -565,20 +568,18 @@ const ProductDetail = (props) => {
 
         console.log("RES" + JSON.stringify(res5.data));
 
-        const res4 = await axios.get(
+        /*   const res4 = await axios.get(
           `http://localhost:8000/api-course/create/offers/${courseID}`
         );
 
         setOffers(res4.data);
-        offers.map((offer, index) => console.log("liste1", index, offer.id));
+        offers.map((offer, index) => console.log("liste1", index, offer.id)); */
 
         const res6 = await axios.get(
-          ` http://localhost:8000/api-course/wishlist/${localStorage.getItem(
-            "ID"
-          )}`,
+          ` http://localhost:8000/api-course/wishlist/${userData.userData.id_user}`,
           {
             headers: {
-              Authorization: "Bearer " + localStorage.getItem("token"),
+              Authorization: "Bearer " + userData.userData.access,
             },
           }
         );
@@ -609,7 +610,7 @@ const ProductDetail = (props) => {
     }
 
     requests();
-  }, []);
+  }, [userData]);
 
   const update_sens = () => {
     window.innerWidth <= 1000 ? setSmall("vertical") : setSmall("horizontal");
@@ -990,9 +991,8 @@ const ProductDetail = (props) => {
                         prenom={comment.prenom}
                         titre={comment.titre}
                         content={comment.comment_cub}
-                        date={comment.dateHour.format("Do MMMM  YYYY")}
+                        date={comment.dateHour.date}
                         rating={comment.note}
-                        statut={"GOLD"}
                       />
                     </List.Item>
                   );
