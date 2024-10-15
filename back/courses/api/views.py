@@ -1,5 +1,6 @@
 import os
 import json
+import googlemaps
 from rest_framework.parsers import JSONParser
 from django.db.models import Max, Min
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, ListCreateAPIView
@@ -20,6 +21,7 @@ from rest_framework import filters
 from rest_framework import generics
 from authentification.perm import GiverAdminOrReadOnlyCourses
 from authentification.serializers import GiverSerializer, AdressSerializer
+from django.forms.models import model_to_dict
 # from django_filters import rest_framework as filters
 
 
@@ -32,134 +34,86 @@ class researchCourseList(ListCreateAPIView):
     queryset2 = Adress.objects.all()
     queryset3 = Giver.objects.all()
     serializer_class = ResearchCourseSerializer
+    def get(self, request, *args, **kwargs):
+        # Fetch filtered queryset
+        course_list = self.get_queryset()
 
-    def get_queryset(self):  # new
-        # query = self.request.GET.get('q')
+        # Serialize the queryset (no need for .is_valid())
+        serializer = ResearchCourseSerializer(course_list, many=True)
 
-        # kidsx
+        # Return the serialized data
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+    def get_queryset(self):  
+        # Start with all courses
         course_list = Course.objects.all()
-        course_list2 = []
 
-        if self.request.query_params.get('date_max'):
-            print('date_max'+self.request.query_params.get('date_max'))
+        # Apply city filtering using Google Maps
+        city = self.request.query_params.get('city')
+        if city:
+            gmaps = googlemaps.Client(key='AIzaSyAxRDhglWqo6ifggUxWQVDsm623tPfp_a4')
+            city_filtered_courses = []
+
             for course in course_list:
-                print("*********"+str(course.id)+"*****")
-                courseHour = CourseHour.objects.get(course=course.id)
-                print("*********" + str(courseHour.date)+"*****")
-                if str(courseHour.date) == self.request.query_params.get('date_max'):
-                    print("*1*1*1"+str(course.id)+"*****")
-                    course_list2.append(course.id)
+                try:
+                    adress = Adress.objects.get(id=course.lieu)
+                    res = gmaps.distance_matrix(city, str(adress))
 
-            course_list = Course.objects.filter(
-                id__in=course_list2)
+                    # Filter by distance
+                    if res['rows'][0]['elements'][0]['distance']['value'] < 20000:
+                        city_filtered_courses.append(course)
+                except Adress.DoesNotExist:
+                    continue
+
+            # Replace course_list with city_filtered_courses
+            course_list = Course.objects.filter(id__in=[course.id for course in city_filtered_courses])
+
+        # Apply date_max filter
+        date_max = self.request.query_params.get('date_max')
+        if date_max:
+            course_ids = []
+            for course in course_list:
+                try:
+                    courseHour = CourseHour.objects.get(course=course.id)
+                    if str(courseHour.date) == date_max:
+                        course_ids.append(course.id)
+                except CourseHour.DoesNotExist:
+                    continue
+            course_list = Course.objects.filter(id__in=course_ids)
+
+        # Apply additional filters using chaining logic
         if self.request.query_params.get('terroir'):
-            course_list = Course.objects.filter(
-                terroirActivity=True)
+            course_list = course_list.filter(terroirActivity=True)
+
         if self.request.query_params.get('team'):
-            course_list = Course.objects.filter(
-                teamBuildingActivity=True)
+            course_list = course_list.filter(teamBuildingActivity=True)
+
         if self.request.query_params.get('kids'):
-            course_list = Course.objects.filter(
-                Q(age__icontains="enfants"))
-        # parent
+            course_list = course_list.filter(Q(age__icontains="enfants"))
+
         if self.request.query_params.get('parent'):
-            course_list = Course.objects.filter(
-                Q(age__icontains="parent"))
-        # anniversaire
+            course_list = course_list.filter(Q(age__icontains="parent"))
+
         if self.request.query_params.get('bday'):
-            course_list = Course.objects.filter(
-                birthdayActivity=True)
+            course_list = course_list.filter(birthdayActivity=True)
+
         if self.request.query_params.get('sub_category'):
             sub_category = self.request.query_params.get('sub_category')
-            print("**********"+"sub_category " + sub_category)
-            course_list_sub_cat = Course.objects.filter(
-                Q(sub_category__icontains=sub_category))  # | Q(state__icontains=query)
-            for course in course_list_sub_cat:
-                print(course.id)
-        else:
-            course_list_sub_cat = course_list
+            course_list = course_list.filter(Q(sub_category__icontains=sub_category))
+
         if self.request.query_params.get('category'):
-
             category = self.request.query_params.get('category')
-            print("**********"+"category " + category)
-            course_list_cat = Course.objects.filter(
-                category=category)  # | Q(state__icontains=query)
+            course_list = course_list.filter(category=category)
 
-        # request._body = json.dumps(myjson)
-        # request.POST["user_type1"] = 3
+        # Pre-fetch related fields to avoid N+1 query problem
+        course_list = course_list.select_related('owner__user')
+        return course_list
 
-        else:
-            course_list_cat = course_list
-        # SI la ville est précisée:
 
-        # SI seats est précisé
 
-        intersection = course_list_cat & course_list_sub_cat
-        courseListFinal = []
-        for course in intersection:
-            # ajout de la ville
-
-            # return Response(serializer.data)
-            myjson = {}
-            myjson["id"] = course.id
-            myjson["title"] = course.title
-
-            myjson["accroche"] = course.accroche
-            myjson["aSavoir"] = course.aSavoir
-            myjson["content"] = course.content
-            myjson["annulation"] = course.annulation
-            myjson["date"] = course.date
-            myjson["hour"] = course.hour
-            myjson["isVerified"] = course.isVerified
-            myjson["price"] = course.price
-            myjson["img1"] = course.img1
-            myjson["img2"] = course.img2
-            myjson["img2"] = course.img2
-            myjson["isDiscounted"] = course.isDiscounted
-            myjson["discount"] = course.discount
-            myjson["isRemote"] = course.isRemote
-            myjson["points"] = course.points
-            myjson["seats"] = course.seats
-            myjson["needCertificate"] = course.needCertificate
-            myjson["dateFin"] = course.dateFin
-            myjson["hourFin"] = course.hourFin
-            myjson["thumbnail1"] = course.thumbnail1
-            myjson["thumbnail2"] = course.thumbnail2
-            myjson["thumbnail3"] = course.thumbnail3
-            myjson["isIntermediate"] = course.isIntermediate
-            myjson["isBeginner"] = course.isBeginner
-            myjson["isAdvanced"] = course.isAdvanced
-            myjson["valOffers"] = course.valOffers
-            myjson["teamBuildingActivity"] = course.teamBuildingActivity
-            myjson["duoActivity"] = course.duoActivity
-            myjson["terroirActivity"] = course.terroirActivity
-            myjson["language"] = course.language
-            myjson["age"] = course.age
-            myjson["accessible"] = course.accessible
-            print("OWNER*** " + str(course.owner))
-            myuser = MyUser.objects.get(email=course.owner)
-            giver = Giver.objects.get(user_id=myuser.user_id)
-            adress = Adress.objects.get(id=course.lieu)
-            print("**********lat" + str(adress.lat))
-            myjson["lat"] = adress.lat
-            myjson["lng"] = adress.lng
-            city = adress.city
-            country = adress.country
-            adress = adress.name
-            print("OWNER*** " + str(city))
-            myjson["city"] = city
-            myjson["country"] = country
-            myjson["adress"] = adress
-
-            courseListFinal.append(myjson)
-
-        serializer = ResearchCourseSerializer(courseListFinal, many=True)
-
-        if serializer:
-            return courseListFinal
-        else:
-            print('error', serializer.errors)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 
 
 """search_fields = ['category']

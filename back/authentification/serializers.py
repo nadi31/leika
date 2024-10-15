@@ -4,6 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import serializers
 from .models import MyUser, Giver, Adress, Cub, Administrator, Prospect
 import datetime
+from django.contrib.auth.hashers import make_password
 from rest_framework.generics import ListAPIView
 from rest_framework.authtoken.models import Token
 import requests
@@ -324,3 +325,35 @@ class CubPhoneUpdateSerializer(serializers.ModelSerializer):
         model = Cub
 
         optional_fields = ["phone"]
+
+
+
+
+class UserPwdResetSerializer(serializers.ModelSerializer):
+  #  courseHour = CourseHoursSerializer(many=True, read_only=True)
+   
+
+    class Meta:
+        model = MyUser
+
+       
+
+    
+    def validate(self, validated_data):
+        """Update a user setting the password correctly"""
+
+        user= MyUser.objects.get(username = validated_data.email)
+        random_password = self.generate_random_password()
+
+        # Hash the random password
+        password= make_password(random_password)
+    
+        if password:
+            user.set_password(password)
+            user.save()
+
+        data = [user, email, password]
+        return data
+
+
+

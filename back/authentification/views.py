@@ -38,29 +38,45 @@ class UserOublieView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = (
         permissions.AllowAny, )
+    
 
-    def post(self,  request, format='json'):
-        print("RESTRSTRSD" + str(request.data['email']))
+    def post(self, request, *args, **kwargs):
+        serializer = UserPwdResetSerializer(data= request.data['email'])
+        print("RESTRSTRSD " + str(request.data['email']))
 
-        myu = MyUser.objects.get(email=request.data['email'])
+
+         
+
+
+        if serializer.is_valid():
+
+            data = serializer.data
+     
+      
+
+
+
+
+        #myu = MyUser.objects.get(email=request.data['email'])
         # envoyer les emails...
         # token
 
-        token = Token.objects.create(user=myu)
-        print("TOK "+request.data[
-            'email'])
-        # 2. envoie du mail
-        subject, from_email, to = 'Leikka: réinitaliser mot de passe', settings.EMAIL_HOST_USER, request.data[
-            'email']
+        #token = Token.objects.create(user=myu)
 
-        verify_link = "http://localhost:3000/mdp/" + token.key
-        html_content = render_to_string('mdp.html', {'first_name': myu.first_name,
-                                                     'verify_link': verify_link, 'base_url': "http://localhost:3000/", })
-        text_content = strip_tags(html_content)
-        msg = EmailMultiAlternatives(
+
+
+            print("TOK "+data.email)
+        # 2. envoie du mail
+            subject, from_email, to = 'Leikka: réinitaliser mot de passe', settings.EMAIL_HOST_USER,data.email
+
+        
+            html_content = render_to_string('mdp.html', {'first_name': data.user.first_name, 'password': data.password,
+                                                    'url_to_visit': "http://localhost:3000/", })
+            text_content = strip_tags(html_content)
+            msg = EmailMultiAlternatives(
             subject, text_content, from_email, [to])
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
 
         return Response(status=status.HTTP_201_CREATED)
 
@@ -869,3 +885,5 @@ class AdressesGiverView(APIView):
 
         # cub = user.cub_set.all()
         return Response(serializer.data)
+
+

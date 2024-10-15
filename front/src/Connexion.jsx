@@ -551,7 +551,7 @@ const Connexion = (props) => {
         centered
         visible={oublie}
         onOk={() => {
-          //onOublie(emailOublie); // emailjs depreciated !
+          //  onOublie(emailOublie);
           setOublie(false);
         }}
         onCancel={() => setOublie(false)}

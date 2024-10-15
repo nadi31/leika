@@ -51,6 +51,8 @@ const Results = () => {
     console.log(window.innerWidth);
   }
   const [map, setMap] = useState(false);
+  const baseURL = "http://localhost:8000";
+
   const [menuArt, setMenuArt] = useState(false);
   const [menuGames, setMenuGames] = useState(false);
   const [menuDrill, setMenuDrill] = useState(false);
@@ -224,25 +226,22 @@ const Results = () => {
         console.log("RESULTS REQUEST" + JSON.stringify(res2.data));
         console.log("HERE : " + request.get("city"));
         if (request.get("city") !== null) {
-          setMap(true);
+          //setMap(true);
           console.log("HERE : IF IF IF  ");
           const cit = request.get("city");
 
-          const url = `https://api.geoapify.com/v1/geocode/search?text=${
-            cit + " France"
-          }&apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44`;
+          setResults(res2.data);
 
-          axios.get(url).then((res1) => {
-            let firstLongitude;
-            let firstLatitude;
-
-            // First attempt to get lon and lat from properties
+          res.current = res2.data;
+          /*   // First attempt to get lon and lat from properties
             if (res1.data.features[0].properties) {
               if (res1.data.features[0].properties.lon !== undefined) {
                 firstLongitude = res1.data.features[0].properties.lon;
+                console.log(firstLongitude);
               }
               if (res1.data.features[0].properties.lat !== undefined) {
                 firstLatitude = res1.data.features[0].properties.lat;
+                console.log(firstLatitude);
               }
             }
             // If that fails, try to get lon and lat from the coordinates array
@@ -273,22 +272,18 @@ const Results = () => {
             );
 
             res2.data.map((location) => {
-              console.log("213 " + latCity.current);
+              console.log("213 " + JSON.stringify(location.adress));
               console.log("214 " + location.lng + " " + location.lat);
 
               var data = JSON.stringify({
-                mode: "drive",
-                sources: [{ location: [location.lng, location.lat] }],
-                targets: [
-                  {
-                    location: [lonCity.current, latCity.current],
-                  },
-                ],
+                destinations: cit,
+                origins: location.adress,
+                key: "AIzaSyC37GN3ygQqvo97xjB3D-nDQ0NSCWA0E3U",
               });
-
+              console.log("DATA / " + data);
               var config = {
                 method: "post",
-                url: "https://api.geoapify.com/v1/routematrix?apiKey=ea16b50fa61c47faa5c3cd8fc43eeb44",
+                url: "https://maps.googleapis.com/maps/api/distancematrix/json",
                 headers: {
                   "Content-Type": "application/json",
                 },
@@ -298,7 +293,7 @@ const Results = () => {
               axios(config)
                 .then(function (response) {
                   console.log(response.data);
-                  if (response.data.sources_to_targets[0][0].distance < 20000) {
+                  if (response.data.rows.elements.distance.value < 20000) {
                     console.log("WE HAVE A WINNER: " + "ici " + location.lng);
                     setResults((prevResults) => [...prevResults, location]);
                     res.current = [...res.current, location];
@@ -309,7 +304,7 @@ const Results = () => {
                   console.log(error);
                 });
             });
-          });
+          }); */
         } else {
           setResults(res2.data);
           res.current = res2.data;
@@ -1065,7 +1060,12 @@ const Results = () => {
                                 key={"HEY" + res.id}
                                 hoverable
                                 style={{ border: "none", width: "100%" }}
-                                cover={<img alt="example" src={res.img1} />}
+                                cover={
+                                  <img
+                                    alt="course 1"
+                                    src={`${baseURL}${res.img1}`}
+                                  />
+                                }
                               >
                                 <Meta
                                   id="button_giver"
@@ -1753,7 +1753,12 @@ const Results = () => {
                                 key={"HEY" + res.id}
                                 hoverable
                                 style={{ border: "none", width: "100%" }}
-                                cover={<img alt="example" src={res.img1} />}
+                                cover={
+                                  <img
+                                    alt="course"
+                                    src={`${baseURL}${res.img1}`}
+                                  />
+                                }
                               >
                                 <Meta
                                   id="button_giver"
