@@ -33,53 +33,54 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 import logging
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 class UserOublieView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
-    permission_classes = (
-        permissions.AllowAny, )
-    
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
-        serializer = UserPwdResetSerializer(data= request.data['email'])
-        print("RESTRSTRSD " + str(request.data['email']))
+        email = request.data.get('email')
+        if not email:
+            return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
 
+        print(f"mail: {email}")
+        try:
+            # Check if the user exists
+            user = MyUser.objects.get(email=email)
+        except MyUser.DoesNotExist:
+            # If the user does not exist, return a proper error response
+            return Response({"error": "No user found with this email address."}, status=status.HTTP_404_NOT_FOUND)
 
-         
-
-
-        if serializer.is_valid():
-
-            data = serializer.data
-     
-      
-
-
-
-
-        #myu = MyUser.objects.get(email=request.data['email'])
-        # envoyer les emails...
-        # token
-
-        #token = Token.objects.create(user=myu)
-
-
-
-            print("TOK "+data.email)
-        # 2. envoie du mail
-            subject, from_email, to = 'Leikka: réinitaliser mot de passe', settings.EMAIL_HOST_USER,data.email
-
+        # If the user exists, proceed with password reset
+        serializer = UserPwdResetSerializer(data={'email': email})
         
-            html_content = render_to_string('mdp.html', {'first_name': data.user.first_name, 'password': data.password,
-                                                    'url_to_visit': "http://localhost:3000/", })
-            text_content = strip_tags(html_content)
-            msg = EmailMultiAlternatives(
-            subject, text_content, from_email, [to])
-            msg.attach_alternative(html_content, "text/html")
-            msg.send()
+        # Ensure the serializer is valid (optional, but recommended)
+      
+        instance_seri = serializer.update(validated_data={'email': email}, instance=user)
+        print(f"data: {instance_seri}")
 
-        return Response(status=status.HTTP_201_CREATED)
+        # Send email
+        print(f"TOK {instance_seri['email']} {instance_seri['new_password']}")
+        subject = 'Leikka: réinitaliser mot de passe'
+        from_email = settings.EMAIL_HOST_USER
+        to_email = instance_seri['email']
+        
+        # Render email template
+        html_content = render_to_string('mdp.html', {
+            'first_name': user.first_name,  # Assuming user model has 'first_name'
+            'password': instance_seri['new_password'],
+            'url_to_visit': "http://localhost:3000/",
+        })
+        text_content = strip_tags(html_content)
+        
+        # Send email
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
 
+        return Response({"message": "Password reset email sent."}, status=status.HTTP_200_OK)
+      
+           
 
 class ContactFormFuturGiver(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)

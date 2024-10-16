@@ -9,8 +9,11 @@ from rest_framework.generics import ListAPIView
 from rest_framework.authtoken.models import Token
 import requests
 import jwt 
+import random
+import string
 import pytz
 from datetime import datetime, timedelta
+
 
 class TokenSerializer(serializers.ModelSerializer):
     class Meta:
@@ -335,12 +338,37 @@ class UserPwdResetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MyUser
+        fields = ('email', 'username', 'password',)
 
-       
 
+                  
+    @classmethod
+    def generate_password(cls, length=12):
+        # Define character pools
+        letters = string.ascii_letters  # a-z, A-Z
+        digits = string.digits  # 0-9
+        
+        # Exclude specific special characters: [ ] { } |
+        special_chars = ''.join(ch for ch in string.punctuation if ch not in '<>()/~/.;:"\',[]{}|')
+
+        # Ensure at least one of each character type is present
+        password = [
+            random.choice(letters),
+            random.choice(digits),
+            random.choice(special_chars)
+        ]
+
+        # Fill the rest of the password length with random characters from all pools
+        all_chars = letters + digits + special_chars
+        password += [random.choice(all_chars) for _ in range(length - 3)]
+
+        # Shuffle the list to make it more random and return as a string
+        random.shuffle(password)
+
+        return ''.join(password)
     
-    def validate(self, validated_data):
-        """Update a user setting the password correctly"""
+    """ def validate(self, validated_data):
+     
 
         user= MyUser.objects.get(username = validated_data.email)
         random_password = self.generate_random_password()
@@ -350,10 +378,41 @@ class UserPwdResetSerializer(serializers.ModelSerializer):
     
         if password:
             user.set_password(password)
-            user.save()
+            user.update()
 
-        data = [user, email, password]
-        return data
+        data = [user, validated_data.email, password]
+        return data """
 
 
+    def validate(self, instance, validated_data):
+       # user = MyUser.objects.get(username=validated_data['email'])
+        random_password = self.__class__.generate_password()  # Call the class method using self.__class__
 
+        # Hash the random password
+        hashed_password = make_password(random_password)
+    
+        if hashed_password:
+            instance.set_password(hashed_password)
+            instance.save()
+
+        # Return the user and email for further processing if necessary
+        return {"user": instance, "email": validated_data['email'], "password": random_password}
+
+    def update(self, instance,validated_data):
+       
+            # Get the user by email
+           
+        print('user : '+ str(instance.email)+' '+ str(instance.password))
+     
+        # Generate a new random password
+        random_password = self.__class__.generate_password(16)
+
+        # Hash the new password and set it
+        hashed_password = make_password(random_password)
+        instance.set_password(hashed_password)
+        print( "I w as here")
+        instance.save(update_fields=['password'])
+        print( "I w as here")
+
+        print(" random_password"+ random_password)
+        return {"email": instance.email, "new_password": random_password, 'first_name': instance.first_name }

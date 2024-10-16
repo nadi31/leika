@@ -70,12 +70,12 @@ const Connexion = (props) => {
       }
     }*/
   };
-  /* const onOublie = (email) => {
+  const onOublie = (email) => {
     //requete pour avoir le token
     console.log("On oublie");
     axios
       .post(
-        `http://localhost:8000/api/user`,
+        `http://localhost:8000/api/user/oublie`,
         { email: email },
         {
           headers: {
@@ -85,42 +85,22 @@ const Connexion = (props) => {
         }
       )
       .then((res) => {
-        console.log("ID " + res.data.id);
-        axios
-          .get(`http://localhost:8000/api/mdp/${res.data.id}`)
-          .then((res) => {
-            console.log("***RES**" + res.data.token);
-            let token = res.data.token;
-            // emailjs.init("YOUR_USER_ID");
-            //var SHA256 = require("crypto-js/sha256");
-            let pk = "YqLf9uj9IFMcnRJHA";
-            init(pk);
-
-            let templateParams = {
-              //  to_name: first_name,
-              to_email: email,
-              URL: `http://localhost:3000/mdp/${token}`,
-              //message: "Lien",
-            };
-
-            emailjs
-              .send("service_6wdorea", "template_mdp", templateParams, pk)
-              .then(
-                (result) => {
-                  console.log(result.text);
-                },
-                (error) => {
-                  console.log("EROOR" + error.text);
-                }
-              );
-          })
-
-          .catch((err) => {
-            console.log("FAILED...", err);
-          });
+        message.success(
+          "Un email à l'adresse: " +
+            email +
+            " vous a été envoyé avec un nouveau mot de passe.",
+          30
+        );
+        props.setConnexion(false);
       })
-      .catch((e) => console.log(e));
-  };*/
+      .catch((e) => {
+        console.log(e);
+        message.error(
+          "Oh non ! une erreur s'est produite... Vérifier que l'email soit correct",
+          30
+        );
+      });
+  };
 
   /*const setCookie = () => {
     console.log("COOK" + cook);
@@ -604,7 +584,7 @@ const Connexion = (props) => {
                   }}
                   htmlType="submit"
                   onClick={() => {
-                    //onOublie(emailOublie); // emailjs depreciated !
+                    onOublie(emailOublie);
                     setOublie(false);
                   }}
                 >

@@ -45,6 +45,15 @@
         color: #b8c3b0; /* Sage Green theme for header */
       }
 
+      .highlight {
+        color: #000000; /* Black text for the password */
+        font-weight: bold;
+        background-color: #b8c3b0; /* Sage green highlight */
+        padding: 5px; /* Add padding for better readability */
+        border-radius: 3px; /* Slightly round the corners */
+        display: inline-block; /* Ensure the background highlight fits the text */
+      }
+
       /* Styles for the Button Container */
       .button {
         text-align: center; /* Center-aligns the content inside the div */
@@ -56,7 +65,7 @@
         display: inline-block; /* Makes the link behave like a button */
         padding: 15px 25px; /* Adds padding inside the button */
         font-size: 16px; /* Sets the font size */
-        color: #ffffff; /* Sets the text color to black */
+        color: #ffffff; /* Sets the text color to white */
         background-color: #b8c3b0; /* Sets the background color to Sage Green */
         text-decoration: none; /* Removes the underline from the link */
         border-radius: 5px; /* Rounds the corners of the button */
@@ -80,119 +89,9 @@
         <h1>Merci de nous avoir rejoints !</h1>
 
         <p>
-          Votre mot de passe temporaire est : <strong>{{password}}</strong>.
-          Veuillez l'utiliser lors de votre première connexion en cliquant sur
-          le bouton ci-dessous et le changer dès que possible pour des raisons
-          de sécurité en allant dans la rubrique "Mon Compte".
-        </p>
-
-        <div class="button" style="text-align: center">
-          <a href="{{url_to_visit}}">Se connecter</a>
-        </div>
-
-        <p>
-          Si le bouton ne fonctionne pas, veuillez copier et coller l'URL
-          suivante dans votre navigateur :
-        </p>
-        <p>
-          <a href="{{url_to_visit}}">{{url_to_visit}}</a>
-        </p>
-
-        <p>
-          Une fois connecté, vous pourrez changer votre mot de passe en vous
-          rendant dans la section "Mon Compte".
-        </p>
-      </div>
-      <div class="footer">
-        <p>&copy; Leikka. Tous droits réservés.</p>
-        <p><a href="{{url_to_visit}}">Visitez notre site web</a></p>
-      </div>
-    </div>
-  </body>
-</html>
-<!DOCTYPE html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bienvenue, {{first_name}} !</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      /* Global Styles */
-      body {
-        font-family: "Lora", serif; /* Earthy and relaxed font */
-        background-color: #f4f4f4; /* Light background */
-        margin: 0;
-        padding: 0;
-        color: #333333;
-      }
-
-      .container {
-        width: 600px; /* Fixed width */
-        margin: 20px auto;
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        overflow: visible; /* Ensure content is always visible */
-      }
-
-      .header {
-        background-color: #b8c3b0; /* Sage Green theme */
-        color: #ffffff;
-        padding: 20px;
-        text-align: center;
-      }
-
-      .content {
-        padding: 30px;
-        text-align: center; /* Center-align the content */
-      }
-
-      .content h1 {
-        margin-top: 0;
-        color: #b8c3b0; /* Sage Green theme for header */
-      }
-
-      /* Styles for the Button Container */
-      .button {
-        text-align: center; /* Center-aligns the content inside the div */
-        margin-top: 20px; /* Adds space above the button */
-      }
-
-      /* Styles for the Button Link */
-      .button a {
-        display: inline-block; /* Makes the link behave like a button */
-        padding: 15px 25px; /* Adds padding inside the button */
-        font-size: 16px; /* Sets the font size */
-        color: #ffffff; /* Sets the text color to black */
-        background-color: #b8c3b0; /* Sets the background color to Sage Green */
-        text-decoration: none; /* Removes the underline from the link */
-        border-radius: 5px; /* Rounds the corners of the button */
-        font-weight: bold; /* Makes the text bold */
-        cursor: pointer; /* Changes cursor to pointer when hovering over the button */
-        transition: background-color 0.3s ease; /* Smooth transition effect */
-      }
-
-      /* Optional: Hover effect for better UX */
-      .button a:hover {
-        background-color: #a3b09a; /* Darker Sage Green on hover */
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h2>Bienvenue, {{first_name}} !</h2>
-      </div>
-      <div class="content">
-        <h1>Merci de nous avoir rejoints !</h1>
-
-        <p>
-          Votre mot de passe temporaire est : <strong>{{password}}</strong>.
+          Votre mot de passe temporaire est :
+          <br />
+          <strong class="highlight">{{password}}</strong><br />
           Veuillez l'utiliser lors de votre première connexion en cliquant sur
           le bouton ci-dessous et le changer dès que possible pour des raisons
           de sécurité en allant dans la rubrique "Mon Compte".
