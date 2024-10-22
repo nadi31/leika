@@ -22,6 +22,7 @@ urlpatterns = [
     path('giver/', researchCourse.as_view()),
     path('search/', researchCourseList.as_view(), name='search_results'),
     path('bookings/', BookingView.as_view(),),
+    path('bookings/giver/<pk>', BookingGiver.as_view(),),
     path('singleBookings/', SingleBookingView.as_view(),),
     path('cubSingleBookings/<pk>', SingleBookingCubView.as_view(),),
     path('cubBookings/<pk>', BookingCubView.as_view(),),

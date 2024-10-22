@@ -33,7 +33,9 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 import logging
 
-#logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
+
+
 class UserOublieView(APIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = (permissions.AllowAny,)
@@ -43,23 +45,27 @@ class UserOublieView(APIView):
         if not email:
             return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        print(f"mail: {email}")
         try:
-            # Check if the user exists
+            # Get the user by email
             user = MyUser.objects.get(email=email)
+
+            # Delete old tokens if they exist
+            token = Token.objects.filter(user=user)
+            token.delete()
         except MyUser.DoesNotExist:
-            # If the user does not exist, return a proper error response
             return Response({"error": "No user found with this email address."}, status=status.HTTP_404_NOT_FOUND)
 
-        # If the user exists, proceed with password reset
-        serializer = UserPwdResetSerializer(data={'email': email})
-        
-        # Ensure the serializer is valid (optional, but recommended)
-      
-        instance_seri = serializer.update(validated_data={'email': email}, instance=user)
-        print(f"data: {instance_seri}")
+        # We only need 'email' in input data for resetting password
+        serializer = UserPwdResetSerializer(user, data={'email': email}, partial=True)  # Allow partial update
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # Send email
+        # Update the user's password and activate the user
+        instance_seri = serializer.update(instance=user, validated_data={'email': email})
+
+        # Create a new token for the user
+        Token.objects.create(user=user)
+
         print(f"TOK {instance_seri['email']} {instance_seri['new_password']}")
         subject = 'Leikka: réinitaliser mot de passe'
         from_email = settings.EMAIL_HOST_USER
@@ -73,12 +79,16 @@ class UserOublieView(APIView):
         })
         text_content = strip_tags(html_content)
         
-        # Send email
-        msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
+        try:
+            msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+            return Response({"success": "Mail sent"}, status=status.HTTP_200_OK)
 
-        return Response({"message": "Password reset email sent."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error":  "Failed to send mail: "+ e}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+      
       
            
 
@@ -484,15 +494,16 @@ class ObtainTokenPairWithColorView(TokenObtainPairView):
         print('Connecting')
         print(request.data)
        
-        user = authenticate(email = request.data.get('email'),
+        user = authenticate(username = request.data.get('email'),
                             password=request.data.get('password'))
+
 
         if user is not None:
             print('Login')
             login(request, user)
             print('OK')
-        # else:
-         #   print('NULL')
+        else:
+            print('NULL')
           #  return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if serializer.is_valid():
@@ -569,14 +580,14 @@ class RefreshTokenWithCookieView(APIView):
             print('error', e)
             return Response({"error": "Invalid or expired refresh token."}, status=status.HTTP_400_BAD_REQUEST)
 
-# class MyUser(ListAPIView):
+class MyUserV(APIView):
 
-#    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.AllowAny,)
 
-#    def get(self, request, *args, **kwargs):
-#        user = MyUser.objects.all()
-#        serializer = MyUserSerializer(user, many=True)
-#        return Response(serializer.data)
+    def get(self, request, *args, **kwargs):
+        user = MyUser.objects.all()
+        serializer = MyUserSerializer(user, many=True)
+        return Response(serializer.data)
 
 #
 class AdressUpdateCreateView(APIView):
@@ -625,9 +636,14 @@ class CustomUserCreate(APIView):
             # 2. envoie du mail
             subject, from_email, to = 'Inscription Leikka', settings.EMAIL_HOST_USER, request.data[
                 'email']
-
+                
             verify_link = "http://localhost:3000/email-verify/" + token.key
-            html_content = render_to_string('emailGiver.html', {'first_name': myy.first_name,
+            html_content = ""
+            if request.data['user_type1'] == 2:
+                html_content= render_to_string('emailCub.html', {'first_name': myu.first_name,
+                'verify_link': verify_link, 'base_url': "http://localhost:3000/", })
+            if request.data['user_type1'] == 3:
+                html_content = render_to_string('emailGiver.html', {'first_name': myu.first_name,
                 'verify_link': verify_link, 'base_url': "http://localhost:3000/", })
             text_content = strip_tags(html_content)
             msg = EmailMultiAlternatives(

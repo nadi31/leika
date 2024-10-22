@@ -496,6 +496,20 @@ class SingleBookingView(ListAPIView):
         else:
             print('error', single_serializer.errors)
             return Response(single_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+class BookingGiver(APIView):
+
+    permission_classes = (IsAll,)
+    model = SingleBooking
+    def get(self, request, *args, **kwargs):
+        id_giver=  self.kwargs['pk']
+        print("ID GIVER "+ id_giver)
+        queryset = SingleBooking.objects.filter(owner=id_giver)
+        serializer = SingleBookingSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
 
 
 class BookingView(APIView):

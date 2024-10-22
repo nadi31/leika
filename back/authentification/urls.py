@@ -21,8 +21,8 @@ urlpatterns = [
     path('create/token/<email>', TokenCreateView.as_view()),
     path('token/<token>', TokenView.as_view()),
     path('token', TokenView.as_view()),
-    path('mdp/<pk>', UserMdpOublieView.as_view()),
-    path('mdp', UserMdpOublieView.as_view()),
+   # path('mdp/<pk>', UserMdpOublieView.as_view()),
+   # path('mdp', UserMdpOublieView.as_view()),
     path('contactForm/', ContactFormFuturGiver.as_view()),
     path('contactFormMail/', ContactFormFuturGiverMail.as_view()),
     path('prospects', ProspView.as_view()),
@@ -33,6 +33,6 @@ urlpatterns = [
   
     
     #
-    #path('myUsers', MyUser.as_view()),
+    path('myusers', MyUserV.as_view()),
 
 ]

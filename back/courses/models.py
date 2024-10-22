@@ -6,7 +6,7 @@ import base64
 from django.utils import timezone
 import uuid
 from shortuuid.django_fields import ShortUUIDField
-from shortuuid.django_fields import ShortUUIDField
+
 from io import BytesIO
 from easy_thumbnails.fields import ThumbnailerImageField
 from easy_thumbnails.files import get_thumbnailer
@@ -235,6 +235,16 @@ class SingleBooking(models.Model):
     courses = models.ForeignKey(Course, on_delete=models.CASCADE)
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     isCommented = models.BooleanField(default=False, null=True, blank=True)
+    owner = models.ForeignKey(Giver, on_delete=models.CASCADE, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.courses and not self.owner:
+            # Automatically set the owner field from the related Course object
+            self.owner = self.course.owner
+        super(SingleBooking, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"SingleBooking in {self.courses.title}"
 
 
 class Wishlist(models.Model):

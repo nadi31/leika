@@ -12,6 +12,8 @@ import {
   Button,
   Tooltip,
   Rate,
+  Table,
+  Typography,
   message,
 } from "antd";
 import MenuBrowser from "./MenuBrowser";
@@ -40,7 +42,9 @@ import HomeMobile from "./HomeMobile";
 const ProfilCub = (props) => {
   const userData = useAuth();
   const [unique, setUnique] = useState([]);
+  const { Meta } = Card;
   const [resFavoris, setResFavoris] = useState([]);
+  const baseURL = "http://localhost:8000";
   const [results, setResults] = useState(null);
   const [phone, setPhone] = useState(null);
   const [pk, setPk] = useState(null);
@@ -61,6 +65,132 @@ const ProfilCub = (props) => {
   const [single, setSingle] = useState(null);
   const [id_user, setId_user] = useState(null);
   const [id_obj_user, setId_obj_user] = useState(null);
+  const { Title, Text } = Typography;
+
+  // Columns definition for the Ant Design Table
+  const columns = [
+    {
+      title: "Référence",
+      dataIndex: "ref",
+      key: "ref",
+      render: (text) => <b>Réservation référence : {text}</b>,
+    },
+    {
+      title: "Cours",
+      key: "course",
+      render: (_, record) => (
+        <>
+          <Title level={5}>{record.course.title}</Title>
+          <Text>{"Commande effectuée le : "}</Text>
+          <br />
+          <Text strong>Date: </Text>
+          {record.course.date}
+          <br />
+          <Text strong>Heure: </Text>
+          {record.course.hour}
+          <br />
+          <Text strong>Nombre de place(s) réservée(s): </Text>
+          {record.single.seats}
+        </>
+      ),
+    },
+    {
+      title: "Atelier réservé ",
+      key: "images",
+      render: (_, record) => (
+        <div
+          style={{
+            width: "70%",
+          }}
+        >
+          <span
+            style={
+              {
+                //float: "left",
+              }
+            }
+            key={record.course.id}
+          >
+            <a href={"/product/" + record.course.id}>
+              <Card
+                key={"HEY" + record.course.id}
+                hoverable
+                style={{ border: "none", width: "100%" }}
+                cover={<img alt="course" src={`${record.course.img1}`} />}
+              >
+                <Meta
+                  id="button_giver"
+                  style={{
+                    marginTop: "-2%",
+                    height: "160%",
+                    border: "none",
+                    //  width: "60%",
+                  }}
+                  title={record.course.title}
+                />
+                <Meta
+                  id="button_giver"
+                  style={{
+                    marginTop: "-2%",
+                    height: "160%",
+                    border: "none",
+                    textDecoration: "none",
+                  }}
+                  title={
+                    record.course.isDiscounted ? (
+                      <>
+                        <p
+                          style={{
+                            textDecoration: "line-through",
+                          }}
+                        >
+                          {record.course.price + "€"}
+                        </p>
+                        <p>{record.course.discount + "€"}</p>{" "}
+                      </>
+                    ) : (
+                      record.course.price + "€"
+                    )
+                  }
+                  // description={}
+                />
+              </Card>
+            </a>
+          </span>
+        </div>
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <>
+          {record.single.isCommented ? (
+            <Text>Vous avez déjà donné votre avis.</Text>
+          ) : (
+            <Button
+              onClick={() => {
+                setBookingRating(record.single.id);
+                setCourseRating(record.course.id);
+                setIsModalVisible(true);
+              }}
+              type="primary"
+            >
+              Donner votre avis
+            </Button>
+          )}
+        </>
+      ),
+    },
+  ];
+
+  // Data transformation to match the table format
+  const dataSource = singleDetails.map((bookingComplete, idx) => ({
+    key: idx,
+    ref: bookingComplete.ref,
+    course: bookingComplete.course,
+    single: bookingComplete.single,
+  }));
 
   const updateSize = () => {
     setWidth(window.innerWidth);
@@ -229,9 +359,9 @@ const ProfilCub = (props) => {
       );
       await Promise.all(
         firstResponse.data.map(async (book) => {
-          const booking = JSON.stringify(book.id);
-          const ref = JSON.stringify(book.ref);
-          const dateHour = JSON.stringify(book.dateHour);
+          const booking = book.id;
+          const ref = book.ref;
+          const dateHour = book.dateHour;
           console.log("REF" + JSON.stringify(book));
           const secondResponse = await axios.get(
             `http://localhost:8000/api-course/cubSingleBookings/${booking}`,
@@ -374,19 +504,7 @@ const ProfilCub = (props) => {
       return (
         <div>
           <MenuBrowser width={width} />
-          <br />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              background: "#f1e6d0",
-            }}
-          >
-            <img src={imgCub}></img>
-          </div>
-          <br />
+
           <Modal
             title="Votre avis"
             visible={isModalVisible}
@@ -428,7 +546,7 @@ const ProfilCub = (props) => {
               </Form.Item>
             </Form>
           </Modal>
-          <div style={{ width: "100%", display: "flex" }}>
+          <div style={{ width: "100%", marginTop: "3%", display: "flex" }}>
             <Menu
               onClick={handleClick}
               style={{
@@ -468,60 +586,13 @@ const ProfilCub = (props) => {
 
             {menuKey === "2" ? (
               <div>
-                <table className="table">
-                  <tbody>
-                    {unique.map(function (bookingRef) {
-                      return (
-                        <tr key={bookingRef}>
-                          <tr>
-                            <td>
-                              <b>Réservation référence : {bookingRef}</b>
-                            </td>
-                          </tr>
-                          {singleDetails.map((bookingComplete, idx) => {
-                            if (bookingRef === bookingComplete.ref) {
-                              return (
-                                <tr key={idx}>
-                                  <td>
-                                    {bookingComplete.course.id}
-                                    {bookingComplete.course.title}
-                                    {bookingComplete.single.isCommented ? (
-                                      <></>
-                                    ) : (
-                                      <Button
-                                        value={idx}
-                                        onClick={() => {
-                                          console.log(
-                                            "BOOKING " +
-                                              bookingComplete.ref +
-                                              "COURSE " +
-                                              bookingComplete.course.id +
-                                              "booking " +
-                                              bookingComplete.single.id
-                                          );
-                                          setBookingRating(
-                                            bookingComplete.single.id
-                                          );
-                                          setCourseRating(
-                                            bookingComplete.course.id
-                                          );
-                                          setIsModalVisible(true);
-                                        }}
-                                        style={{ border: "none" }}
-                                      >
-                                        Donner votre avis
-                                      </Button>
-                                    )}
-                                  </td>
-                                </tr>
-                              );
-                            }
-                          })}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                <Table
+                  dataSource={dataSource}
+                  columns={columns}
+                  bordered
+                  pagination={{ pageSize: 5 }}
+                  rowKey={(record) => record.ref}
+                />
               </div>
             ) : (
               <></>

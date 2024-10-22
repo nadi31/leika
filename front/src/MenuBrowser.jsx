@@ -832,6 +832,7 @@ const MenuBrowser = (props) => {
                           <Menu.Item key="1">Créer un cours</Menu.Item>
                           <Menu.Item key="2">Modifier un cours </Menu.Item>
                           <Menu.Item key="3">Mon Compte </Menu.Item>
+                          <Menu.Item key="4">Réservations </Menu.Item>
                           <Menu.Item key="5">Se déconnecter</Menu.Item>
                         </Menu>
                       ) : null}

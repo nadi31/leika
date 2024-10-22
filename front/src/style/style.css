@@ -201,3 +201,12 @@ h1 {
 .autocomplete-container {
   position: relative;
 }
+.ant-table-tbody > tr > td {
+  max-width: 30%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  justify-content: center;
+  align-items: center;
+}

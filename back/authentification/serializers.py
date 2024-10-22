@@ -4,7 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import serializers
 from .models import MyUser, Giver, Adress, Cub, Administrator, Prospect
 import datetime
-from django.contrib.auth.hashers import make_password
+
 from rest_framework.generics import ListAPIView
 from rest_framework.authtoken.models import Token
 import requests
@@ -330,26 +330,20 @@ class CubPhoneUpdateSerializer(serializers.ModelSerializer):
         optional_fields = ["phone"]
 
 
-
-
 class UserPwdResetSerializer(serializers.ModelSerializer):
-  #  courseHour = CourseHoursSerializer(many=True, read_only=True)
-   
-
     class Meta:
         model = MyUser
         fields = ('email', 'username', 'password',)
+        extra_kwargs = {
+            'password': {'required': False},  # We'll generate a password, so it's not required in the input
+        }
 
-
-                  
     @classmethod
     def generate_password(cls, length=12):
         # Define character pools
-        letters = string.ascii_letters  # a-z, A-Z
-        digits = string.digits  # 0-9
-        
-        # Exclude specific special characters: [ ] { } |
-        special_chars = ''.join(ch for ch in string.punctuation if ch not in '<>()/~/.;:"\',[]{}|')
+        letters = string.ascii_letters
+        digits = string.digits
+        special_chars = ''.join(ch for ch in string.punctuation if ch not in '<>()@/~/.\";:"\',[]{}|')
 
         # Ensure at least one of each character type is present
         password = [
@@ -358,7 +352,7 @@ class UserPwdResetSerializer(serializers.ModelSerializer):
             random.choice(special_chars)
         ]
 
-        # Fill the rest of the password length with random characters from all pools
+        # Fill the rest of the password length with random characters
         all_chars = letters + digits + special_chars
         password += [random.choice(all_chars) for _ in range(length - 3)]
 
@@ -366,53 +360,28 @@ class UserPwdResetSerializer(serializers.ModelSerializer):
         random.shuffle(password)
 
         return ''.join(password)
-    
-    """ def validate(self, validated_data):
-     
 
-        user= MyUser.objects.get(username = validated_data.email)
-        random_password = self.generate_random_password()
+    def validate(self, data):
+        # We are only concerned about the email here; username and password will be handled in the update method
+        return data
 
-        # Hash the random password
-        password= make_password(random_password)
-    
-        if password:
-            user.set_password(password)
-            user.update()
-
-        data = [user, validated_data.email, password]
-        return data """
-
-
-    def validate(self, instance, validated_data):
-       # user = MyUser.objects.get(username=validated_data['email'])
-        random_password = self.__class__.generate_password()  # Call the class method using self.__class__
-
-        # Hash the random password
-        hashed_password = make_password(random_password)
-    
-        if hashed_password:
-            instance.set_password(hashed_password)
-            instance.save()
-
-        # Return the user and email for further processing if necessary
-        return {"user": instance, "email": validated_data['email'], "password": random_password}
-
-    def update(self, instance,validated_data):
-       
-            # Get the user by email
-           
-        print('user : '+ str(instance.email)+' '+ str(instance.password))
-     
+    def update(self, instance, validated_data):
         # Generate a new random password
         random_password = self.__class__.generate_password(16)
 
-        # Hash the new password and set it
-        hashed_password = make_password(random_password)
-        instance.set_password(hashed_password)
-        print( "I w as here")
-        instance.save(update_fields=['password'])
-        print( "I w as here")
+      
+        
+        instance.set_password(random_password)
 
-        print(" random_password"+ random_password)
-        return {"email": instance.email, "new_password": random_password, 'first_name': instance.first_name }
+        # Optionally mark the account as active
+        instance.is_active = True
+
+        # Save only the password and activation status
+        instance.save(update_fields=['password', 'is_active'])
+
+        # Return the user's email and new password for further processing (e.g., sending an email)
+        return {
+            "email": instance.email,
+            "new_password": random_password,
+            'first_name': instance.first_name
+        }
