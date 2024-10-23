@@ -1,273 +1,188 @@
-import React, { Suspense, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import MenuBrowser from "./MenuBrowser";
-import { Form, Input, Image, Upload, Button, message } from "antd";
 import "./style/review.css";
-
-import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import Footer from "./Footer";
 import { useAuth } from "./AuthContext";
-import { UserOutlined } from "@ant-design/icons";
+import { Table } from "antd";
+import moment from "moment";
+import { Link } from "react-router-dom";
 
-const BookingGiver = (props) => {
+const BookingGiver = () => {
   const userData = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const handleModify = (values) => {
-    console.log(values);
-    console.log(values.upload.fileList[0].originFileObj);
-    console.log(values.upload.fileList[0].originFileObj.name);
-    let form_data = new FormData();
-    form_data.append("appelation", values.input_appelation);
-    form_data.append("email", userData.userData.email);
-    form_data.append("description", values.input_description);
-    form_data.append("phone", values.input_phone);
-    form_data.append("user", userData.userData.id_user);
-    if (mdp) {
-      form_data.append("password", values.mdp);
-    }
-    if (upload) {
-      form_data.append(
-        "img1",
-        values.upload.fileList[0].originFileObj,
-        values.upload.fileList[0].originFileObj.name
-      );
-    }
+  const [pastReservations, setPastReservations] = useState([]);
+  const [futureReservations, setFutureReservations] = useState([]);
+  const [width, setWidth] = useState(window.innerWidth);
 
-    axios
-      .post(
-        `http://localhost:8000/api/giver/${userData.userData.id_obj_user}`,
-        form_data,
-        {
-          headers: {
-            Authorization: "Bearer " + userData.userData.access,
-          },
-        }
-      )
-      .then((res) => {
-        message.success("Profil modifié avec succès", 10);
-        console.log(changeDetected);
-        if (changeDetected) {
-          axios.delete(
-            `http://localhost:8000/api/update/adress/${userData.userData.id_user}`,
-            form_data,
-            {
-              headers: {
-                Authorization: "Bearer " + userData.userData.access,
-              },
-            }
+  const columns_changed = [
+    {
+      title: "Nombre de place(s) réservée(s)",
+      dataIndex: "seats",
+      key: "seats",
+    },
+    {
+      title: "Course Hour",
+      dataIndex: "courseHour",
+      key: "courseHour",
+    },
+    {
+      title: "Date de début",
+      dataIndex: ["details", 0, "date"],
+      key: "detailsDate",
+    },
+    {
+      title: "Heure de début",
+      dataIndex: ["details", 0, "hour"],
+      key: "detailsHour",
+    },
+    {
+      title: "Date de fin",
+      dataIndex: ["details", 0, "dateFin"],
+      key: "detailsDateFin",
+    },
+    {
+      title: "Heure de fin",
+      dataIndex: ["details", 0, "hourFin"],
+      key: "detailsHourFin",
+    },
+  ];
+  const columns = [
+    {
+      title: "Nombre de place(s) réservée(s)",
+      dataIndex: "seats",
+      key: "seats",
+    },
+    {
+      title: "Course Hour",
+      dataIndex: "courseHour",
+      key: "courseHour",
+    },
+    {
+      title: "Date de début",
+      dataIndex: ["details", 0, "date"],
+      key: "detailsDate",
+    },
+    {
+      title: "Heure de début",
+      dataIndex: ["details", 0, "hour"],
+      key: "detailsHour",
+    },
+    {
+      title: "Date de fin",
+      dataIndex: ["details", 0, "dateFin"],
+      key: "detailsDateFin",
+    },
+    {
+      title: "Heure de fin",
+      dataIndex: ["details", 0, "hourFin"],
+      key: "detailsHourFin",
+    },
+    {
+      title: "Seats Available",
+      key: "detailsSeats",
+      render: (record) => {
+        const totalSeats = record?.details?.[0]?.seats || 0;
+        const reservedSeats = record.seats || 0;
+        const availableSeats = totalSeats - reservedSeats;
+        return availableSeats >= 0 ? availableSeats : 0; // Ensure no negative values
+      },
+    },
+    {
+      title: "Lien Atelier",
+      dataIndex: "courses",
+      key: "courses",
+      render: (courses) => (
+        <Link to={`/product/${courses}`}>Lien atelier </Link>
+      ),
+    },
+  ];
+
+  const fetchDetailsForBookings = async (bookings) => {
+    return await Promise.all(
+      bookings.map(async (book) => {
+        try {
+          const resHour = await axios.get(
+            `http://localhost:8000/api-course/hours/${book.courseHour}`
           );
-          adressA.current.map((adress, idx) => {
-            let form = new FormData();
-            console.log("GIVER" + JSON.stringify(adress));
-            //console.log("ADRESS" + value);
-            // console.log(password);
-            if (adress.value) {
-              console.log("GIVER" + adress.lon);
-              //console.log("ADRESS" + value);
-              //console.log(password);
-              const lat = adress.lat;
-              const lng = adress.lon;
-
-              //const keyGeo = "ea16b50fa61c47faa5c3cd8fc43eeb44";
-              //const url = `https://api.geoapify.com/v1/geocode/search?text=1214-1224${adress}&format=json&apiKey=${keyGeo}`;
-              form.append("lat", lat);
-              form.append("lng", lng);
-              form.append("name", adress.formatted);
-              form.append("giver", res.data[0]);
-              form.append("city", adress.city);
-              //form.append("apartment_number", values.input_adress_apt_number);
-              form.append("country", adress.country);
-              form.append("add_ons", arrayAdd_ons[idx]);
-            } else {
-              console.log("ANCIENNE : " + JSON.stringify(adress));
-              form.append("lat", adress.lat);
-              form.append("lng", adress.lng);
-              form.append("name", adress.name);
-              form.append("giver", userData.id_user);
-              form.append("city", adress.city);
-              //form.append("apartment_number", values.input_adress_apt_number);
-              form.append("country", adress.country);
-              form.append("add_ons", adress.add_ons);
-              //OULA
-              console.log(values);
-              axios
-                .post(`http://localhost:8000/api/create/adress`, form, {
-                  headers: {
-                    Authorization: "Bearer " + userData.userData.access,
-                  },
-                })
-                .then(() => {
-                  message.success("Adresses modifiées avec succès", 10);
-                })
-                .catch((err) => {
-                  message.error("Erreur Adresses non modifiées", 10);
-                  console.log(err);
-                });
-            }
-          });
+          // Merge details with the original booking
+          return {
+            ...book,
+            details: resHour.data, // Assign fetched details
+          };
+        } catch (err) {
+          console.error(
+            `Error fetching details for courseHour ${book.courseHour}:`,
+            err
+          );
+          return { ...book, details: null }; // Handle case where fetching details fails
         }
       })
-      .catch((err) => {
-        message.error("Erreur", 10);
-        console.log(err);
-      });
+    );
+  };
 
-    /*: "FLY AWAY"
-: "WE TAKE YOU TO FLY"
-input_phone: "09 09 09 09 09 "
-upload: */
-  };
-  const formItemLayout = {
-    labelCol: {
-      xs: {
-        span: 24,
-      },
-      sm: {
-        span: 8,
-      },
-    },
-    wrapperCol: {
-      xs: {
-        span: 24,
-      },
-      sm: {
-        span: 16,
-      },
-    },
-  };
-  const adressA = useRef([]);
-  const [resultsGiver, setResultsGiver] = useState(null);
-  const [adress, setAdress] = useState(null);
-  const [width, setWidth] = useState(window.innerWidth);
-  const [resultsAdress, setResultsAdress] = useState(null);
-  const [adresses, setAdresses] = useState(0);
-  const [arrayAdresses, setArrayAdresses] = useState([]);
-  const [arrayAdd_ons, setArrayAdd_ons] = useState([]);
-  const [mdp, setMdp] = useState(false);
-  const [upload, setUpload] = useState(false);
   const fetchUserData = async () => {
-    console.log("ET VOILA USER !!" + JSON.stringify(userData.userData));
     try {
       const res = await axios.get(
-        `http://localhost:8000/api/giver/${userData.userData.id_obj_user}`,
+        `http://localhost:8000/api-course/bookings/giver/${userData.userData.id_obj_user}`,
         {
           headers: {
-            Authorization: "Bearer " + userData.userData.access,
-          },
-        }
-      );
-      setResultsGiver(res.data[0]);
-      console.log("******* REQUEST" + JSON.stringify(res.data));
-
-      const res2 = await axios.get(
-        `http://localhost:8000/api/giver/adress/${userData.userData.id_user}`,
-        {
-          headers: {
-            Authorization: "Bearer " + userData.userData.access,
+            Authorization: `Bearer ${userData.userData.access}`,
           },
         }
       );
 
-      setArrayAdresses(res2.data);
-      adressA.current = res2.data;
-      console.log("RESULTS REQUEST" + JSON.stringify(res2.data));
+      const bookings = res.data;
 
-      //  console.log("RESULTS REQUEST" + JSON.stringify(res.data));
-      // setAdresses(res2.data.length);
+      if (Array.isArray(bookings)) {
+        // Fetch and merge the course details
+        const enrichedBookings = await fetchDetailsForBookings(bookings);
 
-      //setFilters(res.data);
-      //  console.log("ADRESS" + adresses);
-      setIsLoading(false);
-    } catch (err) {
-      console.log(err);
-    } finally {
+        // Split into past and future reservations based on dateFin
+        const now = moment(); // Use moment to get current date
+        const past = enrichedBookings.filter((booking) =>
+          moment(booking.details[0].dateFin).isBefore(now)
+        );
+        const future = enrichedBookings.filter((booking) =>
+          moment(booking.details[0].dateFin).isSameOrAfter(now)
+        );
+
+        setPastReservations(past);
+        setFutureReservations(future);
+        setIsLoading(false);
+      } else {
+        console.error("Expected an array, but got:", bookings);
+      }
+
+      console.log("******* REQUEST", JSON.stringify(res.data));
+    } catch (error) {
+      console.error("Error fetching bookings or details:", error);
       setIsLoading(false);
     }
   };
 
-  const [changeDetected, setChangeDetected] = useState(false);
   useEffect(() => {
-    console.log("USER :" + JSON.stringify(userData));
-    if (userData.token !== null && userData.userData !== null) {
-      try {
-        fetchUserData();
-      } catch (err) {
-        console.error("Error in useEffect:", err);
-      }
+    if (userData?.userData?.id_obj_user && userData?.userData?.access) {
+      fetchUserData();
     }
   }, [userData]);
+
   return !isLoading ? (
     <>
       <MenuBrowser width={width} />
-      <div
-        className="top"
-        style={{
-          fontSize: "200%",
-          width: "20%",
-          // borderRightWidth: "thin",
-        }}
-      >
-        Modifier votre profil{" "}
+      <div>
+        <h1>Réservations passées</h1>
+        <Table dataSource={pastReservations} columns={columns} rowKey="id" />
       </div>
-      <div
-        style={{
-          width: "60%",
-          // borderRightWidth: "thin",
-        }}
-      >
-        <Form
-          onFinish={handleModify}
-          {...formItemLayout}
-          initialValues={{
-            input_appelation: resultsGiver.appelation,
-            input_description: resultsGiver.description,
-            input_phone: resultsGiver.phone,
-          }}
-        >
-          <Form.Item name="input_appelation" label="Nom">
-            <Input placeholder="Appelation" />
-          </Form.Item>
-          <Form.Item name="upload" label="Image">
-            <Upload
-              //{...this.props_upload}
-              defaultFileList={[
-                {
-                  uid: "-1",
-                  name: "image1.png",
-                  status: "done",
-                  url: "http://localhost:8000" + resultsGiver.img1,
-                  thumbUrl: "http://localhost:8000" + resultsGiver.img1,
-                },
-              ]}
-              maxCount={1}
-              listType="picture"
-              //multiple
-              onChange={() => setUpload(true)}
-              accept=".jpeg, .png, .jpg"
-              beforeUpload={() => false}
-            >
-              <Button icon={<UploadOutlined />}>Upload</Button>
-            </Upload>
-          </Form.Item>
-          <Form.Item name="input_description" label="Description">
-            <Input placeholder="Description" />
-          </Form.Item>
-          <Form.Item name="input_phone" label="Téléphone">
-            <Input placeholder="Téléphone" />
-          </Form.Item>
-          <Form.Item name="mdp" label="Mot de passe">
-            <Input.Password
-              onChange={() => setMdp(true)}
-              placeholder="Nouveau mot de passe"
-            />
-          </Form.Item>
-
-          <Button type="primary" htmlType="submit">
-            Modifier
-          </Button>
-        </Form>
-        <Footer width={width} />
+      <div>
+        <h1>Réservations à venir</h1>
+        <Table
+          dataSource={futureReservations}
+          columns={columns_changed}
+          rowKey="id"
+        />
       </div>
+      <Footer width={width} />
     </>
   ) : (
     <>Loading</>

@@ -33,6 +33,6 @@ urlpatterns = [
   
     
     #
-    path('myusers', MyUserV.as_view()),
+   # path('myusers', MyUserV.as_view()),
 
 ]

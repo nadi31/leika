@@ -23,6 +23,7 @@ import TeamBuilding from "./TeamBuilding";
 import GiftCard from "./GiftCard";
 import Founders from "./Founders";
 import HomeMobile from "./HomeMobile";
+import BookingGiver from "./BookingGiver";
 import Map from "./Map";
 
 const BaseRouter = () => (
@@ -51,7 +52,7 @@ const BaseRouter = () => (
     <Route exact path="/email-verify/:token" element={<EmailVerify />} />
     <Route exact path="/giver/:giverID" element={<GiverView />} />
     <Route exact path="/map" element={<Map />} />
-
+    <Route exact path="/booking/giver" element={<BookingGiver />} />
     <Route exact path="/gift" element={<GiftCard />} />
     <Route exact path="/founders" element={<Founders />} />
     <Route
