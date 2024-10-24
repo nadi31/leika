@@ -334,119 +334,64 @@ class GiverDetailView(APIView):
     permission_classes = (IsAll,)
     parser_classes = (MultiPartParser,)
 
-    # queryset = Giver.objects.all()
-
     def get(self, request, *args, **kwargs):
-        user = Giver.objects.filter(id=self.kwargs['pk'])
-        serializer = GiverSerializer(user, many=True)
-        adress = Adress.objects.filter(
-            id=request.data.get('adress'))
-        serializer2 = AdressSerializer(adress, many=True)
-        # print("SERIALIZER2**", serializer)
-        res = serializer.data
+        try:
+            user = Giver.objects.filter(id=self.kwargs['pk'])
+            serializer = GiverSerializer(user, many=True)
+            return Response(serializer.data)
 
-        return Response(res)
+        except Giver.DoesNotExist:
+            return Response({"error": "Not Found"}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request, pk, format='json'):
-        print("RES = " + str(request.POST))
-        myuser = MyUser.objects.get(username=request.data['email'])
-       # myuser= MyUser.objects.get(user_id=self.kwargs['pk'])
-        if request.POST.get('password'):
-
-            print("RES = " + str(request.data))
-            # request.data.pop('username')
-            print("RES = " + str(request.data))
-            # pwd= MyUser.set_password(request.data['raw_password'])
-            # print("PASS"+ str(pwd))
-            # user.update(password=pwd
-
-            # user.update(password=request.data.pop('password'))
-            # user.save()
-        # user.save()
-
+        try:
+            # Fetch the user by their email
             myuser = MyUser.objects.get(username=request.data['email'])
-            myjson = {}
+            if request.POST.get('password'):
+                # Update MyUser with the provided data
+                myjson = {
+                    "password": request.data.get("password"),
+                    "username": request.data.get("email"),
+                    "email": request.data.get("email")
+                }
+                myUser_serializer = GiverSerializerMDP(data=myjson)
+                myUser_serializer.update(myuser, myjson)
 
-            myjson["password"] = request.data.get("password")
-            myjson["username"] = request.data.get("email")
-            myjson["email"] = request.data.get("email")
-            # request._body = json.dumps(myjson)
-            # request.POST["user_type1"] = 3
-            print("myuser", myjson)
-            print("req", request.data)
+            # Update Giver information with the provided fields
+            Giver.objects.filter(id=pk).update(
+                description=request.data.get("description"),
+                phone=request.data.get("phone"),
+                appelation=request.data.get("appelation"),
+                siret=request.data.get("siret")
+            )
 
-            # request._body = json.dumps(myjson)
-            # request.POST["user_type1"] = 3
-            print("myuser", myjson)
-            print("req", request.data)
-            # essai
+            # Handle the image update if provided
+            if request.FILES.get("img1"):
+                obj = Giver.objects.get(id=pk)
+                if obj.img1:
+                    os.remove(obj.img1.path)  # Remove old image
+                obj.img1 = request.FILES.get("img1")
+                obj.save()
 
-            myUser_serializer = GiverSerializerMDP(
-                data=myjson)
-            myUser_serializer.update(myuser, myjson)
+            # Serialize and validate the data for response
+            req = request.POST.copy()
+            serializer = GiverSerializer(data=req)
+            if serializer.is_valid():
+                json = serializer.data
+                return Response(json, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            # if myUser_serializer.is_valid():
-            #  print("ME OR THE PS5")
-            #  myUser_serializer.update(myuser, myjson)
+        except MyUser.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-           # else:
-            # print('error', myUser_serializer.errors)
-            user = Giver.objects.filter(id=self.kwargs['pk'])
-            print(request.data.get("description"))
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        Giver.objects.filter(id=pk).update(
-            description=request.data.get("description"), phone=request.data.get("phone"), appelation=request.data.get("appelation"), siret=request.data.get("siret"))
-        req = request.POST.copy()
-        print("***REQ1: ", req)
-       
-        print("***REQUEST: ", request.FILES.get("img1"))
-        print("***REQ2: ", req)
-        # req.pop('img1')
-        # req.FILES.pop('img1')
-        # print("***REQ: ", req.data)
-        serializer = GiverSerializer(data=req)
-        if request.FILES.get("img1"):
-            # if request.data.get("img1") != None:
-            print("IMG: ", request.FILES.get("img1"))
-            obj = Giver.objects.get(user=request.data.get("user"))
-            print("OBJECT", obj)
-            os.remove(obj.img1.path)
-            obj.img1 = request.FILES.get("img1")
-            obj.save()
-        if serializer.is_valid():
-            json = serializer.data
-
-            #print("ERRUE R" + e)
-            return Response(json, status=status.HTTP_201_CREATED)
-        else:
-            print('error', serializer.errors)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        # print("SERIALIZER", serializer)
-        # print("DATTTA", request.data)
-
-        # user.img1 = request.FILES.get('img1')
-
-        # obj.description = request.data.get("description")
-        # obj.phone = request.data.get("phone")
-        # obj.appelation = request.data.get("appelation")
-        # obj.siret = request.data.get("siret")
-        # obj.img1 = request.data.get('img1')
-        # rint("OULALA** ", user.img1)
-
-        # obj.save()"""
-
-        # ...
-        # do some stuff with uploaded file
-        # ...
-        # return Response(status=204)
-
-        # Giver.objects.filter(user=request.data.get("user")).update(description=request.data.get("description"), phone=request.data.get(
-        #    "phone"), appelation=request.data.get("appelation"), siret=request.data.get("siret"), img1=request.FILES.get('img1'))
-        # rint("OULALA** ", user.img1)
-
-        # user.save()
-        #    user.save(commit=False)
+      
 
 class CustomTokenRefreshView(TokenRefreshView):
     parser_classes = (JSONParser,)

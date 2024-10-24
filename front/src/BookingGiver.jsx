@@ -170,11 +170,12 @@ const BookingGiver = () => {
   return !isLoading ? (
     <>
       <MenuBrowser width={width} />
-      <div>
+      <div className="table-container">
         <h1>Réservations passées</h1>
         <Table dataSource={pastReservations} columns={columns} rowKey="id" />
       </div>
-      <div>
+      <div className="table-container">
+        {" "}
         <h1>Réservations à venir</h1>
         <Table
           dataSource={futureReservations}

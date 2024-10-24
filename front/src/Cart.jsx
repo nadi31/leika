@@ -7,12 +7,14 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 import { Table, Typography, Space } from "antd";
+import { useNavigate, withRouter, useSearchParams } from "react-router-dom";
 
 //Panier shopping
 
 const Cart = (props) => {
   const [data, setData] = useState([]);
   const [seats, setSeats] = useState(0);
+  const navigate = useNavigate();
   useEffect(() => {
     console.log("Toolbar hi from useEffect");
     // let itemsOrdered = refactorizedData();
@@ -35,7 +37,9 @@ const Cart = (props) => {
     // let itemsOrdered = refactorizedData();
     setData(JSON.parse(localStorage.getItem("cart") || "[]"));
   };
-
+  const onContinue = () => {
+    navigate("../recap", { replace: true });
+  };
   const handleDelete = (key) => {
     let deleted = data;
     console.log("INDEX" + key);
@@ -324,6 +328,7 @@ const Cart = (props) => {
                   id="payer"
                   onClick={() => {
                     refactorizedData();
+                    onContinue();
                   }}
                   style={{
                     borderRadius: "25px",
@@ -332,7 +337,7 @@ const Cart = (props) => {
                     backgroundColor: "#ffd04f",
                   }}
                 >
-                  Payer{" "}
+                  Valider le panier{" "}
                   <ShoppingCartOutlined
                     style={{ color: "#eb0a0c", fontSize: "bold" }}
                   />

@@ -2,6 +2,7 @@ import os
 import json
 import googlemaps
 from rest_framework.parsers import JSONParser
+from django.core.mail import send_mail
 from django.db.models import Max, Min
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, ListCreateAPIView
 from courses.models import Course, CourseHour, Booking, SingleBooking
@@ -22,6 +23,7 @@ from rest_framework import generics
 from authentification.perm import GiverAdminOrReadOnlyCourses
 from authentification.serializers import GiverSerializer, AdressSerializer
 from django.forms.models import model_to_dict
+from django.conf import settings
 # from django_filters import rest_framework as filters
 
 
@@ -841,3 +843,58 @@ class WishlistView(APIView):
         wishL.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SendPaymentRecapView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = [JSONParser]
+    def post(self, request):
+        try:
+            data = request.data
+            items = data.get('items', [])
+            total_amount = data.get('totalAmount')
+            user_email = data.get('userEmail')
+            emails_giver = data.get('emailsGiver', [])
+
+            # Prepare the email for the person who ordered
+            if user_email:
+                order_summary = "\n".join(
+                    [
+                        f"- {item['name']}: {item['seats']} seats at {item['price']} {item['currency']} each"
+                        for item in items
+                    ]
+                )
+                user_message = (
+                    f"Thank you for your order.\n\nHere is your recap:\n{order_summary}\n\nTotal: {total_amount} €"
+                )
+                send_mail(
+                    'Your Payment Recap',
+                    user_message,
+                    settings.EMAIL_HOST_USER,
+                    [user_email],
+                    fail_silently=False,
+                )
+
+            # Prepare the emails for the giver(s)
+            for giver_email in emails_giver:
+                if giver_email:
+                    for item in items:
+                        giver_message = (
+                            f"Hello,\n\nSomeone has just booked a session:\n"
+                            f"Course: {item['name']}\n"
+                            f"Date: {item['hourSelected']['date']} at {item['hourSelected']['hour']}\n"
+                            f"Seats: {item['seats']}\n\n"
+                            f"Please prepare accordingly."
+                        )
+                        send_mail(
+                            'New Booking Notification',
+                            giver_message,
+                            settings.EMAIL_HOST_USER,
+                            [giver_email],
+                            fail_silently=False,
+                        )
+
+            return Response({"message": "Emails sent successfully"}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

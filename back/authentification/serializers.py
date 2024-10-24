@@ -201,10 +201,36 @@ class ProspectsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+from rest_framework import serializers
+from .models import Giver, MyUser
+
+from rest_framework import serializers
+from .models import Giver, MyUser
+
 class GiverSerializer(serializers.ModelSerializer):
+    email_giver = serializers.SerializerMethodField()
+
     class Meta:
         model = Giver
-        fields = '__all__'
+        fields = [field.name for field in Giver._meta.fields] + ['email_giver']
+
+    def get_email_giver(self, obj):
+        try:
+            # Using 'user_id' instead of 'id' as it is referenced
+            myuser = MyUser.objects.get(user_id=obj.user_id)
+            return myuser.email
+        except MyUser.DoesNotExist:
+            return None
+
+    def create(self, validated_data):
+        return Giver.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
+        instance.save()
+        return instance
+
 
 
 class GiverSerializerMDP(serializers.ModelSerializer):

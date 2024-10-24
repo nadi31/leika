@@ -331,7 +331,13 @@ const ProductDetail = (props) => {
                     img: course.img1,
                     maxSeats: maxSeats,
                     hourSelected: hourSelected,
+                    emailGiver: giver.email_giver,
                     currency: "€",
+
+                    giver: giver.appelation,
+                    adress: adress[0].name + ", " + adress[0].city,
+
+                    contactGiver: giver.phone,
                   });
                   let itemsOrdered = refactorizedData(items, init_cart);
                   localStorage.setItem("cart", JSON.stringify(itemsOrdered));
@@ -1017,14 +1023,3 @@ const ProductDetail = (props) => {
 };
 
 export default ProductDetail;
-/*<br />
-
- <br />
-           */
-/*RocketTwoTone,
-  ExperimentTwoTone,
-  EnvironmentTwoTone,
-  SmileTwoTone,
-  ThunderboltTwoTone,
-  BulbOutlined,
-  InfoCircleOutlined, */

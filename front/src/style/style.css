@@ -210,3 +210,45 @@ h1 {
   justify-content: center;
   align-items: center;
 }
+/* review.css */
+
+/* Sage color theme */
+.table-container {
+  background-color: #f0f4f2; /* Light sage background for the table container */
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.ant-table-thead > tr > th {
+  background-color: #c5d7bd; /* Sage header background */
+  color: #ffffff; /* White text for contrast */
+  font-weight: bold;
+}
+
+.ant-table-tbody > tr:nth-child(odd) {
+  background-color: #e8f0e8; /* Lighter sage for odd rows */
+}
+
+.ant-table-tbody > tr:nth-child(even) {
+  background-color: #f5f9f5; /* Even lighter sage for even rows */
+}
+
+.ant-table-tbody > tr:hover {
+  background-color: #b8cbb8 !important; /* Darker sage on hover */
+}
+
+.ant-table-tbody > tr > td {
+  color: #2f4f2f; /* Darker text for readability */
+}
+
+.ant-table-pagination.ant-pagination {
+  background-color: #f0f4f2; /* Matching pagination with the sage theme */
+  padding: 10px;
+  border-top: 1px solid #c5d7bd; /* Subtle border */
+}
+
+.ant-pagination-item-active {
+  background-color: #b8cbb8; /* Active page in darker sage */
+  border-color: #b8cbb8;
+  color: white;
+}

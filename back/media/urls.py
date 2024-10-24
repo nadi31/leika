@@ -11,5 +11,7 @@ urlpatterns = [
     path('giver/<pk>', GiverDetailView.as_view()),
     path('adress/<pk>', AdressDetailView.as_view()),
     path('myUsers', MyUser.as_view()),
+ 
+
 
 ]

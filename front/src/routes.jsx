@@ -25,6 +25,7 @@ import Founders from "./Founders";
 import HomeMobile from "./HomeMobile";
 import BookingGiver from "./BookingGiver";
 import Map from "./Map";
+import Recap from "./Recap";
 
 const BaseRouter = () => (
   <Routes>
@@ -55,6 +56,7 @@ const BaseRouter = () => (
     <Route exact path="/booking/giver" element={<BookingGiver />} />
     <Route exact path="/gift" element={<GiftCard />} />
     <Route exact path="/founders" element={<Founders />} />
+    <Route exact path="/recap" element={<Recap />} />
     <Route
       exact
       path="/email-verify-giver/:token"
