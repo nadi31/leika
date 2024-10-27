@@ -7,6 +7,8 @@
 }
 .product_card > .ant-card-extra {
   display: none;
+  font-family: "Playwrite GB S";
+  color: "#070c65";
 }
 
 .product_card > .ant-card-head {
@@ -86,6 +88,12 @@
   border-color: #ffc069 !important;
 }
 
+.ant-steps-item-title {
+  color: #070c65 !important;
+}
+.ant-btn > span {
+  color: #070c65 !important;
+}
 #giver {
   font-family: "Nunito", sans-serif;
 }

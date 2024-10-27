@@ -1,7 +1,14 @@
 import React from "react";
 
 import { Card } from "antd";
-
+import {
+  SmileTwoTone,
+  CalendarTwoTone,
+  ToolTwoTone,
+  EuroCircleTwoTone,
+  PlusCircleTwoTone,
+} from "@ant-design/icons";
+import dayjs from "dayjs";
 const ResCard = (props) => {
   const { Meta } = Card;
   //id+ width + img1 +title + price
@@ -37,9 +44,38 @@ const ResCard = (props) => {
       >
         <Meta
           id="button_giver"
-          style={{ marginTop: "-2%", border: "none" }}
-          title={props.info.title}
-          description={props.info.price + "€"}
+          style={{ marginTop: "-2%", border: "none", textDecoration: "none" }}
+          title={
+            <>
+              <span>{props.info.title}</span> <br />
+              <span> {props.info.price + "   €"}</span>{" "}
+            </>
+          }
+          description={
+            <>
+              <>
+                <span>
+                  {<ToolTwoTone twoToneColor="#070c65" />}
+                  {props.info.isIntermediate
+                    ? "   Intermédiaire"
+                    : props.info.isBeginner
+                    ? "   Débutant"
+                    : "   Confirmé"}
+                </span>
+                <br />
+                <span>
+                  {<CalendarTwoTone twoToneColor="#070c65" />}
+                  {"    " + dayjs(props.info.date).format("DD-MM-YYYY")}
+                </span>
+                <br />
+                <span>
+                  {" "}
+                  {<SmileTwoTone twoToneColor="#070c65" />}
+                  {"    " + props.info.age}{" "}
+                </span>
+              </>
+            </>
+          }
         />
       </Card>
     </a>

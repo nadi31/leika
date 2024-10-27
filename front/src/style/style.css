@@ -1,11 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Dosis:wght@200;400&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Annie+Use+Your+Telescope&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Dosis:wght@300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Annie+Use+Your+Telescope:wght@400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Dosis:wght@400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playwrite+GB+S:wght@300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Merriweather&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@500&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=Merriweather&family=Oswald&display=swap");
 
 /* beginning test:  added for map !!!! */
 
@@ -43,8 +48,7 @@
 }
 
 #kids {
-  font-family: "Annie Use Your Telescope", cursive;
-  font-size: 35px;
+  font-family: "Playwrite GB S", cursive;
 }
 
 .research_bar {
@@ -71,6 +75,7 @@
 }
 .menu {
   font-family: "Dosis", sans-serif;
+  font-weight: 500;
 }
 .menu_abt {
   font-weight: 400;
@@ -93,18 +98,27 @@
 }
 
 .top {
-  font-family: "Noto Sans JP", sans-serif;
+  font-family: "Dosis", sans-serif;
   padding-bottom: 0.5%;
   padding-top: 2%;
-
+  color: #070c65;
   margin-left: 3.5%;
   width: 100%;
 }
 
 #button_giver {
-  font-family: "Dosis", sans-serif;
+  font-family: "Oswald", sans-serif;
+  font-weight: 400;
+  color: #070c65;
 }
-
+.ant-card-meta-title {
+  color: #070c65 !important;
+  font-weight: bold;
+}
+.ant-card-meta-description {
+  color: #070c65 !important;
+  text-decoration: none !important;
+}
 .div_video {
   justify-content: center;
   margin: 0 auto;
@@ -142,34 +156,6 @@
   border: 1px solid #b1afaf;
 }
 
-.ant-card-meta-description {
-  top: "10%";
-  right: 70%;
-  /* margin-left: 90%; */
-  font-weight: 1300;
-  text-decoration: none;
-  color: black;
-  width: 100%;
-}
-.ant-card-meta-title {
-  overflow: hidden;
-  color: black;
-  font-weight: 600;
-  font-size: 16px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  width: 100%;
-  margin: 0;
-  /* display: flex; */
-}
-.ant-card-meta-detail {
-  overflow: hidden;
-  color: black;
-  display: inline-block;
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-}
 .header ul {
   list-style-type: none;
   display: flex;
@@ -193,7 +179,8 @@
   }
 }
 h1 {
-  font-family: "Noto Sans JP", sans-serif;
+  font-family: "Dosis", sans-serif;
+  color: #070c65;
 }
 .pres {
   font-family: "Noto Sans KR", sans-serif;

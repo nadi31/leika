@@ -19,11 +19,15 @@ from rest_framework import status, permissions
 from django.db.models import Q
 # from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from django.template.loader import render_to_string
 from rest_framework import generics
 from authentification.perm import GiverAdminOrReadOnlyCourses
 from authentification.serializers import GiverSerializer, AdressSerializer
 from django.forms.models import model_to_dict
 from django.conf import settings
+from django.utils.html import strip_tags
+
+from django.utils import timezone
 # from django_filters import rest_framework as filters
 
 
@@ -514,61 +518,132 @@ class BookingGiver(APIView):
 
 
 
+
+
+
+
+
 class BookingView(APIView):
-    permission_classes = (IsAdminOrSuperUser,)
-   # serializer_class = CourseHoursSerializer
-
-    def get(self, request, *args, **kwargs):
-        bookings = Booking.objects.all()
-        serializer = BookingSerializer(bookings, many=True)
-        return Response(serializer.data)
-
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
     def post(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            items = data.get('items', [])
+            total_amount = data.get('totalAmount')
+            cub_id= data.get('id_user')
+            user_email= data.get('userEmail')
 
-        print(request.data.get('cub'))
-        req_cub = request.data.copy()
-        del req_cub["single"]
-        booking_serializer = BookingSerializer(
-            data=req_cub)
-        print("REQ", request.data)
-        if booking_serializer.is_valid():
+            # Step 1: Retrieve Cub instance
+            try:
+                cub = Cub.objects.filter(user=cub_id)
+                print (cub_id)
+            except Cub.DoesNotExist:
+                return Response({"error": "Cub not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            # Step 2: Create Booking instance
+            booking_data = {
+                "cub": cub_id,
+                "dateHour": timezone.now()
+            }
+            booking_serializer = BookingSerializer(data=booking_data)
+            
+            if booking_serializer.is_valid():
+                booking = booking_serializer.save()
+            else:
+                return Response(booking_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+           
+            # Step 3: Create SingleBooking instances for each item
+            single_bookings_data = []
+            for item in items:
+                
+                
+                single_booking_data = {
+                    "courseHour": item['hourSelected']['id'],
+                    "seats": item['seats'],
+                    "courses": item['key'],
+                    "booking": booking.id,
+                    "owner":  item['owner'],
+                }
+                single_bookings_data.append(single_booking_data)
 
-            obj = booking_serializer.save()
-
-            print("ID" + str(obj.id))
-            singleBookings = request.data.get('single')
-            print(singleBookings)
-            for single in singleBookings:
-                print(single)
-                print("REQUEST ***" + str(single["courses"]))
-                print("REQUEST ***" + str(single["courseHour"]))
-                single["booking"] = obj.id
-                # course = list(Course.objects.filter(
-                #   id=single["courses"]).values())
-                # courseHour = list(CourseHour.objects.filter(
-                #    id=single["courseHour"]).values())
-                # print(course)
-
-        # createCourseHour(course_serializer.data)
-
-                print(single)
-
-                single_serializer = SingleBookingSerializer(
-                    data=single)
-
-                if single_serializer.is_valid():
-
-                    single_serializer.save()
+            for single_booking in single_bookings_data:
+                single_booking_serializer = SingleBookingSerializer(data=single_booking)
+                if single_booking_serializer.is_valid():
+                    single_booking_serializer.save()
                 else:
-                    print('error', single_serializer.errors)
+                    return Response(single_booking_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-                Response(single_serializer.data,
-                         status=status.HTTP_201_CREATED)
+            # Step 4: Send emails to user and giver
+            if user_email:
+                for item in items:
+                    # Render the user email template
+                    html_content = render_to_string('order.html', {
+                        'name': item['name'],
+                        'key': item['key'],
+                        'price': item['price'],
+                        'seats': item['seats'],
+                        'currency': item['currency'],
+                        'img': item['img'],
+                        'emailGiver': item['emailGiver'],
+                        'adress': item['adress'],
+                        'hour': item['hourSelected']['hour'],
+                        'date': item['hourSelected']['date']
+                    })
+                    plain_message = strip_tags(html_content)
 
-        else:
-            print('error', booking_serializer.errors)
+                    send_mail(
+                        'Votre Récapitulatif de Paiement',
+                        plain_message,
+                        settings.EMAIL_HOST_USER,
+                        [user_email],
+                        html_message=html_content,
+                        fail_silently=False,
+                    )
 
-        return Response(booking_serializer.data, status=status.HTTP_201_CREATED)
+                # Send an email to each giver with detailed recap
+                for item in items:
+                    giver_email = item['emailGiver']
+                    # Render the giver recap HTML template with provided data
+                    giver_html_content = render_to_string('recap.html', {
+                        'name': item['name'],
+                        'key': item['key'],
+                        'price': item['price'],
+                        'seats': item['seats'],
+                        'currency': item['currency'],
+                        'img': item['img'],
+                        'adress': item['adress'],
+                        'hour': item['hourSelected']['hour'],
+                        'date': item['hourSelected']['date']
+                    })
+                    giver_plain_message = strip_tags(giver_html_content)
+
+                    send_mail(
+                        'Nouvelle Réservation - Récapitulatif',
+                        giver_plain_message,
+                        settings.EMAIL_HOST_USER,
+                        [giver_email],
+                        html_message=giver_html_content,
+                        fail_silently=False,
+                    )
+
+            return Response({"message": "Booking created and emails sent successfully"}, status=status.HTTP_201_CREATED)
+
+        except Cub.DoesNotExist:
+            return Response({"error": "Cub not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        except CourseHour.DoesNotExist:
+            return Response({"error": "CourseHour not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        except Course.DoesNotExist:
+            return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        except Giver.DoesNotExist:
+            return Response({"error": "Giver not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 class BookingCubView(APIView):
@@ -845,9 +920,11 @@ class WishlistView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+
 class SendPaymentRecapView(APIView):
-    permission_classes = (permissions.AllowAny,)
     parser_classes = [JSONParser]
+    permission_classes = (permissions.AllowAny,)
+
     def post(self, request):
         try:
             data = request.data
@@ -856,45 +933,60 @@ class SendPaymentRecapView(APIView):
             user_email = data.get('userEmail')
             emails_giver = data.get('emailsGiver', [])
 
-            # Prepare the email for the person who ordered
             if user_email:
-                order_summary = "\n".join(
-                    [
-                        f"- {item['name']}: {item['seats']} seats at {item['price']} {item['currency']} each"
-                        for item in items
-                    ]
-                )
-                user_message = (
-                    f"Thank you for your order.\n\nHere is your recap:\n{order_summary}\n\nTotal: {total_amount} €"
-                )
-                send_mail(
-                    'Your Payment Recap',
-                    user_message,
-                    settings.EMAIL_HOST_USER,
-                    [user_email],
-                    fail_silently=False,
-                )
+                for item in items:
+                    # Render the user email template
+                    html_content = render_to_string('order.html', {
+                        'name': item['name'],
+                        'key': item['key'],
+                        'price': item['price'],
+                        'seats': item['seats'],
+                        'currency': item['currency'],
+                        'img': item['img'],
+                        'emailGiver': item['emailGiver'],
+                        'adress': item['adress'],
+                        'hour': item['hourSelected']['hour'],
+                         'date': item['hourSelected']['date'],
+                    })
+                    plain_message = strip_tags(html_content)
 
-            # Prepare the emails for the giver(s)
-            for giver_email in emails_giver:
-                if giver_email:
-                    for item in items:
-                        giver_message = (
-                            f"Hello,\n\nSomeone has just booked a session:\n"
-                            f"Course: {item['name']}\n"
-                            f"Date: {item['hourSelected']['date']} at {item['hourSelected']['hour']}\n"
-                            f"Seats: {item['seats']}\n\n"
-                            f"Please prepare accordingly."
-                        )
-                        send_mail(
-                            'New Booking Notification',
-                            giver_message,
-                            settings.EMAIL_HOST_USER,
-                            [giver_email],
-                            fail_silently=False,
-                        )
+                    send_mail(
+                        'Votre Récapitulatif de Paiement',
+                        plain_message,
+                        settings.EMAIL_HOST_USER,
+                        [user_email],
+                        html_message=html_content,
+                        fail_silently=False,
+                    )
 
-            return Response({"message": "Emails sent successfully"}, status=status.HTTP_200_OK)
+                # Send an email to each giver with the new giver_recap.html
+                for giver_email in emails_giver:
+                    # Render the giver recap HTML template with provided data
+                    giver_html_content = render_to_string('recap.html', {
+                        'name': item['name'],
+                        'key': item['key'],
+                        'price': item['price'],
+                        'seats': item['seats'],
+                        'currency': item['currency'],
+                        'img': item['img'],
+                        'adress': item['adress'],
+                         'hour': item['hourSelected']['hour'],
+                         'date': item['hourSelected']['date'],
+                    })
+                    giver_plain_message = strip_tags(giver_html_content)
+
+                    send_mail(
+                        'Nouvelle Réservation - Récapitulatif',
+                        giver_plain_message,
+                        settings.EMAIL_HOST_USER,
+                        [giver_email],
+                        html_message=giver_html_content,
+                        fail_silently=False,
+                    )
+
+                return Response({"message": "Emails sent successfully"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "User email is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

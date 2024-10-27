@@ -146,17 +146,18 @@ const Home = () => {
         </div>
         <div
           style={{
-            display: "block",
-
+            display: "flex",
+            backgroundColor: "rgb(255 247 243)",
+            justifyContent: "space-between",
             marginLeft: "4%",
-            width: "95%",
+            width: "90%",
           }}
         >
           <span
             style={{
               position: "flex",
               display: "inline",
-              width: "30%",
+              width: "28%",
               float: "left",
               marginRight: "4%",
             }}
@@ -167,7 +168,7 @@ const Home = () => {
             style={{
               position: "flex",
               display: "inline",
-              width: "30%",
+              width: "28%",
               float: "left",
             }}
           >
@@ -177,7 +178,7 @@ const Home = () => {
             style={{
               position: "flex",
 
-              width: "30%",
+              width: "28%",
               float: "left",
               marginLeft: "4%",
             }}
@@ -193,21 +194,22 @@ const Home = () => {
             display: "block",
           }}
         >
-          <h3>Dispos aujourd'hui.</h3>
+          <h3>Les plus populaires.</h3>
         </div>
         <div
           style={{
-            display: "block",
+            display: "flex",
+            backgroundColor: "rgb(255 247 243)",
+            justifyContent: "space-between",
             marginLeft: "4%",
             width: "95%",
-            float: "left",
           }}
         >
           <span
             style={{
               position: "flex",
               display: "inline",
-              width: "30%",
+              width: "28%",
               float: "left",
               marginRight: "4%",
             }}
@@ -218,7 +220,7 @@ const Home = () => {
             style={{
               position: "flex",
               display: "inline",
-              width: "30%",
+              width: "28%",
               float: "left",
             }}
           >
@@ -229,7 +231,7 @@ const Home = () => {
             style={{
               position: "flex",
               display: "inline",
-              width: "30%",
+              width: "28%",
               float: "left",
               marginLeft: "4%",
             }}

@@ -31,19 +31,16 @@ import Footer from "./Footer";
 import axios from "axios";
 import "./style/ProductDetail.css";
 import {
-  HomeOutlined,
-  DownCircleOutlined,
+  AlertTwoTone,
   ShoppingCartOutlined,
   CaretDownOutlined,
   HeartFilled,
-  HeartTwoTone,
+  InfoCircleTwoTone,
   RocketTwoTone,
   ExperimentTwoTone,
   EnvironmentTwoTone,
   HeartOutlined,
-  ThunderboltTwoTone,
-  BulbOutlined,
-  InfoCircleOutlined,
+  TrophyTwoTone,
 } from "@ant-design/icons";
 import { useAuth } from "./AuthContext";
 const ProductDetail = (props) => {
@@ -126,14 +123,14 @@ const ProductDetail = (props) => {
       message.error("Veuillez vous connecter");
     }
   };
-  const timeMenu = (date, hour, seats) => {
+  const timeMenu = (date, hour, seats, dateFin, hourFin, id) => {
     return (
       <Timeline.Item>
         <Button
           onClick={() => {
             setCurrent(1);
             setMaxSeats(seats);
-            setHourSelected({ date, hour });
+            setHourSelected({ date, hour, dateFin, hourFin, id });
           }}
           style={{ borderRadius: "25px", width: "100%" }}
         >
@@ -191,7 +188,10 @@ const ProductDetail = (props) => {
                       timeMenu(
                         dayjs(h.date).format("DD/MM/YYYY"),
                         h.hour.slice(0, -3),
-                        h.seats
+                        h.seats,
+                        h.dateFin,
+                        h.hourFin,
+                        h.id
                       )
                     )
                   : null}
@@ -333,7 +333,7 @@ const ProductDetail = (props) => {
                     hourSelected: hourSelected,
                     emailGiver: giver.email_giver,
                     currency: "€",
-
+                    owner: course.owner,
                     giver: giver.appelation,
                     adress: adress[0].name + ", " + adress[0].city,
 
@@ -673,8 +673,13 @@ const ProductDetail = (props) => {
         )}
 
         <div style={{ width: "100%" }}>
-          <div style={{ display: width <= 1200 ? "" : "flex", width: "100%" }}>
-            <div style={{ width: width <= 1200 ? "100%" : "40%" }}>
+          <div style={{ display: "flex", width: "100%" }}>
+            <div
+              style={{
+                display: "flex",
+                width: "40%",
+              }}
+            >
               {width <= 1200 ? (
                 <>
                   <div
@@ -702,12 +707,13 @@ const ProductDetail = (props) => {
                 <div
                   style={{
                     // position: "sticky",
-                    //marginTop: "20px",
+                    display: "flex",
+                    marginTop: "10%",
                     width: "100%",
                     marginLeft: "5%",
                   }}
                 >
-                  <div style={{ top: "10%", width: "30%" }}>
+                  <div style={{ marginTop: "2%", top: "10%", width: "20%" }}>
                     <Card
                       className="product_card"
                       onClick={() => {
@@ -740,8 +746,6 @@ const ProductDetail = (props) => {
                   <div
                     style={{
                       width: "70%",
-                      marginLeft: "20%",
-                      marginTop: "-18%",
                     }}
                   >
                     <Card
@@ -762,17 +766,28 @@ const ProductDetail = (props) => {
 
             <div
               style={{
+                color: "#070C65",
                 margin: width <= 1200 ? "auto" : "0 0 0 2%",
                 display: width <= 1200 ? "bloc" : "",
                 width: width <= 1200 ? "80%" : "50%",
                 marginTop: "2%",
               }}
             >
-              <span className={"title_activity"}>{course.title}</span>
+              <span
+                style={{
+                  fontFamily: "Dosis",
+                  fontWeight: "500",
+                }}
+                className={"title_activity"}
+              >
+                {course.title}
+              </span>
               <br />
               <Rate
                 style={{
                   color: "#ffc069",
+                  marginTop: "2%",
+                  marginBottom: "2%",
                 }}
                 disabled
                 allowHalf
@@ -800,7 +815,7 @@ const ProductDetail = (props) => {
               )}
               <br /> <br />
               <span>
-                <EnvironmentTwoTone twoToneColor="#02245c" />
+                <EnvironmentTwoTone twoToneColor="#FF8A65" />
                 {adress ? adress[0].name + ", " + adress[0].city : "chargement"}
               </span>
               <br />
@@ -823,7 +838,7 @@ const ProductDetail = (props) => {
               </span>
               <br /> <br />
               <span className="accroche" style={{ marginRight: "70px" }}>
-                {course.price} € pour 1 place
+                {course.price} € par place
               </span>
               <br /> <br />
               {/* <span>
@@ -852,15 +867,23 @@ const ProductDetail = (props) => {
               <br />
               <br />
               {width <= 1200 ? (
-                <div style={{ width: "100%" }}>
+                <div style={{ color: "#070C65", width: "100%" }}>
                   {steps[0].content}
                   {steps[1].content}
                 </div>
               ) : (
                 <>
-                  <Steps direction={"horizontal"} current={current_tab}>
+                  <Steps
+                    style={{ color: "#070C65" }}
+                    direction={"horizontal"}
+                    current={current_tab}
+                  >
                     {steps.map((item) => (
-                      <Step key={item.title} title={item.title} />
+                      <Step
+                        style={{ color: "#070C65" }}
+                        key={item.title}
+                        title={item.title}
+                      />
                     ))}
                   </Steps>
                   <div className="steps-content" style={{ marginTop: "3%" }}>
@@ -942,7 +965,7 @@ const ProductDetail = (props) => {
             }
             icone={
               <RocketTwoTone
-                twoToneColor="#ffa940"
+                twoToneColor="#ffd166"
                 style={{ fontSize: "25px" }}
               />
             }
@@ -962,8 +985,8 @@ const ProductDetail = (props) => {
             height={"400px"}
             content={course.aSavoir}
             icone={
-              <BulbOutlined
-                twoToneColor="#ffa940"
+              <AlertTwoTone
+                twoToneColor="#ffd166"
                 style={{ fontSize: "25px" }}
               />
             }
@@ -975,8 +998,8 @@ const ProductDetail = (props) => {
             height={"400px"}
             content={course.annulation}
             icone={
-              <InfoCircleOutlined
-                twoToneColor="#ffa940"
+              <InfoCircleTwoTone
+                twoToneColor="#ffd166"
                 style={{ fontSize: "25px" }}
               />
             }
@@ -1007,13 +1030,13 @@ const ProductDetail = (props) => {
             </div>
           }
           icone={
-            <HeartOutlined
-              twoToneColor="#ffa940"
+            <TrophyTwoTone
+              twoToneColor="#ffd166"
               style={{ fontSize: "25px" }}
             />
           }
           titre={"AVIS"}
-          width={"100%"}
+          width={"50%"}
         />
 
         <Footer width={width} />

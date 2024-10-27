@@ -273,7 +273,7 @@ const Menu2 = (props) => {
           overflow: "hidden",
           display: "flex",
           justifyContent: "center",
-          background: "#FCEFCD",
+          background: "#FFE5D9",
         }}
       >
         <nav style={{ width: "100%" }}>
@@ -286,7 +286,7 @@ const Menu2 = (props) => {
               display: "inline-flex",
               width: "90%",
               textAlign: "center",
-              fontFamily: "Dosis",
+              fontFamily: "Playwrite GB S",
               listStyle: "none",
 
               //paddingLeft: "10%",
@@ -297,7 +297,7 @@ const Menu2 = (props) => {
                 onClick={() => scroll(-20)}
                 style={{
                   width: "8%",
-                  background: "#FCEFCD",
+                  background: "#FFE5D9",
                   position: "absolute",
                   marginTop: "5%",
                   left: 0,
@@ -317,7 +317,10 @@ const Menu2 = (props) => {
               style={{ display: "inline-block" }}
             >
               <a
-                style={{ color: "#000", textDecoration: "none" }}
+                style={{
+                  color: "#070C65",
+                  textDecoration: "none",
+                }}
                 href="#Accueil"
               >
                 <Icon
@@ -347,7 +350,10 @@ const Menu2 = (props) => {
               style={{ display: "inline-block" }}
             >
               <a
-                style={{ color: "#000", textDecoration: "none" }}
+                style={{
+                  color: "#070C65",
+                  textDecoration: "none",
+                }}
                 href="#Accueil"
               >
                 <Icon
@@ -376,7 +382,10 @@ const Menu2 = (props) => {
               style={{ display: "inline-block" }}
             >
               <a
-                style={{ color: "#000", textDecoration: "none" }}
+                style={{
+                  color: "#070C65",
+                  textDecoration: "none",
+                }}
                 href="#Accueil"
               >
                 <Icon
@@ -406,7 +415,10 @@ const Menu2 = (props) => {
               style={{ display: "inline-block" }}
             >
               <a
-                style={{ color: "#000", textDecoration: "none" }}
+                style={{
+                  color: "#070C65",
+                  textDecoration: "none",
+                }}
                 href="#Accueil"
               >
                 <Icon
@@ -436,7 +448,10 @@ const Menu2 = (props) => {
               style={{ display: "inline-block" }}
             >
               <a
-                style={{ color: "#000", textDecoration: "none" }}
+                style={{
+                  color: "#070C65",
+                  textDecoration: "none",
+                }}
                 href="#Accueil"
               >
                 <Icon
@@ -466,7 +481,10 @@ const Menu2 = (props) => {
               style={{ display: "inline-block" }}
             >
               <a
-                style={{ color: "#000", textDecoration: "none" }}
+                style={{
+                  color: "#070C65",
+                  textDecoration: "none",
+                }}
                 href="#Accueil"
               >
                 <Icon
@@ -496,7 +514,10 @@ const Menu2 = (props) => {
               style={{ display: "inline-block" }}
             >
               <a
-                style={{ color: "#000", textDecoration: "none" }}
+                style={{
+                  color: "#070C65",
+                  textDecoration: "none",
+                }}
                 href="#Accueil"
               >
                 <Icon
@@ -526,7 +547,10 @@ const Menu2 = (props) => {
               style={{ display: "inline-block" }}
             >
               <a
-                style={{ color: "#000", textDecoration: "none" }}
+                style={{
+                  color: "#070C65",
+                  textDecoration: "none",
+                }}
                 href="#Accueil"
               >
                 <Icon
@@ -556,7 +580,10 @@ const Menu2 = (props) => {
               style={{ display: "inline-block" }}
             >
               <a
-                style={{ color: "#000", textDecoration: "none" }}
+                style={{
+                  color: "#070C65",
+                  textDecoration: "none",
+                }}
                 href="#Accueil"
               >
                 <Icon
@@ -586,7 +613,10 @@ const Menu2 = (props) => {
               style={{ display: "inline-block" }}
             >
               <a
-                style={{ color: "#000", textDecoration: "none" }}
+                style={{
+                  color: "#070C65",
+                  textDecoration: "none",
+                }}
                 href="#Accueil"
               >
                 <Icon
@@ -616,7 +646,10 @@ const Menu2 = (props) => {
               style={{ display: "inline-block" }}
             >
               <a
-                style={{ color: "#000", textDecoration: "none" }}
+                style={{
+                  color: "#070C65",
+                  textDecoration: "none",
+                }}
                 href="#Accueil"
               >
                 <Icon
@@ -643,7 +676,7 @@ const Menu2 = (props) => {
                 onClick={() => scroll(20)}
                 style={{
                   width: "8%",
-                  background: "#FCEFCD",
+                  background: "#FFE5D9",
                   position: "absolute",
                   marginTop: "5%",
                   right: 0,

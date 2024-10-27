@@ -56,12 +56,13 @@ import {
 } from "@ant-design/icons";
 import Connexion from "./Connexion";
 import Cart from "./Cart";
-import logo2 from "./leika_logo2.png";
+import logo2 from "./maory.png";
 import para from "./para.jpg";
 import couture from "./couture.jpg";
 import kart from "./kart.jpg";
 import loop from "./loop.mp4";
 import kidIcon from "./kids.png";
+import separator from "./separator.png";
 //import Form from "antd/lib/form/Form";
 import Results from "./Results";
 import { typeOf } from "react-responsive";
@@ -106,6 +107,7 @@ const MenuBrowser = (props) => {
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [city, setCity] = useState("");
   const antRef = useRef(null);
+
   /*const { ref: antRef } = usePlacesWidget({
     apiKey: "AIzaSyDNvRrdKaNa67E4OFRsZGsmrbpqsQLUAUM",
     defaultValue: "Paris",
@@ -705,7 +707,9 @@ const MenuBrowser = (props) => {
           style={{
             zIndex: "2",
             position: "flex",
+            justifyContent: "space-evenly",
             display: "flex",
+            width: "90%",
             maxHeight: props.width <= "1100" ? "150px" : "80px",
           }}
         >
@@ -721,7 +725,8 @@ const MenuBrowser = (props) => {
               <img
                 style={{
                   justifyContent: "left",
-                  width: props.width <= "1100" ? "50%" : "50%",
+                  width: "120%",
+                  marginTop: "2%",
                   marginLeft: "20%",
                 }}
                 id="img_logo_desktop"
@@ -736,16 +741,17 @@ const MenuBrowser = (props) => {
               className="menu"
               name="menu_elements"
               style={{
-                justifyContent: "center",
                 width: "60%",
                 borderBottom: "none",
                 display: "flex",
-                marginLeft: "20%",
-                fontSize: props.width <= "1400" ? "15px" : "20px",
+                justifyContent: "center",
+                color: "#070C65",
+                fontSize: props.width <= "1400" ? "15px" : "27px",
               }}
             >
               <Menu.Item
                 id="kids"
+                style={{ color: "rgb(7, 12, 101)" }}
                 onClick={() => {
                   navigate("../kids", { replace: true });
 
@@ -756,7 +762,7 @@ const MenuBrowser = (props) => {
                   <Image
                     src={kidIcon}
                     preview={false}
-                    style={{ width: "20px", marginLeft: "-30%", bottom: "0" }}
+                    style={{ width: "20px", bottom: "0" }}
                   />
                 }
               >
@@ -764,6 +770,24 @@ const MenuBrowser = (props) => {
               </Menu.Item>
 
               <Menu.Item
+                style={{ color: "rgb(7, 12, 101)" }}
+                key="kids"
+                onClick={() => {
+                  navigate("../kids", { replace: true });
+
+                  setKids(true);
+                }}
+                icon={
+                  <Image
+                    src={separator}
+                    preview={false}
+                    style={{ width: "30px", bottom: "0" }}
+                  />
+                }
+              ></Menu.Item>
+
+              <Menu.Item
+                style={{ color: "rgb(7, 12, 101)" }}
                 onClick={() => {
                   navigate("../team", { replace: true });
                   setTeam(true);
@@ -772,27 +796,28 @@ const MenuBrowser = (props) => {
               >
                 Team Building
               </Menu.Item>
+              <Menu.Item
+                onClick={() => {
+                  navigate("../team", { replace: true });
+                  setTeam(true);
+                }}
+                style={{ color: "rgb(7, 12, 101)" }}
+                key="team"
+                icon={
+                  <Image
+                    src={separator}
+                    preview={false}
+                    style={{ width: "30px", bottom: "0" }}
+                  />
+                }
+              ></Menu.Item>
 
               <Menu.Item
+                style={{ color: "rgb(7, 12, 101)" }}
                 onClick={() => {
                   navigate("../gift", { replace: true });
                 }}
                 key="gift"
-                icon={
-                  <Icon
-                    component={() => (
-                      <img
-                        src={gift}
-                        height={30}
-                        style={{
-                          // margin: "0 7px 0 0",
-                          //paddingTop: 10,
-                          float: "center",
-                        }}
-                      />
-                    )}
-                  />
-                }
               >
                 Carte Cadeau
               </Menu.Item>
@@ -801,11 +826,6 @@ const MenuBrowser = (props) => {
           <Menu
             mode="horizontal"
             style={{
-              marginTop: "5px",
-              position: "flex",
-              justifyContent: "flex-end",
-              marginLeft: props.width <= "1100" ? "43%" : "10%",
-              width: "40%",
               borderBottom: "none",
             }}
             className="menu"
@@ -843,7 +863,7 @@ const MenuBrowser = (props) => {
                   )}
                 >
                   <Menu.Item
-                    style={{ fontSize: "25px" }}
+                    style={{ fontSize: "25px", color: "rgb(7, 12, 101)" }}
                     //onClick={() => handleClick()}
                     key="connexion"
                     icon={<UserOutlined style={{ fontSize: "90%" }} />}
@@ -854,7 +874,7 @@ const MenuBrowser = (props) => {
               </>
             ) : (
               <Menu.Item
-                style={{ fontSize: "25px" }}
+                style={{ fontSize: "25px", color: "rgb(7, 12, 101)" }}
                 onClick={() => handleClick()}
                 key="connexion"
                 icon={<UserOutlined style={{ fontSize: "90%" }} />}
@@ -863,7 +883,7 @@ const MenuBrowser = (props) => {
               </Menu.Item>
             )}
             <Menu.Item
-              style={{ fontSize: "25px" }}
+              style={{ fontSize: "25px", color: "rgb(7, 12, 101)" }}
               onClick={() => handleCart()}
               key="cart"
               icon={
@@ -923,7 +943,7 @@ const MenuBrowser = (props) => {
             >
               <span
                 style={{
-                  color: "black",
+                  color: "#070C65",
                   position: "absolute",
                   left: "10px",
                   fontFamily: "Dosis",
@@ -1040,7 +1060,12 @@ const MenuBrowser = (props) => {
               />
             </AutoComplete> */}
             <div
-              style={{ width: "10%", paddingTop: "1%", fontSize: "16px" }}
+              style={{
+                width: "10%",
+                paddingTop: "1%",
+                fontSize: "16px",
+                color: "#070C65",
+              }}
               className="dashboardSearch"
             >
               Quel jour?{" "}
@@ -1081,7 +1106,7 @@ const MenuBrowser = (props) => {
               <SearchOutlined
                 style={{
                   fontSize: props.width <= "800" ? "14px" : "27px",
-                  color: "#FFB319",
+                  color: "#FF8A65",
                   width: "50%",
                 }}
               />

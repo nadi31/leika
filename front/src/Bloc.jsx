@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 import "./style/ProductDetail.css";
-import { ExperimentTwoTone } from "@ant-design/icons";
 
 const Bloc = (props) => {
   const [content, setContent] = useState(props.content);
@@ -32,7 +31,7 @@ const Bloc = (props) => {
             style={{
               display: "flex",
               height: "20%",
-              backgroundColor: yellow ? "#fff7e6" : "",
+              backgroundColor: "#FFE5D9",
               borderRadius: "40px",
               marginBottom: "10px",
               justifyContent: "center",
@@ -44,7 +43,7 @@ const Bloc = (props) => {
               style={{
                 marginTop: "4%",
 
-                color: "#ffa940",
+                color: "#070C65",
                 position: "relative",
               }}
             >
@@ -54,7 +53,10 @@ const Bloc = (props) => {
             </div>
           </div>
 
-          <div style={{ lineHeight: "2" }} className="content">
+          <div
+            style={{ color: "#070C65", lineHeight: "2" }}
+            className="content"
+          >
             {content}
           </div>
         </div>

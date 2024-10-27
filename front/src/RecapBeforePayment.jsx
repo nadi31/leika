@@ -23,6 +23,7 @@ const RecapBeforePayment = ({ items }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [id_user, setId_user] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
   const { userData } = useAuth();
@@ -36,6 +37,7 @@ const RecapBeforePayment = ({ items }) => {
     if (userData !== null) {
       setIsAuthenticated(true);
       setUserEmail(userData.email);
+      setId_user(userData.id_obj_user);
     } else {
       setIsAuthenticated(false);
     }
@@ -49,7 +51,7 @@ const RecapBeforePayment = ({ items }) => {
 
     try {
       const response = await fetch(
-        "http://localhost:8000/api-course/send-payment-recap/",
+        "http://localhost:8000/api-course/bookings/",
         {
           method: "POST",
           headers: {
@@ -57,6 +59,7 @@ const RecapBeforePayment = ({ items }) => {
           },
           body: JSON.stringify({
             items,
+            id_user: id_user,
             totalAmount,
             userEmail,
             emailsGiver: items.map((item) => item.emailGiver), // Emails of responsible people for the courses

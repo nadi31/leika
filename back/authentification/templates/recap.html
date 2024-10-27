@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nouvelle Réservation - {{ name }}</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Google Font Lora -->
+    <style>
+      /* Global Styles */
+      body {
+        font-family: "Lora", serif; /* Earthy and relaxed font */
+        background-color: #f4f4f4; /* Light background */
+        margin: 0;
+        padding: 0;
+        color: #333333;
+      }
+
+      .container {
+        width: 600px; /* Fixed width */
+        margin: 20px auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: visible; /* Ensure content is always visible */
+      }
+
+      .header {
+        background-color: #b8c3b0; /* Sage Green theme */
+        color: #ffffff;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .content {
+        padding: 30px;
+        text-align: left; /* Align the content to the left */
+      }
+
+      .content h1 {
+        margin-top: 0;
+        color: #b8c3b0; /* Sage Green theme for header */
+      }
+
+      .button {
+        text-align: center; /* Center-aligns the content inside the div */
+        margin-top: 20px; /* Adds space above the button */
+      }
+
+      .button a {
+        display: inline-block; /* Makes the link behave like a button */
+        padding: 15px 25px; /* Adds padding inside the button */
+        font-size: 16px; /* Sets the font size */
+        color: #ffffff; /* Sets the text color to white */
+        background-color: #b8c3b0; /* Sets the background color to Sage Green */
+        text-decoration: none; /* Removes the underline from the link */
+        border-radius: 5px; /* Rounds the corners of the button */
+        font-weight: bold; /* Makes the text bold */
+        cursor: pointer; /* Changes cursor to pointer when hovering over the button */
+        transition: background-color 0.3s ease; /* Smooth transition effect */
+      }
+
+      .button a:hover {
+        background-color: #a3b09a; /* Darker Sage Green on hover */
+      }
+
+      .footer {
+        padding: 20px;
+        text-align: center;
+        font-size: 14px;
+        color: #777777;
+      }
+
+      .footer a {
+        color: #b8c3b0;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>Nouvelle Réservation - {{ name }}</h2>
+      </div>
+      <div class="content">
+        <h1>Récapitulatif de la nouvelle réservation :</h1>
+
+        <p>
+          <strong>Cours : {{ name }}</strong> (<a
+            href="http://localhost:3000/product/{{ key }}"
+            >Voir le cours</a
+          >)
+        </p>
+        <ul>
+          <li>
+            <strong>Nombre de places réservées</strong> : {{ seats }} place(s)
+          </li>
+          <li><strong>Prix par place</strong> : {{ price }} {{ currency }}</li>
+          <li><strong>Adresse du cours</strong> : {{ adress }}</li>
+          <li><strong>Date et heure</strong> : {{ date }} à {{hour }}</li>
+        </ul>
+      </div>
+      <div class="footer">
+        <p>&copy; Leikka. Tous droits réservés.</p>
+        <p><a href="http://localhost:3000">Visitez notre site web</a></p>
+      </div>
+    </div>
+  </body>
+</html>
