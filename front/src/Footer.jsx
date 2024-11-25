@@ -1,20 +1,23 @@
 import React, { useState } from "react";
-import { Image, Button, Modal, InputNumber, message, Input } from "antd";
+import { Menu, Button, Modal, InputNumber, message, Input } from "antd";
 //import "antd/dist/antd.css";
 import "./style/footer.css";
 import axios from "axios";
 
 import {
   MailOutlined,
-  HeartOutlined,
-  PhoneOutlined,
+  TwitterOutlined,
+  InstagramOutlined,
   RocketOutlined,
 } from "@ant-design/icons";
 import { Table, Typography } from "antd";
-
-//Panier shopping
+import { useNavigate } from "react-router-dom";
+import { Grid } from "antd";
 
 const Footer = (props) => {
+  const navigate = useNavigate();
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
   const [email, setEmail] = useState("");
 
   const addEmail = () => {
@@ -46,8 +49,7 @@ const Footer = (props) => {
         margin: "30%",
 
         background: "",
-        margin: props.width <= 900 ? "auto" : "",
-        opacity: "0.9",
+        margin: window.innerWidth <= 1200 ? "auto" : "",
       }}
     >
       <div
@@ -55,9 +57,9 @@ const Footer = (props) => {
         style={{
           position: "relative",
           display: "block",
-          alignSelf: props.width <= 900 ? "" : "flex-end",
-          justifyContent: props.width <= 900 ? "" : "center",
-          zIndex: "-1",
+          alignSelf: window.innerWidth <= 1200 ? "" : "flex-end",
+          justifyContent: window.innerWidth <= 1200 ? "" : "center",
+          //    zIndex: "-1",
 
           margin: "auto",
           width: "100%",
@@ -68,119 +70,97 @@ const Footer = (props) => {
         <div
           className="content"
           style={{
-            display: props.width <= 1200 ? "block" : "flex",
+            display: "flex",
             justifyContent: "center",
-            zIndex: "1",
-            width: props.width <= 900 ? "100%" : "80%",
+            //  zIndex: "1",
+            width: "100%",
+            flexDirection: window.innerWidth < 1200 ? "column" : "",
             margin: "auto",
           }}
         >
           <div
-            className="about"
             style={{
-              zIndex: "1",
-              margin: "auto",
+              width: window.innerWidth < 1200 ? "100%" : "20%",
+
+              //  zIndex: "1",
+              margin: window.innerWidth < 1200 ? "5% 8% " : "5%  7%  ",
               justifyContent: "center",
-              width: props.width <= 900 ? "70%" : "20%",
-              height: "10%",
             }}
           >
-            <div>
-              <h1>
-                {" "}
-                <HeartOutlined /> A PROPOS
-              </h1>
-              <br />
-
-              <a href="http://localhost:3000/founders#process" style={{}}>
-                {" "}
-                Fonctionnement{" "}
-              </a>
-              <br />
-              <br />
-              <a href="http://localhost:3000/founders#founders">Fondatrices</a>
-              <br />
-              <br />
-              <a href="">Mention Légales</a>
-            </div>
+            {" "}
+            <h1>Restez au courant de notre actualité !</h1>
+            <br />
+            <Input
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+              style={{
+                width: window.innerWidth < 1200 ? "70%" : "100%",
+                height: "30%",
+              }}
+              placeholder=" email"
+              prefix={<MailOutlined style={{ color: "#070C65" }} />}
+              suffix={<Button onClick={addEmail}>OK</Button>}
+            />
           </div>
 
           <div
-            className="assistance"
             style={{
+              width: window.innerWidth < 1200 ? "100%" : "20%",
               zIndex: "1",
-              margin: "5% auto ",
+              margin: window.innerWidth < 1200 ? "5% 7% " : "5% auto ",
               justifyContent: "center",
-              width: props.width <= 900 ? "70%" : "20%",
-              height: "10%",
             }}
           >
-            <div>
-              <h1>
+            <Menu style={{ border: "none" }}>
+              <Menu.Item
+                onClick={() => {
+                  navigate("../", {
+                    replace: true,
+                  });
+                }}
+              >
                 {" "}
-                <PhoneOutlined />
-                ASSISTANCE
-              </h1>
-              <br />
-              <a href="">FAQ</a>
-              <br />
-              <br />
-              <a href="http://localhost:3000/founders#contact">Contact</a>{" "}
-              <br />
-              <br />
-              <a href="">Face à la covid</a>
-            </div>
+                <h1>Mentions Légales</h1>
+              </Menu.Item>
+              <Menu.Item
+                onClick={() => {
+                  navigate("../founders", {
+                    replace: true,
+                  });
+                }}
+              >
+                {" "}
+                <h1>Proposer un Atelier</h1>
+              </Menu.Item>
+            </Menu>
           </div>
 
           <div
-            className="giver"
             style={{
+              width: window.innerWidth < 1200 ? "100%" : "20%",
               zIndex: "1",
-              margin: "5% auto ",
+              margin: window.innerWidth < 1200 ? "5% 12% " : "5% 1% ",
               justifyContent: "center",
-              width: props.width <= 900 ? "70%" : "20%",
-              height: "10%",
             }}
           >
-            <div>
-              <h1>
-                {" "}
-                <RocketOutlined />
-                DEVENIR UN GIVER
+            <a href="">
+              <h1
+                style={{ fontSize: window.innerWidth < 1200 ? "30px" : "50px" }}
+              >
+                <TwitterOutlined />
               </h1>
-              <br />
-              <a href="">Conditions</a>
-              <br />
-              <br />
-              <a href="">Notre process de sélection</a>
-              <br />
-              <br />
-              <a href="">Formulaire de contact</a>
-            </div>
+            </a>
+
+            <br />
+            <a href="">
+              <h1
+                style={{ fontSize: window.innerWidth < 1200 ? "30px" : "50px" }}
+              >
+                <InstagramOutlined />
+              </h1>
+            </a>
           </div>
-        </div>
-        <div
-          className="news_letter"
-          style={{
-            zIndex: "1",
-            margin: "5% auto ",
-            justifyContent: "center",
-            width: props.width <= 900 ? "70%" : "30%",
-            height: "10%",
-            opacity: "1",
-          }}
-        >
-          <h1>Restez au courant de notre actualité !</h1>
-          <br />
-          <Input
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-            style={{ height: "30%" }}
-            placeholder="e-mail"
-            prefix={<MailOutlined />}
-            suffix={<Button onClick={addEmail}>OK</Button>}
-          />
         </div>
       </div>
       <br />

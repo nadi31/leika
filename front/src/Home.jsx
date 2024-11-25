@@ -3,6 +3,7 @@ import { ConfigProvider } from "antd";
 import { BrowserView, MobileView } from "react-device-detect";
 import { Card } from "antd";
 import axios from "axios";
+import MobileLayout from "./MobileLayout";
 import { useAuth } from "./Connexion";
 import HomeMobile from "./HomeMobile";
 import Footer from "./Footer";
@@ -11,7 +12,11 @@ import MyMap from "./MyMap";
 import ResCard from "./ResCard";
 import MenuBrowser from "./MenuBrowser";
 
+import { Grid } from "antd";
+
 const Home = () => {
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
   const [courseList, setCourseList] = useState([]);
   const [results, setResults] = useState([]);
   const funcCourseList = (res) => {
@@ -115,13 +120,17 @@ const Home = () => {
   } else if (width > 800 && courseList !== null) {
     return (
       <div id="root">
-        <MenuBrowser
-          team={false}
-          kids={false}
-          setDisplay={setDisplay}
-          width={width}
-          setResults={setResults}
-        />
+        {screens.xs ? (
+          <MobileLayout />
+        ) : (
+          <MenuBrowser
+            team={false}
+            kids={false}
+            setDisplay={setDisplay}
+            width={width}
+            setResults={setResults}
+          />
+        )}{" "}
         <div
           className="div_video"
           style={{
@@ -243,7 +252,7 @@ const Home = () => {
             <MyMap />
           </div>
         </div>
-        <Footer width={width} />
+        <Footer width={width} />{" "}
       </div>
     );
   }

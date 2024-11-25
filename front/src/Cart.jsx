@@ -9,9 +9,11 @@ import {
 import { Table, Typography, Space } from "antd";
 import { useNavigate, withRouter, useSearchParams } from "react-router-dom";
 
-//Panier shopping
+import { Grid } from "antd";
 
 const Cart = (props) => {
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
   const [data, setData] = useState([]);
   const [seats, setSeats] = useState(0);
   const navigate = useNavigate();
@@ -96,24 +98,26 @@ const Cart = (props) => {
   };
 
   const columns = [
-    {
-      title: "delete",
-      width: "27%",
-      dataIndex: props.width > 900 ? "" : "none",
-      render: (key, record, index) => (
-        <Space>
-          {" "}
-          <a
-            onClick={() => {
-              handleDelete(index);
-            }}
-          >
-            <DeleteOutlined />
-          </a>
-        </Space>
-      ),
-    },
-    props.width > 1200
+    !screens.xs
+      ? {
+          title: "delete",
+          width: "27%",
+          dataIndex: props.width > 900 ? "" : "none",
+          render: (key, record, index) => (
+            <Space>
+              {" "}
+              <a
+                onClick={() => {
+                  handleDelete(index);
+                }}
+              >
+                <DeleteOutlined />
+              </a>
+            </Space>
+          ),
+        }
+      : {},
+    !screens.xs
       ? {
           width: "50%",
 
@@ -129,24 +133,34 @@ const Cart = (props) => {
           ),
         }
       : {},
-    {
-      width: "35%",
+    !screens.xs
+      ? {
+          width: "35%",
 
-      dataIndex: "name",
-    },
-    {
-      width: "35%",
+          dataIndex: "name",
+        }
+      : {
+          width: "50%",
 
-      dataIndex: "price",
-    },
-    {
-      width: "35%",
+          dataIndex: "name",
+        },
+    !screens.xs
+      ? {
+          width: "35%",
 
-      dataIndex: "currency",
-    },
+          dataIndex: "price",
+        }
+      : {},
+    !screens.xs
+      ? {
+          width: "35%",
+
+          dataIndex: "currency",
+        }
+      : {},
 
     {
-      width: "70%",
+      width: !screens.xs ? "70%" : "35%",
 
       dataIndex: "seats",
       render: (seats, record, index) => (
@@ -268,15 +282,7 @@ const Cart = (props) => {
         visible={props.cart}
         onOk={() => props.setCart(false)}
         onCancel={() => props.setCart(false)}
-        width={
-          props.width >= 1500
-            ? "45%"
-            : props.width >= 1000
-            ? props.width >= 400
-              ? "90%"
-              : "70%"
-            : "70%"
-        }
+        width={screens.xs ? "95%" : "45%"}
         footer={null}
         //onAfterOpen={afterOpenModal}
 
@@ -309,7 +315,28 @@ const Cart = (props) => {
                       totalPrice += price * seats;
                     });
 
-                    return (
+                    return screens.xs ? (
+                      <>
+                        <Table.Summary.Row
+                          style={{ width: "100%" }}
+                          id="summary"
+                        >
+                          {" "}
+                          <Table.Summary.Cell></Table.Summary.Cell>
+                          <Table.Summary.Cell></Table.Summary.Cell>
+                          <Table.Summary.Cell style={{ width: "50%" }}>
+                            Total
+                          </Table.Summary.Cell>
+                          <Table.Summary.Cell></Table.Summary.Cell>{" "}
+                          <Table.Summary.Cell></Table.Summary.Cell>
+                          <Table.Summary.Cell>
+                            <Text style={{ width: "50%" }}>
+                              {totalPrice + "€"}
+                            </Text>
+                          </Table.Summary.Cell>
+                        </Table.Summary.Row>
+                      </>
+                    ) : (
                       <>
                         <Table.Summary.Row id="summary">
                           <Table.Summary.Cell>Total</Table.Summary.Cell>
@@ -333,7 +360,7 @@ const Cart = (props) => {
                   style={{
                     borderRadius: "25px",
                     left: "70%",
-                    width: "30%",
+                    width: "35%",
                     backgroundColor: "#ffd04f",
                   }}
                 >

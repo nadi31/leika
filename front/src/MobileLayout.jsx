@@ -1,111 +1,55 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, withRouter, useSearchParams } from "react-router-dom";
-import { ConfigProvider, Modal } from "antd";
-
-//import frFR from "antd/lib/locale/fr_FR";
-//import MediaQuery from 'react-responsive';
-import { BrowserView, MobileView } from "react-device-detect";
-import { Card, Menu, Button, Input, AutoComplete, Affix } from "antd";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Icon from "@ant-design/icons";
-import axios from "axios";
-import logo2 from "./leika_logo2.png";
-import Cart from "./Cart";
-import {
-  ShoppingCartOutlined,
-  MenuOutlined,
-  UserOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import board from "./board.png";
-import france from "./france.png";
-import drill from "./drill.png";
-import eiffel from "./eiffel.png";
-import gift from "./gift.png";
-import team from "./team.png";
-import museum from "./museum.png";
-import noodles from "./noodles.png";
-import sculpture from "./sculpture.png";
-import sewing from "./sewing.png";
-import dayjs from "dayjs";
-import spa from "./spa.png";
-import sport from "./sport.png";
-import theatre from "./theatre.png";
-import translation from "./translation.png";
-import Connexion from "./Connexion";
-import home from "./home.png";
-import ckids from "./ckids.png";
-import login from "./login.png";
+import { Menu, Modal, Button } from "antd";
 import hambur from "./hamburger.png";
-import { SettingOutlined, AppstoreOutlined } from "@ant-design/icons";
-const { SubMenu } = Menu;
-const MenuMobile = () => {
-  let history = useNavigate();
+import search from "./searchIcon.png";
+import Cart from "./Cart";
+import kids from "./kids2.png";
+import logo2 from "./maory.png";
+import team from "./team2.png";
+import { useAuth } from "./AuthContext";
+import Connexion from "./Connexion";
+import { ShoppingCartOutlined, MenuOutlined } from "@ant-design/icons";
+
+const MobileLayout = () => {
+  const userData = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
-  const [width, setWidth] = useState(window.innerWidth);
+
+  const { SubMenu } = Menu;
   const [menuHamburger, setMenuHamburger] = useState(false);
-  const authLogOut = () => {
-    localStorage.clear();
+  const [connexion, setConnexion] = useState(false);
+  const [cart, setCart] = useState(false);
+  const [connected, setConnected] = useState(userData ? true : false);
+  const handleCart = () => {
+    setCart(true);
   };
-  function getItem(label, key, icon, children, type) {
-    return {
-      key,
-      icon,
-      children,
-      label,
-      type,
-    };
-  }
-  const items = [
-    getItem("RECHERCHE AVANCEE", "sub1", <SearchOutlined />),
-    getItem("Navigation Two", "sub2", <AppstoreOutlined />, [
-      getItem("Option 5", "5"),
-      getItem("Option 6", "6"),
-      getItem("Submenu", "sub3", null, [
-        getItem("Option 7", "7"),
-        getItem("Option 8", "8"),
-      ]),
-    ]),
-    getItem("Navigation Three", "sub4", <SettingOutlined />, [
-      getItem("Option 9", "9"),
-      getItem("Option 10", "10"),
-      getItem("Option 11", "11"),
-      getItem("Option 12", "12"),
-    ]),
-  ];
-  const [kids, setKids] = useState(false);
-  const [connected, setConnected] = useState(false);
   const handleClick = () => {
     setConnexion(!connexion);
   };
-  const [connexion, setConnexion] = useState(false);
-  function updateSize() {
-    setWidth(window.innerWidth);
-    console.log(window.innerWidth);
-  }
-  const [courseList, setCourseList] = useState([]);
-  const [cart, setCart] = useState(false);
-  const [results, setResults] = useState([]);
-  const funcCourseList = (res) => {
-    setCourseList(res.data);
-    console.log(res.data);
-  };
   const handleMenuConnexionCub = (value) => {
+    if (value.key === "1") {
+      navigate("../recap/orders", { replace: true });
+    }
     if (value.key === "2") {
       navigate("../profil", { replace: true });
     }
+    if (value.key === "4") {
+      navigate("../infos", { replace: true });
+    }
     if (value.key === "3") {
-      setConnected(false);
-      authLogOut();
+      logout();
 
       navigate("../", { replace: true });
-    } else {
-      console.log(value.key);
+    }
+    if (value.key === "5") {
+      navigate("../infos/reviews", { replace: true });
     }
   };
   const handleMenuConnexionGiver = (value) => {
     if (value.key === "5") {
-      setConnected(false);
-      authLogOut();
+      logout();
 
       navigate("../", { replace: true });
     }
@@ -121,7 +65,10 @@ const MenuMobile = () => {
       // navigate("");
       navigate("../profil/giver", { replace: true });
     }
-
+    if (value.key === "6") {
+      // navigate("");
+      navigate("../booking/giver", { replace: true });
+    }
     if (value.key === "4") {
       // navigate("");
       navigate("../online/giver", { replace: true });
@@ -130,8 +77,7 @@ const MenuMobile = () => {
 
   const handleMenuConnexionAdmin = (value) => {
     if (value.key === "4") {
-      setConnected(false);
-      authLogOut();
+      logout();
 
       navigate("../", { replace: true });
     }
@@ -153,41 +99,24 @@ const MenuMobile = () => {
       navigate("../admin/list/verify", { replace: true });
     }
   };
-
-  const [display, setDisplay] = useState(false);
-
-  const [card1, setcard1] = useState(<></>);
-  const [card2, setcard2] = useState(<></>);
-  const [collapsed, setCollapsed] = useState(false);
-  useEffect(() => {
-    {
+  const handleMenuNotConnected = (value) => {
+    if (value.key === "1") {
+      setConnexion(true);
     }
-  }, []);
-
-  const { Meta } = Card;
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
+    if (value.key === "2") {
+      //populaires
+      navigate("../", { replace: true });
+    }
+    if (value.key === "3") {
+      //proches de chez vous
+      navigate("../", { replace: true });
+    }
+    if (value.key === "4") {
+      setConnexion(true);
+    }
   };
-
-  const contentStyle = {
-    height: "160px",
-    color: "#fff",
-    lineHeight: "160px",
-    textAlign: "center",
-    background: "#364d79",
-  };
-  const options = [
-    { label: "Toulouse", value: "Toulouse" },
-    { label: "Muret", value: "Muret" },
-  ];
-  const [bottom, setBottom] = useState(830);
-  const handleCart = () => {
-    setCart(true);
-  };
-  //6 activités à mettre en valeur
-
   return (
-    <div style={{ width: "100%" }}>
+    <>
       <Menu
         mode="horizontal"
         style={{
@@ -195,7 +124,7 @@ const MenuMobile = () => {
           display: "table",
           textAlign: "center",
           fontFamily: "Dosis",
-          background: "#F4F4F4",
+          background: "#FFF4F0",
         }}
       >
         <Menu.Item
@@ -209,20 +138,29 @@ const MenuMobile = () => {
             paddingBottom: "10px",
           }}
           onClick={() => setMenuHamburger(!menuHamburger)}
-          icon=<img
-            src={hambur}
-            height={30}
-            style={{
-              marginTop: "-20px",
-              color: "hotpink",
-              //paddingTop: 10,
-              float: "center",
-            }}
-          />
+          icon={
+            <Icon
+              component={() => (
+                <MenuOutlined style={{ color: "#070C65", fontSize: "30px" }} />
+              )}
+            />
+          }
         >
+          {connexion ? (
+            <div>
+              <Connexion
+                setConnected={setConnected}
+                setConnexion={setConnexion}
+                connexion={connexion}
+                connected={userData ? true : false}
+              />
+            </div>
+          ) : (
+            <></>
+          )}
           <Modal
             style={{ top: "-1%", float: "left" }}
-            visible={menuHamburger}
+            open={menuHamburger}
             onCancel={() => setMenuHamburger(false)}
             width="100%"
             footer={null}
@@ -238,9 +176,21 @@ const MenuMobile = () => {
                 justifyContent: "center",
               }}
             >
-              {localStorage.getItem("connected") === "true" ? (
-                <div className="connec" style={{ display: "-ms-flexbox" }}>
-                  {localStorage.getItem("user_type") === "1" ? (
+              {userData ? (
+                <div
+                  className="mobile"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
+                  }}
+                >
+                  <img
+                    src={logo2}
+                    style={{ width: "50%", marginLeft: "10%" }}
+                  />
+
+                  {userData.user_type === "1" ? (
                     <Menu
                       onClick={(e) => handleMenuConnexionAdmin(e)}
                       style={{
@@ -249,16 +199,17 @@ const MenuMobile = () => {
                         fontFamily: "Dosis",
                         fontSize: "25px",
                         width: "100%",
-                        color: "black",
+                        color: "#070C65",
+                        border: "None",
                       }}
                     >
                       <Menu.Item key="1">Créer un giver</Menu.Item>
-                      <Menu.Item key="2">Créer une expérience</Menu.Item>
+                      <Menu.Item key="2 ">Créer une expérience</Menu.Item>
                       <Menu.Item key="3">Modifier une expérience</Menu.Item>
                       <Menu.Item key="4">Se déconnecter</Menu.Item>
                       <Menu.Item key="5">Cours à vérifier</Menu.Item>
                     </Menu>
-                  ) : localStorage.getItem("user_type") === "2" ? (
+                  ) : userData.user_type === "2" ? (
                     <Menu
                       onClick={(e) => handleMenuConnexionCub(e)}
                       style={{
@@ -267,14 +218,17 @@ const MenuMobile = () => {
                         fontFamily: "Dosis",
                         fontSize: "25px",
                         width: "100%",
-                        color: "black",
+                        color: "#070C65",
+                        border: "None",
                       }}
                     >
                       <Menu.Item key="1">Mes commandes</Menu.Item>
-                      <Menu.Item key="2">Mon profil</Menu.Item>
+
+                      <Menu.Item key="4">Mes informations</Menu.Item>
+                      <Menu.Item key="5">Mes avis</Menu.Item>
                       <Menu.Item key="3">Se déconnecter</Menu.Item>
                     </Menu>
-                  ) : (
+                  ) : userData.user_type === "3" ? (
                     <Menu
                       onClick={(e) => handleMenuConnexionGiver(e)}
                       style={{
@@ -283,13 +237,35 @@ const MenuMobile = () => {
                         fontFamily: "Dosis",
                         fontSize: "25px",
                         width: "100%",
-                        color: "black",
+                        color: "#070C65",
+                        border: "None",
                       }}
                     >
                       <Menu.Item key="1">Créer un cours</Menu.Item>
                       <Menu.Item key="2">Modifier un cours </Menu.Item>
                       <Menu.Item key="3">Mon Compte </Menu.Item>
+                      <Menu.Item key="6">Réservations </Menu.Item>
                       <Menu.Item key="5">Se déconnecter</Menu.Item>
+                    </Menu>
+                  ) : (
+                    <Menu
+                      onClick={(e) => handleMenuNotConnected(e)}
+                      style={{
+                        margin: "none",
+                        padding: "none",
+                        fontFamily: "Dosis",
+                        fontSize: "25px",
+                        width: "100%",
+                        color: "#070C65",
+                        border: "None",
+                      }}
+                    >
+                      <Menu.Item key="1">Inscription</Menu.Item>
+                      <Menu.Item key="2">Ateliers populaires</Menu.Item>
+                      <Menu.Item key="3">
+                        Ateliers proches de chez vous
+                      </Menu.Item>
+                      <Menu.Item key="4">Se connecter</Menu.Item>
                     </Menu>
                   )}
                 </div>
@@ -416,7 +392,7 @@ const MenuMobile = () => {
           style={{
             width: "33%",
             justifyContent: "center",
-            paddingBottom: "10px",
+            //   paddingBottom: "10px",
           }}
           // key="mail"
 
@@ -426,7 +402,7 @@ const MenuMobile = () => {
           icon={
             <img
               src={logo2}
-              height={30}
+              height={40}
               style={{
                 marginTop: "-20px",
                 color: "hotpink",
@@ -452,7 +428,9 @@ const MenuMobile = () => {
           icon={
             <Icon
               component={() => (
-                <ShoppingCartOutlined style={{ fontSize: "30px" }} />
+                <ShoppingCartOutlined
+                  style={{ color: "#070C65", fontSize: "30px" }}
+                />
               )}
             />
           }
@@ -461,12 +439,11 @@ const MenuMobile = () => {
 
       {cart ? (
         <div>
-          <Cart setCart={setCart} cart={cart} width={width} />
+          <Cart setCart={setCart} cart={cart} />
         </div>
       ) : (
         <></>
       )}
-
       <div
         style={{ position: "fixed", bottom: "0%", width: "100%", zIndex: 1 }}
       >
@@ -474,128 +451,135 @@ const MenuMobile = () => {
           mode="horizontal"
           style={{
             width: "100%",
-            display: "table",
             textAlign: "center",
             fontFamily: "Dosis",
-            background: "#F4F4F4",
+            fontSize: "20px",
+            background: "#FFF4F0",
           }}
         >
           <Menu.Item
-            id="icons"
-            // key="mail"
             style={{
-              width: "33%",
-              height: "50%",
-              display: "inlineBlock",
-              float: "none",
-              paddingBottom: "10px",
+              width: "30%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              color: "#070C65",
+              justifyContent: "center",
+              textAlign: "center",
             }}
+            id="icons"
             onClick={() => {
-              navigate("../gift", { replace: true });
+              navigate("../", { replace: true });
             }}
-            icon={
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Icon
-                style={{ paddingTop: "10px" }}
+                style={{ paddingBottom: "5px" }}
                 component={() => (
                   <img
-                    src={gift}
-                    height={30}
+                    src={search}
+                    height={40}
                     style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      float: "center",
-                      marginBottom: 0,
+                      margin: "0 auto",
+                      display: "block",
                     }}
                   />
                 )}
               />
-            }
-          >
-            <br />
-            Carte Cadeau
+              <span>Explorer</span>
+            </div>
           </Menu.Item>
-          <Menu.Item
-            id="icons"
-            style={{
-              width: "33%",
-              justifyContent: "center",
-              paddingBottom: "10px",
-            }}
-            // key="mail"
 
+          <Menu.Item
+            style={{
+              width: "30%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              color: "#070C65",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+            id="icons"
             onClick={() => {
               navigate("../kids", { replace: true });
-              setKids(true);
             }}
-            icon={
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Icon
-                style={{ paddingTop: "10px" }}
+                style={{ paddingBottom: "5px" }}
                 component={() => (
                   <img
-                    src={ckids}
-                    height={30}
+                    src={kids}
+                    height={40}
                     style={{
-                      marginTop: "-20px",
-                      color: "hotpink",
-                      //paddingTop: 10,
-                      float: "center",
+                      margin: "0 auto",
+                      display: "block",
                     }}
                   />
                 )}
               />
-            }
-          >
-            {" "}
-            <br />
-            Enfants
+              <span>Enfants</span>
+            </div>
           </Menu.Item>
+
           <Menu.Item
             style={{
-              width: "33%",
+              width: "30%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              color: "#070C65",
               justifyContent: "center",
-              paddingBottom: "10px",
+              textAlign: "center",
             }}
             id="icons"
             onClick={() => {
               navigate("../team", { replace: true });
             }}
-            icon={
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Icon
-                style={{ paddingTop: "10px" }}
+                style={{ paddingBottom: "5px" }}
                 component={() => (
                   <img
                     src={team}
-                    height={30}
+                    height={40}
                     style={{
-                      marginTop: "-20px",
-                      color: "hotpink",
-                      //paddingTop: 10,
-                      float: "center",
+                      margin: "0 auto",
+                      display: "block",
                     }}
                   />
                 )}
               />
-            }
-          >
-            <br />
-            Team Building
+              <span>Team Building</span>
+            </div>
           </Menu.Item>
         </Menu>
-        {connexion ? (
-          <div>
-            <Connexion
-              setConnected={setConnected}
-              setConnexion={setConnexion}
-              connexion={connexion}
-              connected={connected}
-            />
-          </div>
-        ) : (
-          <></>
-        )}
       </div>
-    </div>
+    </>
   );
 };
 
-export default MenuMobile;
+export default MobileLayout;

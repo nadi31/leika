@@ -14,7 +14,27 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from authentification.models import MyUser, Cub, Giver
 from datetime import datetime, timedelta
+from django.core.files.storage import FileSystemStorage
+from PIL import Image
+from io import BytesIO
 
+class CompressedImageStorage(FileSystemStorage):
+    def _save(self, name, content):
+        # Open the image
+        img = Image.open(content)
+        
+        # Ensure compatibility with JPEG
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
+        
+        # Compress the image
+        buffer = BytesIO()
+        img.save(buffer, format="JPEG", quality=75)
+        buffer.seek(0)
+
+        # Replace content with compressed image
+        content.file = buffer
+        return super()._save(name, content)
 
 class Course(models.Model):
 
@@ -29,11 +49,11 @@ class Course(models.Model):
     isVerified = models.BooleanField(default=False)
     price = models.FloatField(null=True, blank=True)
     img1 = models.ImageField(null=True, blank=True,
-                             upload_to="gallery", default='../media/sewing.png')
+                             upload_to="gallery", storage=CompressedImageStorage())
     img2 = models.ImageField(null=True, blank=True,
-                             upload_to="gallery", default='../media/sewing.png')
+                             upload_to="gallery", storage=CompressedImageStorage())
     img3 = models.ImageField(null=True, blank=True,
-                             upload_to="gallery", default='../media/sewing.png')
+                             upload_to="gallery", storage=CompressedImageStorage())
     isDiscounted = models.BooleanField(default=False)
     discount = models.FloatField(null=True, blank=True)
     isRemote = models.BooleanField(default=False)

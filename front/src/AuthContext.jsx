@@ -1,6 +1,7 @@
 // AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
+import { message } from "antd";
 
 // Create the context
 const AuthContext = createContext();
@@ -99,10 +100,12 @@ const AuthProvider = ({ children }) => {
         },
         { withCredentials: true }
       );
-      console.log("Login successful:", response.data);
+
       handleSuccessfulLogin(response.data);
+      message.success("Connexion réussie");
     } catch (error) {
       console.error("There was an error logging in:", error);
+      message.error("Connexion échouée");
     }
   };
 

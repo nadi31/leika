@@ -1,16 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Dosis:wght@200;400&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Annie+Use+Your+Telescope:wght@400&display=swap");
+
 @import url("https://fonts.googleapis.com/css2?family=Dosis:wght@400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Playwrite+GB+S:wght@300&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Merriweather&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@500&display=swap");
 
-@import url("https://fonts.googleapis.com/css2?family=Merriweather&family=Oswald&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playwrite+GB+S:wght@300&display=swap");
 
 /* beginning test:  added for map !!!! */
 
@@ -22,7 +17,23 @@
   color: lightgrey; /* Change placeholder text color to light grey */
   opacity: 1; /* Ensure full opacity on all browsers */
 }
+.mobile .ant-menu > .ant-menu-item {
+  position: relative;
+  padding: 50px; /* Adjust as needed for the padding */
+}
 
+.mobile .ant-menu > .ant-menu-item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background-color: "#FFE5D9";
+}
+.ant-menu > .ant-menu-item {
+  border: none !important;
+}
 #icons {
   line-height: 19px;
 }
@@ -105,16 +116,28 @@
   margin-left: 3.5%;
   width: 100%;
 }
+@media (max-width: 768px) {
+  /* Adjust for your xs screen breakpoint */
+  #wrap {
+    flex-direction: column; /* Apply column layout on small screens */
+  }
+}
+@media (max-width: 1000px) {
+  #button_giver .ant-card-meta-title {
+    font-family: "Dosis", sans-serif;
+    font-size: 20px;
+    color: #070c65 !important;
+  }
+}
 
-#button_giver {
-  font-family: "Oswald", sans-serif;
-  font-weight: 400;
-  color: #070c65;
+@media (min-width: 1000px) {
+  #button_giver .ant-card-meta-title {
+    font-family: "Dosis", sans-serif;
+    font-size: 20px;
+    color: #070c65 !important;
+  }
 }
-.ant-card-meta-title {
-  color: #070c65 !important;
-  font-weight: bold;
-}
+
 .ant-card-meta-description {
   color: #070c65 !important;
   text-decoration: none !important;
@@ -127,10 +150,6 @@
 
 .crop {
   width: 60%;
-}
-
-.ant-menu > .ant-menu-item {
-  border: none !important;
 }
 
 .ant-table-tbody > tr > td {
@@ -209,7 +228,10 @@ h1 {
 .ant-table-thead > tr > th {
   background-color: #c5d7bd; /* Sage header background */
   color: #ffffff; /* White text for contrast */
-  font-weight: bold;
+  font-family: "Playwrite GB S", cursive;
+}
+.ant-table {
+  color: "#070C65" !important;
 }
 
 .ant-table-tbody > tr:nth-child(odd) {

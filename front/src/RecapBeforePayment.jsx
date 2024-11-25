@@ -92,7 +92,7 @@ const RecapBeforePayment = ({ items }) => {
       }}
     >
       <Title level={2} style={{ textAlign: "center", color: "#333333" }}>
-        Récapitulatif de Paiement
+        Récapitulatif du Paiement
       </Title>
       {items.map((item) => (
         <Card
@@ -114,7 +114,8 @@ const RecapBeforePayment = ({ items }) => {
               <br />
               <Text strong>Adresse :</Text> {item.adress}
               <br />
-              <Text strong>Contact :</Text> {item.contactGiver}
+              <Text strong>Contact du responsable ateliergbh:</Text>{" "}
+              {item.contactGiver}
               <br />
               <Text strong>Date :</Text> {item.hourSelected.date} -{" "}
               {item.hourSelected.hour}

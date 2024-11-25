@@ -64,15 +64,16 @@ import loop from "./loop.mp4";
 import kidIcon from "./kids.png";
 import separator from "./separator.png";
 //import Form from "antd/lib/form/Form";
-import Results from "./Results";
-import { typeOf } from "react-responsive";
+import { Grid } from "antd";
 
 import dayjs from "dayjs";
-import MenuMobile from "./MenuMobile";
+import MenuMobile from "./MobileLayout";
 
 //Panier shopping
 
 const MenuBrowser = (props) => {
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
   const { userData } = useAuth();
   const { logout } = useAuth();
   const inputRef = useRef(null);
@@ -228,8 +229,6 @@ const MenuBrowser = (props) => {
       setCity(place.formatted_address);
     }
   };
-
-  let history = useNavigate();
 
   let query = "";
 
@@ -403,16 +402,23 @@ const MenuBrowser = (props) => {
     //isVerified;
   };
   const handleMenuConnexionCub = (value) => {
+    if (value.key === "1") {
+      navigate("../recap/orders", { replace: true });
+    }
     if (value.key === "2") {
       navigate("../profil", { replace: true });
+    }
+    if (value.key === "4") {
+      navigate("../infos", { replace: true });
     }
     if (value.key === "3") {
       setConnected(false);
       authLogOut();
 
       navigate("../", { replace: true });
-    } else {
-      console.log(value.key);
+    }
+    if (value.key === "5") {
+      navigate("../infos/reviews", { replace: true });
     }
   };
   const handleMenuConnexionGiver = (value) => {
@@ -709,7 +715,7 @@ const MenuBrowser = (props) => {
             position: "flex",
             justifyContent: "space-evenly",
             display: "flex",
-            width: "90%",
+            width: "100%",
             maxHeight: props.width <= "1100" ? "150px" : "80px",
           }}
         >
@@ -717,17 +723,18 @@ const MenuBrowser = (props) => {
           <a href={"/"}>
             <div
               style={{
-                background: "white", //varies height for mobile...
+                background: "white",
                 height: "192%",
-                width: "130%",
+                width: "100%",
               }}
             >
               <img
                 style={{
                   justifyContent: "left",
-                  width: "120%",
+                  //here
+                  width: screens.xs || screens.sm ? "75%" : "100%",
                   marginTop: "2%",
-                  marginLeft: "20%",
+                  marginLeft: screens.xs ? "" : screens.sm ? "10%" : "20%",
                 }}
                 id="img_logo_desktop"
                 src={logo2}
@@ -741,12 +748,12 @@ const MenuBrowser = (props) => {
               className="menu"
               name="menu_elements"
               style={{
-                width: "60%",
+                width: screens.xs ? "50%" : "60%",
                 borderBottom: "none",
                 display: "flex",
                 justifyContent: "center",
                 color: "#070C65",
-                fontSize: props.width <= "1400" ? "15px" : "27px",
+                fontSize: window.innerWidth < 1200 ? "20px" : "25px",
               }}
             >
               <Menu.Item
@@ -768,24 +775,26 @@ const MenuBrowser = (props) => {
               >
                 Kids
               </Menu.Item>
+              {window.innerWidth < 1200 ? (
+                <></>
+              ) : (
+                <Menu.Item
+                  style={{ color: "rgb(7, 12, 101)" }}
+                  key="kids"
+                  onClick={() => {
+                    navigate("../kids", { replace: true });
 
-              <Menu.Item
-                style={{ color: "rgb(7, 12, 101)" }}
-                key="kids"
-                onClick={() => {
-                  navigate("../kids", { replace: true });
-
-                  setKids(true);
-                }}
-                icon={
-                  <Image
-                    src={separator}
-                    preview={false}
-                    style={{ width: "30px", bottom: "0" }}
-                  />
-                }
-              ></Menu.Item>
-
+                    setKids(true);
+                  }}
+                  icon={
+                    <Image
+                      src={separator}
+                      preview={false}
+                      style={{ width: "25px", bottom: "0" }}
+                    />
+                  }
+                ></Menu.Item>
+              )}
               <Menu.Item
                 style={{ color: "rgb(7, 12, 101)" }}
                 onClick={() => {
@@ -796,22 +805,25 @@ const MenuBrowser = (props) => {
               >
                 Team Building
               </Menu.Item>
-              <Menu.Item
-                onClick={() => {
-                  navigate("../team", { replace: true });
-                  setTeam(true);
-                }}
-                style={{ color: "rgb(7, 12, 101)" }}
-                key="team"
-                icon={
-                  <Image
-                    src={separator}
-                    preview={false}
-                    style={{ width: "30px", bottom: "0" }}
-                  />
-                }
-              ></Menu.Item>
-
+              {window.innerWidth < 1200 ? (
+                <></>
+              ) : (
+                <Menu.Item
+                  onClick={() => {
+                    navigate("../team", { replace: true });
+                    setTeam(true);
+                  }}
+                  style={{ color: "rgb(7, 12, 101)" }}
+                  key="team"
+                  icon={
+                    <Image
+                      src={separator}
+                      preview={false}
+                      style={{ width: "25px", bottom: "0" }}
+                    />
+                  }
+                ></Menu.Item>
+              )}
               <Menu.Item
                 style={{ color: "rgb(7, 12, 101)" }}
                 onClick={() => {
@@ -826,6 +838,8 @@ const MenuBrowser = (props) => {
           <Menu
             mode="horizontal"
             style={{
+              marginLeft: screens.xs ? "5%" : "",
+              width: window.innerWidth < 1200 ? "30%" : "20%",
               borderBottom: "none",
             }}
             className="menu"
@@ -847,7 +861,9 @@ const MenuBrowser = (props) => {
                       ) : userData.user_type === 2 ? (
                         <Menu onClick={(e) => handleMenuConnexionCub(e)}>
                           <Menu.Item key="1">Mes commandes</Menu.Item>
-                          <Menu.Item key="2">Mon profil</Menu.Item>
+
+                          <Menu.Item key="4">Mes informations</Menu.Item>
+                          <Menu.Item key="5">Mes avis</Menu.Item>
                           <Menu.Item key="3">Se déconnecter</Menu.Item>
                         </Menu>
                       ) : userData.user_type === 3 ? (
@@ -874,7 +890,10 @@ const MenuBrowser = (props) => {
               </>
             ) : (
               <Menu.Item
-                style={{ fontSize: "25px", color: "rgb(7, 12, 101)" }}
+                style={{
+                  fontSize: window.innerWidth < 1200 ? "20px" : "25px",
+                  color: "rgb(7, 12, 101)",
+                }}
                 onClick={() => handleClick()}
                 key="connexion"
                 icon={<UserOutlined style={{ fontSize: "90%" }} />}
@@ -883,12 +902,19 @@ const MenuBrowser = (props) => {
               </Menu.Item>
             )}
             <Menu.Item
-              style={{ fontSize: "25px", color: "rgb(7, 12, 101)" }}
+              style={{
+                fontSize: window.innerWidth < 1200 ? "20px" : "25px",
+                color: "rgb(7, 12, 101)",
+              }}
               onClick={() => handleCart()}
               key="cart"
               icon={
                 <Badge count={totalQuantity}>
-                  <ShoppingCartOutlined style={{ fontSize: "180%" }} />
+                  <ShoppingCartOutlined
+                    style={{
+                      fontSize: window.innerWidth < 1200 ? "20px" : "25px",
+                    }}
+                  />
                 </Badge>
               }
             ></Menu.Item>
@@ -918,6 +944,7 @@ const MenuBrowser = (props) => {
           style={{
             position: "flex",
             display: "flex",
+            width: "100%",
             justifyContent: "center",
           }}
         >
@@ -2044,8 +2071,7 @@ const MenuBrowser = (props) => {
                 separator="|"
                 style={{
                   width: "100%",
-                  //  marginLeft: "17%",
-                  // paddingLeft: "18%",
+
                   marginBottom: "3%",
                   fontFamily: "Dosis",
                   border: "none",

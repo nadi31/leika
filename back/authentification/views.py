@@ -32,6 +32,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 import logging
+from django.shortcuts import get_object_or_404
 
 logger = logging.getLogger(__name__)
 
@@ -348,11 +349,12 @@ class GiverDetailView(APIView):
 
     def post(self, request, pk, format='json'):
         try:
-            # Fetch the user by their email
+            print("DICT"+ str(request.data))
             myuser = MyUser.objects.get(username=request.data['email'])
             if request.POST.get('password'):
                 # Update MyUser with the provided data
                 myjson = {
+                  
                     "password": request.data.get("password"),
                     "username": request.data.get("email"),
                     "email": request.data.get("email")
@@ -362,6 +364,7 @@ class GiverDetailView(APIView):
 
             # Update Giver information with the provided fields
             Giver.objects.filter(id=pk).update(
+               
                 description=request.data.get("description"),
                 phone=request.data.get("phone"),
                 appelation=request.data.get("appelation"),
@@ -378,6 +381,7 @@ class GiverDetailView(APIView):
 
             # Serialize and validate the data for response
             req = request.POST.copy()
+            #print("res"+ req)
             serializer = GiverSerializer(data=req)
             if serializer.is_valid():
                 json = serializer.data
@@ -388,8 +392,8 @@ class GiverDetailView(APIView):
         except MyUser.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        #except Exception as e:
+         #   return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
       
 
@@ -629,40 +633,51 @@ class CubList(APIView):
         user = Cub.objects.all()
         serializer = CubSerializer(user, many=True)
         # cub = user.cub_set.all()
+
         return Response(serializer.data)
 
 
 class CubView(APIView):
-
     permission_classes = (IsCub,)
     parser_classes = (MultiPartParser, FormParser)
 
     def get(self, request, *args, **kwargs):
-        # user = MyUser.objects.all()
         user = MyUser.objects.filter(user_id=self.kwargs['pk'])
         serializer = MyUserCubSerializer(user, many=True)
-        # cub = user.cub_set.all()
         return Response(serializer.data)
 
-    def post(self,  request, pk, format='json'):
-        user = MyUser.objects.filter(user_id=self.kwargs['pk'])
-        user.update(last_name=request.data.get("last_name"), email=request.data.get(
-            "email"), username=request.data.get("email"), first_name=request.data.get("first_name"))
-        req = request.POST.copy()
+    def post(self, request, pk, format='json'):
+        user = get_object_or_404(MyUser, user_id=pk)
+        
+        # Extract the email and other fields from the request
+        email = request.data.get("email")
+        user_data = {
+            'last_name': request.data.get("last_name", user.last_name),
+            'first_name': request.data.get("first_name", user.first_name),
+        }
 
-        serializer = CubUpdateSerializer(data=req)
-        if request.data.get("phone"):
-            req.pop("phone")
-            user_cub = Cub.objects.filter(user=self.kwargs['pk'])
-            # os.remove(user_cub.phone)
-            user_cub.update(phone=request.data.get("phone"))
-           # serializer = CubUpdatePhoneSerializer(data=req)
-        if serializer.is_valid():
-            json = serializer.data
-            return Response(json, status=status.HTTP_201_CREATED)
+        # Handle email separately to avoid unique constraint errors
+        if email and email != user.email:
+            # Check for duplicate emails
+            if MyUser.objects.filter(email=email).exclude(user_id=pk).exists():
+                return Response({"email": "A user with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                user.email = email  # Directly update email if unique
+        
+        # Update other fields using serializer
+        user_serializer = MyUserCubSerializer(user, data=user_data, partial=True)
+        
+        if user_serializer.is_valid():
+            user_serializer.save()  # Save only the fields in user_data
         else:
-            print('error', serializer.errors)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Save email directly if it was updated and passed the uniqueness check
+        if email and email != user.email:
+            user.save(update_fields=['email'])  # Save only the email field
+        
+        return Response(user_serializer.data, status=status.HTTP_200_OK)
+
 
 
 class CubPhoneView(APIView):

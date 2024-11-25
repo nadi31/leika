@@ -14,23 +14,21 @@ const GiverProfil = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const handleModify = (values) => {
     console.log(values);
-    console.log(values.upload.fileList[0].originFileObj);
-    console.log(values.upload.fileList[0].originFileObj.name);
+    //  console.log(values.upload.fileList[0].originFileObj);
+    // console.log(values.upload.fileList[0].originFileObj.name);
     let form_data = new FormData();
     form_data.append("appelation", values.input_appelation);
     form_data.append("email", userData.userData.email);
     form_data.append("description", values.input_description);
     form_data.append("phone", values.input_phone);
     form_data.append("user", userData.userData.id_user);
+    form_data.append("user_id", userData.userData.id_obj_user);
     if (mdp) {
       form_data.append("password", values.mdp);
     }
-    if (upload) {
-      form_data.append(
-        "img1",
-        values.upload.fileList[0].originFileObj,
-        values.upload.fileList[0].originFileObj.name
-      );
+    if (values.upload?.fileList?.length > 0) {
+      const file = values.upload.fileList[0].originFileObj;
+      form_data.append("img1", file, file.name);
     }
 
     axios
@@ -261,10 +259,14 @@ upload: */
               placeholder="Nouveau mot de passe"
             />
           </Form.Item>
-
-          <Button type="primary" htmlType="submit">
-            Modifier
-          </Button>
+          <Form.Item
+            wrapperCol={{
+              offset: 16,
+              span: 16,
+            }}
+          >
+            <Button htmlType="submit">Modifier</Button>
+          </Form.Item>
         </Form>
         <Footer width={width} />
       </div>

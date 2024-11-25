@@ -11,8 +11,6 @@ import {
   SmileTwoTone,
 } from "@ant-design/icons";
 
-import Map from "./Map"; // import the map here
-
 import Maps from "./Maps"; // import the map here
 import euros from "./euros.png";
 import ageImage from "./age.png";
@@ -43,7 +41,7 @@ import MenuBrowser from "./MenuBrowser";
 
 import axios from "axios";
 import Footer from "./Footer";
-import MenuMobile from "./MenuMobile";
+import MenuMobile from "./MobileLayout";
 import HomeMobile from "./HomeMobile";
 const Results = () => {
   function updateSize() {
@@ -709,7 +707,7 @@ const Results = () => {
                     </div>
                     */}
 
-                <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
+                {/*   <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
                   {results.length > 0 &&
                   latCity.current !== null &&
                   lonCity.current !== null &&
@@ -722,7 +720,7 @@ const Results = () => {
                       style={{ zIndex: "-1" }}
                     />
                   ) : null}
-                </div>
+                </div> */}
               </Form>
             </Modal>
             {width > 800 ? (
@@ -982,7 +980,7 @@ const Results = () => {
                 </LoadScript>
               ) : null}
             </div>*/}
-                <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
+                {/*  <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
                   {results.length > 0 &&
                   latCity.current !== 0 &&
                   map === true &&
@@ -995,7 +993,7 @@ const Results = () => {
                       style={{ zIndex: "-1" }}
                     />
                   ) : null}
-                </div>
+                </div> */}
               </Form>
             ) : (
               <></>
@@ -1396,7 +1394,7 @@ const Results = () => {
               ) : null}
             </div>*/}
 
-                <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
+                {/*   <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
                   {results.length > 0 &&
                   latCity.current !== 0 &&
                   map === true &&
@@ -1409,7 +1407,7 @@ const Results = () => {
                       style={{ zIndex: "-1" }}
                     />
                   ) : null}
-                </div>
+                </div> */}
               </Form>
             </Modal>
             {width > 800 ? (
@@ -1669,7 +1667,7 @@ const Results = () => {
                 </LoadScript>
               ) : null}
             </div>*/}
-                <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
+                {/*  <div style={{ width: "50%", height: "50%", zIndex: "-1" }}>
                   {results.length > 0 &&
                   latCity.current !== 0 &&
                   map === true &&
@@ -1682,7 +1680,7 @@ const Results = () => {
                       style={{ zIndex: "-1" }}
                     />
                   ) : null}
-                </div>
+                </div> */}
               </Form>
             ) : (
               <></>

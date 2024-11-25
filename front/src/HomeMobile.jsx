@@ -11,34 +11,11 @@ import {
   RocketOutlined,
   ExperimentOutlined,
 } from "@ant-design/icons";
-import Footer from "./Footer";
-import MenuMobile from "./MenuMobile";
-import axios from "axios";
-import logo2 from "./leika_logo2.png";
-import Cart from "./Cart";
-import { RightOutlined, LeftOutlined } from "@ant-design/icons";
-import board from "./board.png";
-import france from "./france.png";
-import drill from "./drill.png";
-import eiffel from "./eiffel.png";
-import museum from "./museum.png";
-import noodles from "./noodles.png";
-import sculpture from "./sculpture.png";
-import sewing from "./sewing.png";
+
+import MobileLayout from "./MobileLayout";
+
 import dayjs from "dayjs";
-import spa from "./spa.png";
-import sport from "./sport.png";
-import theatre from "./theatre.png";
-import translation from "./translation.png";
-import Connexion from "./Connexion";
-import home from "./home.png";
-import ckids from "./ckids.png";
-import login from "./login.png";
-import hambur from "./hamburger.png";
-import kart from "./kart.jpg";
-import loop from "./loop.mp4";
-import kids from "./kids.png";
-import MenuBrowser from "./MenuBrowser";
+
 import { useNavigate, withRouter, useSearchParams } from "react-router-dom";
 import Results from "./Results";
 import MenuKids2 from "./MenuKids2";
@@ -163,12 +140,13 @@ const HomeMobile = (props) => {
 
   return (
     <div style={{}}>
-      <MenuMobile />
+      <MobileLayout />
       <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
         <div
           id="color"
           style={{
             display: "flex",
+            marginTop: "5%",
 
             borderRadius: "25px",
             padding: 0,
@@ -190,7 +168,8 @@ const HomeMobile = (props) => {
               style={{
                 borderRadius: "25px",
                 width: "100%",
-                height: "100%",
+
+                height: "80%",
                 border: 0,
                 fontFamily: "Dosis",
               }}
@@ -227,7 +206,12 @@ const HomeMobile = (props) => {
       ) : props.kids ? (
         <MenuKids2 activity={activity} date_max={datemax} city={city} />
       ) : (
-        <Menu2 activity={activity} date_max={datemax} city={city} />
+        <Menu2
+          activity={activity}
+          date_max={datemax}
+          city={city}
+          mobile={true}
+        />
       )}
 
       {props.city ? (

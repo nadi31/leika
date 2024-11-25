@@ -129,7 +129,7 @@ const Giver = () => {
           <Image
             style={{ borderRadius: "50%", width: "100px", height: "100px" }}
             preview={false}
-            src={giver.img1}
+            src={"http://localhost:8000/" + giver.img1}
           />{" "}
           <br />
           <div>

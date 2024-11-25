@@ -7,7 +7,6 @@ import { BrowserView, MobileView } from "react-device-detect";
 
 import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
 
-import Map from "./Map"; // import the map here
 import euros from "./euros.png";
 
 import Icon, { RocketOutlined, ExperimentOutlined } from "@ant-design/icons";
@@ -33,7 +32,7 @@ import MenuBrowser from "./MenuBrowser";
 import axios from "axios";
 import Footer from "./Footer";
 import { filter } from "lodash";
-import MenuMobile from "./MenuMobile";
+import MenuMobile from "./MobileLayout";
 
 const GiftCard = () => {
   const [small, setSmall] = useState("horizontal");

@@ -13,6 +13,7 @@ import random
 import string
 import pytz
 from datetime import datetime, timedelta
+from django.core.exceptions import ValidationError
 
 
 class TokenSerializer(serializers.ModelSerializer):
@@ -131,14 +132,23 @@ class MyUserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
 class MyUserCubSerializer(serializers.ModelSerializer):
-
+    
     class Meta:
-
         model = MyUser
-        # fields = ('email', 'first_name', 'last_name', 'date_joined')
         exclude = ('password', 'username', 'user_id', 'last_login', 'is_superuser',
-                   'is_staff', 'is_active', 'user_type1', 'groups', 'user_permissions', )
+                   'is_staff', 'is_active', 'user_type1', 'groups', 'user_permissions')
+
+    def validate_email(self, value):
+        """
+        Custom validation for the email field to prevent duplicate emails
+        only if the email has changed.
+        """
+        user_id = self.instance.user_id if self.instance else None
+        if MyUser.objects.filter(email=value).exclude(user_id=user_id).exists():
+            raise serializers.ValidationError("A user with this email already exists.")
+        return value
 
 
 class CubSerializer(serializers.ModelSerializer):
@@ -216,8 +226,8 @@ class GiverSerializer(serializers.ModelSerializer):
 
     def get_email_giver(self, obj):
         try:
-            # Using 'user_id' instead of 'id' as it is referenced
-            myuser = MyUser.objects.get(user_id=obj.user_id)
+            print ("OBJ"+ str(obj['user']))
+            myuser = MyUser.objects.get(email=obj['user'])
             return myuser.email
         except MyUser.DoesNotExist:
             return None

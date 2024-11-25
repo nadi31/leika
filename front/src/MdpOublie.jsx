@@ -26,7 +26,7 @@ import para from "./para.jpg";
 import couture from "./couture.jpg";
 import logo2 from "./logo2.png";
 import { BrowserView, MobileView } from "react-device-detect";
-import MenuMobile from "./MenuMobile";
+import MenuMobile from "./MobileLayout";
 import Review from "./Review";
 import Footer from "./Footer";
 import axios from "axios";

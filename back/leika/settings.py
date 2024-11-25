@@ -217,11 +217,11 @@ AUTH_TOKEN_VALIDITY = getattr(
     settings, 'AUTH_TOKEN_VALIDITY', timedelta(days=1))
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'ssmtp.hostinger.com'
+EMAIL_HOST = 'smtp.hostinger.com'
 EMAIL_HOST_USER = 'noreply@maory.fr'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_HOST_PASSWORD = 'bifma3-feKsit-qupwyr'
-EMAIL_PORT = 465
+EMAIL_PORT = 587
 EMAIL_USE_SSL = False
 EMAIL_USE_TLS = True
 #SESSION_COOKIE_SECURE = True in real env !!!! 

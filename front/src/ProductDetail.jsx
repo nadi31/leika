@@ -2,6 +2,9 @@ import MenuBrowser from "./MenuBrowser";
 import Bloc from "./Bloc";
 import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
+
+import { Grid } from "antd";
+import MobileLayout from "./MobileLayout";
 import HomeMobile from "./HomeMobile";
 import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
 import {
@@ -45,6 +48,8 @@ import {
 import { useAuth } from "./AuthContext";
 const ProductDetail = (props) => {
   const userData = useAuth();
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
   const [width, setWidth] = useState(undefined);
   const { TabPane } = Tabs;
   const [course, setCourse] = useState(null);
@@ -177,12 +182,17 @@ const ProductDetail = (props) => {
             className="div_choix"
             style={{
               overflow: "auto",
-              width: width <= 700 ? "70%" : "100%",
+              width: "90%",
               height: "100px",
             }}
           >
             <div ref={myRef}>
-              <Timeline style={{ marginTop: "5%", marginLeft: "1%" }}>
+              <Timeline
+                style={{
+                  marginTop: "5%",
+                  marginLeft: screens.xs ? "1%" : "5%",
+                }}
+              >
                 {hours
                   ? hours.map((h) =>
                       timeMenu(
@@ -235,9 +245,18 @@ const ProductDetail = (props) => {
       ),
       content: (
         <>
-          <div style={{ display: "block", width: "100%" }}>
+          <div
+            style={{
+              width: "100%",
+
+              alignItems: "center",
+            }}
+          >
             Nombre de place(s){" "}
             <Button
+              style={{
+                width: "50px",
+              }}
               onClick={() => {
                 if (offers !== null) {
                   offers.map((offer, index) => {
@@ -257,7 +276,7 @@ const ProductDetail = (props) => {
               -
             </Button>
             <InputNumber
-              style={{ width: "50px", bottom: "4px" }}
+              style={{ width: "75px" }}
               value={valueInput}
               onChange={(e) => {
                 if (e > maxSeats) {
@@ -269,7 +288,7 @@ const ProductDetail = (props) => {
               }}
             ></InputNumber>
             <Button
-              style={{}}
+              style={{ display: " inline-block" }}
               onClick={() => {
                 if (offers !== null) {
                   offers.map((offer, index) => {
@@ -294,26 +313,45 @@ const ProductDetail = (props) => {
             {price ? (
               price !== course.price ? (
                 <>
-                  {" "}
-                  pour
-                  <p style={{ textDecoration: " line-through" }}>
+                  <span>pour</span>
+                  <p
+                    style={{
+                      textDecoration: "line-through",
+                      margin: 0,
+                      width: "20%", // Adjust width as needed
+                    }}
+                  >
                     {course.price}
                   </p>
-                  <p>{price}€</p>
+                  <p
+                    style={{
+                      margin: 0,
+                      width: "20%", // Adjust width as needed
+                    }}
+                  >
+                    {price}€
+                  </p>
                 </>
               ) : (
-                <p>pour {price}€</p>
+                <p
+                  style={{
+                    margin: 0,
+                    width: "20%", // Increased width
+                  }}
+                >
+                  pour {price}€
+                </p>
               )
             ) : null}
             <div />
             <br />
-            <div style={{ width: "100%" }}>
+            <div style={{ display: "flex", width: "100%" }}>
               <Button
                 id="button"
                 style={{
                   backgroundColor: "#ffd04f",
                   borderRadius: "25px",
-                  width: "70%",
+                  width: "100%",
                   marginTop: "34px",
                   //marginLeft: "5%",
                 }}
@@ -386,7 +424,6 @@ const ProductDetail = (props) => {
       ),
     },
   ];
-  //const courseID = useParams();
   const { Step } = Steps;
   const [imagePrincipale, setImagePrincipale] = useState(null);
 
@@ -638,210 +675,217 @@ const ProductDetail = (props) => {
   } else {
     return (
       <>
-        {width <= 700 ? (
+        {" "}
+        {screens.xs ? (
           <>
             {" "}
-            {course.age === "Enfants" ? (
-              <HomeMobile
-                kids={true}
-                //team={course.teamBuildingActivity}
-              />
-            ) : (
-              <HomeMobile
-                kids={false}
-                // team={course.teamBuildingActivity}
-              />
-            )}
+            <MobileLayout />
           </>
         ) : (
           <>
-            {" "}
-            {course.age === "Enfants" ? (
-              <MenuBrowser
-                kids={true}
-                width={width}
-                //  team={course.teamBuildingActivity}
-              />
-            ) : (
-              <MenuBrowser
-                kids={false}
-                width={width}
-                // team={course.teamBuildingActivity}
-              />
-            )}
+            <MenuBrowser />
           </>
         )}
-
-        <div style={{ width: "100%" }}>
-          <div style={{ display: "flex", width: "100%" }}>
+        <>
+          <div style={{ width: "100%" }}>
             <div
+              id="wrap"
               style={{
                 display: "flex",
-                width: "40%",
+                width: "100%",
               }}
             >
-              {width <= 1200 ? (
-                <>
-                  <div
-                    style={{
-                      width: "80%",
-                      display: "block",
-                      margin: "20px auto",
-                    }}
-                  >
-                    <Carousel autoplay={true}>
-                      <div>
-                        <Image preview={false} src={course.img1} />
-                      </div>
-
-                      <div>
-                        <Image preview={false} src={course.img2} />
-                      </div>
-                      <div>
-                        <Image preview={false} src={course.img3} />
-                      </div>
-                    </Carousel>
-                  </div>
-                </>
-              ) : (
+              <div
+                style={{
+                  display: "flex",
+                  width: screens.xs ? "100%" : "40%",
+                }}
+              >
                 <div
                   style={{
                     // position: "sticky",
                     display: "flex",
-                    marginTop: "10%",
+                    marginTop: "2%",
                     width: "100%",
                     marginLeft: "5%",
                   }}
                 >
-                  <div style={{ marginTop: "2%", top: "10%", width: "20%" }}>
-                    <Card
-                      className="product_card"
-                      onClick={() => {
-                        setImagePrincipale(course.img1);
+                  {screens.xs ? (
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "25vh",
+                        overflow: "hidden",
                       }}
-                      hoverable
-                      style={style_icone}
-                      cover={<Image preview={false} src={course.img1} />}
-                    />
-
-                    <Card
-                      className="product_card"
-                      onClick={() => {
-                        setImagePrincipale(course.img2);
-                      }}
-                      hoverable
-                      style={style_icone}
-                      cover={<Image preview={false} src={course.img2} />}
-                    />
-                    <Card
-                      className="product_card"
-                      onClick={() => {
-                        setImagePrincipale(course.img3);
-                      }}
-                      hoverable
-                      style={style_icone}
-                      cover={<Image preview={false} src={course.img3} />}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      width: "70%",
-                    }}
-                  >
-                    <Card
-                      className="product_card"
-                      style={{ width: "100%" }}
-                      cover={
-                        <Image
-                          preview={false}
-                          style={{ width: "100%" }}
-                          src={imagePrincipale}
+                    >
+                      <Carousel autoplay arrows infinite={true}>
+                        <div>
+                          <img
+                            style={{
+                              height: "25vh",
+                              width: "100%",
+                            }}
+                            src={course.img1}
+                            alt="Image 1"
+                          />
+                        </div>
+                        <div>
+                          <img
+                            style={{
+                              height: "25vh",
+                              width: "100%",
+                            }}
+                            src={course.img2}
+                            alt="Image 2"
+                          />
+                        </div>
+                        <div>
+                          <img
+                            style={{
+                              height: "25vh", // Fix height
+                              width: "100%", // Maintain aspect ratio
+                            }}
+                            src={course.img3}
+                            alt="Image 3"
+                          />
+                        </div>
+                      </Carousel>
+                    </div>
+                  ) : (
+                    <>
+                      <div
+                        style={{ marginTop: "2%", top: "10%", width: "20%" }}
+                      >
+                        <Card
+                          className="product_card"
+                          onClick={() => {
+                            setImagePrincipale(course.img1);
+                          }}
+                          hoverable
+                          style={style_icone}
+                          cover={<Image preview={false} src={course.img1} />}
                         />
-                      }
-                    ></Card>
-                  </div>
-                </div>
-              )}
-            </div>
 
-            <div
-              style={{
-                color: "#070C65",
-                margin: width <= 1200 ? "auto" : "0 0 0 2%",
-                display: width <= 1200 ? "bloc" : "",
-                width: width <= 1200 ? "80%" : "50%",
-                marginTop: "2%",
-              }}
-            >
-              <span
+                        <Card
+                          className="product_card"
+                          onClick={() => {
+                            setImagePrincipale(course.img2);
+                          }}
+                          hoverable
+                          style={style_icone}
+                          cover={<Image preview={false} src={course.img2} />}
+                        />
+                        <Card
+                          className="product_card"
+                          onClick={() => {
+                            setImagePrincipale(course.img3);
+                          }}
+                          hoverable
+                          style={style_icone}
+                          cover={<Image preview={false} src={course.img3} />}
+                        />
+                      </div>{" "}
+                      <div
+                        style={{
+                          width: "70%",
+                        }}
+                      >
+                        <Card
+                          className="product_card"
+                          style={{ width: "100%" }}
+                          cover={
+                            <Image
+                              preview={false}
+                              style={{ width: "100%" }}
+                              src={imagePrincipale}
+                            />
+                          }
+                        ></Card>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div
                 style={{
-                  fontFamily: "Dosis",
-                  fontWeight: "500",
+                  color: "#070C65",
+                  margin: screens.xs ? "0% 0% 0% 9%" : "0 0 0 2%",
+                  display: width <= 1200 ? "bloc" : "",
+                  width: width <= 1200 ? "100%" : "50%",
                 }}
-                className={"title_activity"}
               >
-                {course.title}
-              </span>
-              <br />
-              <Rate
-                style={{
-                  color: "#ffc069",
-                  marginTop: "2%",
-                  marginBottom: "2%",
-                }}
-                disabled
-                allowHalf
-                value={ratings}
-              />{" "}
-              <a
-                style={{
-                  color: "#02245c",
-                  marginLeft: "10px",
-                  textDecoration: "underline",
-                }}
-              >
-                {nombreRating} avis
-              </a>{" "}
-              {a ? (
-                <HeartFilled
-                  style={{ color: "#ffc069" }}
-                  onClick={deletedToWishlist}
-                />
-              ) : (
-                <HeartOutlined
-                  style={{ color: "#ffc069" }}
-                  onClick={addedToWishlist}
-                />
-              )}
-              <br /> <br />
-              <span>
-                <EnvironmentTwoTone twoToneColor="#FF8A65" />
-                {adress ? adress[0].name + ", " + adress[0].city : "chargement"}
-              </span>
-              <br />
-              <br />
-              <span className="accroche">{course.accroche}</span>
-              <br />
-              <br />
-              <span className="description">
-                {course.content}
+                <span
+                  style={{
+                    fontFamily: "Dosis",
+                    fontWeight: "500",
+                  }}
+                  className={"title_activity"}
+                >
+                  {course.title}
+                </span>
+                <br />
+                <Rate
+                  style={{
+                    color: "#ffc069",
+                    marginTop: "2%",
+                    marginBottom: "2%",
+                  }}
+                  disabled
+                  allowHalf
+                  value={ratings}
+                />{" "}
                 <a
                   style={{
-                    marginLeft: "10px",
                     color: "#02245c",
+                    marginLeft: "10px",
                     textDecoration: "underline",
                   }}
-                  href="#descr"
                 >
-                  Voir plus
-                </a>
-              </span>
-              <br /> <br />
-              <span className="accroche" style={{ marginRight: "70px" }}>
-                {course.price} € par place
-              </span>
-              <br /> <br />
-              {/* <span>
+                  {nombreRating} avis
+                </a>{" "}
+                {a ? (
+                  <HeartFilled
+                    style={{ color: "#ffc069" }}
+                    onClick={deletedToWishlist}
+                  />
+                ) : (
+                  <HeartOutlined
+                    style={{ color: "#ffc069" }}
+                    onClick={addedToWishlist}
+                  />
+                )}
+                <br /> <br />
+                <span>
+                  <EnvironmentTwoTone twoToneColor="#FF8A65" />
+                  {adress
+                    ? adress[0].name + ", " + adress[0].city
+                    : "chargement"}
+                </span>
+                <br />
+                <br />
+                <span className="accroche">{course.accroche}</span>
+                <br />
+                <br />
+                <span className="description">
+                  {course.content}
+                  <a
+                    style={{
+                      marginLeft: "10px",
+                      color: "#02245c",
+                      textDecoration: "underline",
+                    }}
+                    href="#descr"
+                  >
+                    Voir plus
+                  </a>
+                </span>
+                <br /> <br />
+                <span className="accroche" style={{ marginRight: "70px" }}>
+                  {course.price} € par place
+                </span>
+                <br /> <br />
+                {/* <span>
                 {offers !== null ? (
                   <>
                     <ThunderboltTwoTone twoToneColor="ffa940 " />
@@ -864,14 +908,6 @@ const ProductDetail = (props) => {
                   </>
                 ) : null}
               </span> */}
-              <br />
-              <br />
-              {width <= 1200 ? (
-                <div style={{ color: "#070C65", width: "100%" }}>
-                  {steps[0].content}
-                  {steps[1].content}
-                </div>
-              ) : (
                 <>
                   <Steps
                     style={{ color: "#070C65" }}
@@ -890,156 +926,156 @@ const ProductDetail = (props) => {
                     {steps[current_tab].content}
                   </div>
                 </>
-              )}
-              <br />
-              <br />
+                <br />
+                <br />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div
-          style={{ width: "100%", display: "flex", justifyContent: "center" }}
-        >
-          <div style={{ width: "80%" }}>
-            <Steps direction={small} size="small" current={(1, 2, 3)}>
-              <Step
-                title="🐓 Choisir une entreprise Française 🇫🇷 "
-                description="Nous sommes localisés dans la ville rose, Toulouse. Et nous ne comptons pas démanager. "
-              />
-              <Step
-                title="🤝 Donner du sens à l'économie 🚀"
-                description="Nous sélectionnons avec soin les meilleurs partenaires locaux pour vous satisfaire."
-              />
-              <Step
-                title="✨Partager des moments uniques  🎁 "
-                description="Nous faisons tout notre possible pour que vous passiez des moments inoubliables. "
-              />
-            </Steps>
+          <div
+            style={{ width: "100%", display: "flex", justifyContent: "center" }}
+          >
+            <div style={{ width: "80%" }}>
+              <Steps direction={small} size="small" current={(1, 2, 3)}>
+                <Step
+                  title="🐓 Choisir une entreprise Française 🇫🇷 "
+                  description="Nous sommes localisés dans la ville rose, Toulouse. Et nous ne comptons pas démanager. "
+                />
+                <Step
+                  title="🤝 Donner du sens à l'économie 🚀"
+                  description="Nous sélectionnons avec soin les meilleurs partenaires locaux pour vous satisfaire."
+                />
+                <Step
+                  title="✨Partager des moments uniques  🎁 "
+                  description="Nous faisons tout notre possible pour que vous passiez des moments inoubliables. "
+                />
+              </Steps>
+            </div>
           </div>
-        </div>
 
-        <div
-          id="descr"
-          style={{
-            display: width <= 1200 ? "block" : "flex",
-            justifyContent: width <= 1200 ? "" : "center",
-            margin: "20px auto",
-          }}
-        >
-          {" "}
+          <div
+            id="descr"
+            style={{
+              display: width <= 1200 ? "block" : "flex",
+              justifyContent: width <= 1200 ? "" : "center",
+              margin: "20px auto",
+            }}
+          >
+            {" "}
+            <Bloc
+              yellow={true}
+              height={"400px"}
+              content={course.content}
+              icone={
+                <ExperimentTwoTone
+                  twoToneColor="#ffa940"
+                  style={{ fontSize: "25px" }}
+                />
+              }
+              titre={"Au menu de l'Expérience"}
+              width={width <= 1200 ? "80%" : "40%"}
+            />
+            <Bloc
+              yellow={true}
+              height={"400px"}
+              content={
+                <div style={{ justifyContent: "center" }}>
+                  <a href={"http://localhost:3000/giver/" + giver.id}>
+                    <Image
+                      style={{
+                        borderRadius: "50%",
+                        width: "100px",
+                        height: "100px",
+                      }}
+                      preview={false}
+                      src={"http://localhost:8000/" + giver.img1}
+                    />{" "}
+                  </a>
+                  <a href={"http://localhost:3000/giver/" + giver.id}>
+                    {" "}
+                    <h2> {giver.appelation}</h2>
+                  </a>
+                  <p>{giver.description}</p>
+                </div>
+              }
+              icone={
+                <RocketTwoTone
+                  twoToneColor="#ffd166"
+                  style={{ fontSize: "25px" }}
+                />
+              }
+              titre={"Proposé par"}
+              width={width <= 1200 ? "80%" : "40%"}
+            />
+          </div>
+          <div
+            style={{
+              display: width <= 1200 ? "block" : "flex",
+              justifyContent: width <= 1200 ? "" : "center",
+              margin: "20px auto",
+            }}
+          >
+            <Bloc
+              yellow={true}
+              height={"400px"}
+              content={course.aSavoir}
+              icone={
+                <AlertTwoTone
+                  twoToneColor="#ffd166"
+                  style={{ fontSize: "25px" }}
+                />
+              }
+              titre={"À savoir"}
+              width={width <= 1200 ? "80%" : "40%"}
+            />
+            <Bloc
+              yellow={true}
+              height={"400px"}
+              content={course.annulation}
+              icone={
+                <InfoCircleTwoTone
+                  twoToneColor="#ffd166"
+                  style={{ fontSize: "25px" }}
+                />
+              }
+              titre={"Annulation"}
+              width={width <= 1200 ? "80%" : "40%"}
+            />
+          </div>
           <Bloc
-            yellow={true}
-            height={"400px"}
-            content={course.content}
-            icone={
-              <ExperimentTwoTone
-                twoToneColor="#ffa940"
-                style={{ fontSize: "25px" }}
-              />
-            }
-            titre={"Au menu de l'Expérience"}
-            width={width <= 1200 ? "80%" : "40%"}
-          />
-          <Bloc
-            yellow={true}
             height={"400px"}
             content={
-              <div style={{ justifyContent: "center" }}>
-                <a href={"http://localhost:3000/giver/" + giver.id}>
-                  <Image
-                    style={{
-                      borderRadius: "50%",
-                      width: "100px",
-                      height: "100px",
-                    }}
-                    preview={false}
-                    src={giver.img1}
-                  />{" "}
-                </a>
-                <a href={"http://localhost:3000/giver/" + giver.id}>
-                  {" "}
-                  <h2> {giver.appelation}</h2>
-                </a>
-                <p>{giver.description}</p>
+              <div style={{ display: "block", width: "100%" }}>
+                <List style={{ width: "60%", margin: "auto" }}>
+                  {comments.map((comment) => {
+                    return (
+                      <List.Item>
+                        <Review
+                          iniale={comment.initiale}
+                          prenom={comment.prenom}
+                          titre={comment.titre}
+                          content={comment.comment_cub}
+                          date={comment.dateHour.date}
+                          rating={comment.note}
+                        />
+                      </List.Item>
+                    );
+                  })}
+                </List>
               </div>
             }
             icone={
-              <RocketTwoTone
+              <TrophyTwoTone
                 twoToneColor="#ffd166"
                 style={{ fontSize: "25px" }}
               />
             }
-            titre={"Proposé par"}
-            width={width <= 1200 ? "80%" : "40%"}
+            titre={"AVIS"}
+            width={"50%"}
           />
-        </div>
-        <div
-          style={{
-            display: width <= 1200 ? "block" : "flex",
-            justifyContent: width <= 1200 ? "" : "center",
-            margin: "20px auto",
-          }}
-        >
-          <Bloc
-            yellow={true}
-            height={"400px"}
-            content={course.aSavoir}
-            icone={
-              <AlertTwoTone
-                twoToneColor="#ffd166"
-                style={{ fontSize: "25px" }}
-              />
-            }
-            titre={"À savoir"}
-            width={width <= 1200 ? "80%" : "40%"}
-          />
-          <Bloc
-            yellow={true}
-            height={"400px"}
-            content={course.annulation}
-            icone={
-              <InfoCircleTwoTone
-                twoToneColor="#ffd166"
-                style={{ fontSize: "25px" }}
-              />
-            }
-            titre={"Annulation"}
-            width={width <= 1200 ? "80%" : "40%"}
-          />
-        </div>
-        <Bloc
-          height={"400px"}
-          content={
-            <div style={{ display: "block", width: "100%" }}>
-              <List style={{ width: "60%", margin: "auto" }}>
-                {comments.map((comment) => {
-                  return (
-                    <List.Item>
-                      <Review
-                        iniale={comment.initiale}
-                        prenom={comment.prenom}
-                        titre={comment.titre}
-                        content={comment.comment_cub}
-                        date={comment.dateHour.date}
-                        rating={comment.note}
-                      />
-                    </List.Item>
-                  );
-                })}
-              </List>
-            </div>
-          }
-          icone={
-            <TrophyTwoTone
-              twoToneColor="#ffd166"
-              style={{ fontSize: "25px" }}
-            />
-          }
-          titre={"AVIS"}
-          width={"50%"}
-        />
 
-        <Footer width={width} />
+          <Footer width={width} />
+        </>
       </>
     );
   }

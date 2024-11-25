@@ -24,9 +24,12 @@ import GiftCard from "./GiftCard";
 import Founders from "./Founders";
 import HomeMobile from "./HomeMobile";
 import BookingGiver from "./BookingGiver";
-import Map from "./Map";
-import Recap from "./Recap";
 
+import Recap from "./Recap";
+import RecapOrders from "./RecapOrders";
+import ReviewsCub from "./ReviewsCub";
+
+import InfosCub from "./InfosCub";
 const BaseRouter = () => (
   <Routes>
     <Route exact path="/" element={<Home />} />
@@ -52,11 +55,15 @@ const BaseRouter = () => (
     <Route exact path="/admin/check/:courseID" element={<CoursesCheck />} />
     <Route exact path="/email-verify/:token" element={<EmailVerify />} />
     <Route exact path="/giver/:giverID" element={<GiverView />} />
-    <Route exact path="/map" element={<Map />} />
+
     <Route exact path="/booking/giver" element={<BookingGiver />} />
     <Route exact path="/gift" element={<GiftCard />} />
     <Route exact path="/founders" element={<Founders />} />
     <Route exact path="/recap" element={<Recap />} />
+    <Route exact path="/recap/orders" element={<RecapOrders />} />
+    <Route exact path="/infos" element={<InfosCub />} />
+    <Route exact path="/infos/reviews" element={<ReviewsCub />} />
+
     <Route
       exact
       path="/email-verify-giver/:token"

@@ -6,10 +6,7 @@ import axios from "axios";
 import { BrowserView, MobileView } from "react-device-detect";
 import MenuBrowser from "./MenuBrowser";
 import Footer from "./Footer";
-import img1 from "./france.png";
-import Bloc from "./Bloc";
-import process from "./process.jpg";
-import founders from "./founders.jpg";
+
 import {
   HomeOutlined,
   DownCircleOutlined,
@@ -119,21 +116,7 @@ const Founders = (props) => {
     return (
       <div>
         <MenuBrowser width={width} />
-        <Bloc
-          yellow={true}
-          height={"400px"}
-          content={
-            " Leikka. est une petite entreprise toulousaine créée en 2023 par deux soeurs: Nadia et Nouria 👯‍♀️ .Leikka a pour ambition de simplifier le travail des professionels dumonde du loisir en proposant un système de réservation en ligne 💻.Nous avons aussi comme vocation à faciliter la recherche d activités et de cours pour tout un chacun! Nous avons à coeur de sélectionner les meilleurs professionnels pour que chaque expérience soit un souvenir unique 🥳."
-          }
-          icone={
-            <ExperimentTwoTone
-              twoToneColor="#ffa940"
-              style={{ fontSize: "25px" }}
-            />
-          }
-          titre={"Au menu de l'Expérience"}
-          width={width <= 1200 ? "80%" : "40%"}
-        />
+
         <div
           style={{
             display: "flex",
@@ -141,32 +124,14 @@ const Founders = (props) => {
             marginRight: "20%",
           }}
         >
-          <Image
-            style={{
-              marginTop: "20%",
-              marginLeft: "-10%",
-              borderRadius: "50%",
-              width: "200px",
-              height: "200px",
-            }}
-            preview={false}
-            src={founders}
-          />
-
-          <div
-            id="founders"
-            className="pres"
-            style={{ marginTop: "3%", width: "50%" }}
-          >
+          <div id="founders" className="pres" style={{ width: "50%" }}>
             {" "}
-            <h1>Fondatrices</h1>
           </div>
         </div>
         <div
           style={{
             display: "flex",
             justifyContent: "center",
-            marginRight: "-16%",
           }}
         >
           <div
@@ -196,37 +161,13 @@ const Founders = (props) => {
             de partager leur savoirs faire avec des personnes du monde entier.
             <br />
           </div>
-          <Image
-            style={{
-              marginTop: "90%",
-              marginLeft: "3%",
-              borderRadius: "50%",
-              width: "200px",
-              height: "200px",
-            }}
-            preview={false}
-            src={process}
-          />
         </div>
         <div
           style={{
             display: "flex",
             justifyContent: "center",
-            marginLeft: "-9%",
           }}
         >
-          <Image
-            style={{
-              marginTop: "30%",
-              marginLeft: "-6%",
-
-              borderRadius: "50%",
-              width: "200px",
-              height: "200px",
-            }}
-            preview={false}
-            src={processus}
-          />
           <div
             id="conditions"
             className="pres"
@@ -275,7 +216,7 @@ const Founders = (props) => {
               <Form.Item
                 rules={[
                   {
-                    required: true,
+                    required: false,
                   },
                 ]}
                 name={"url"}

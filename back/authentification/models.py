@@ -33,6 +33,26 @@ import json
 import jwt
 import collections
 from rest_framework.test import APIRequestFactory
+from django.core.files.storage import FileSystemStorage
+from PIL import Image
+from io import BytesIO
+class CompressedImageStorage(FileSystemStorage):
+    def _save(self, name, content):
+        # Open the image
+        img = Image.open(content)
+        
+        # Ensure compatibility with JPEG
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
+        
+        # Compress the image
+        buffer = BytesIO()
+        img.save(buffer, format="JPEG", quality=75)
+        buffer.seek(0)
+
+        # Replace content with compressed image
+        content.file = buffer
+        return super()._save(name, content)
 
 
 class MyUser(AbstractUser):
@@ -121,7 +141,7 @@ class Giver(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE,)
     user_type1 = 3
     img1 = models.ImageField(null=True, blank=True,
-                             upload_to="gallery", default='../media/sewing.png')
+                             upload_to="gallery", storage=CompressedImageStorage())
 
     description = models.TextField(null=True, blank=True)
     appelation = models.TextField(null=True, blank=True)

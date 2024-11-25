@@ -15,7 +15,7 @@ import {
   notification,
   Space,
 } from "antd";
-import logo from "./leika_logo2.png";
+import logo from "./maory.png";
 
 import {
   useNavigate,
@@ -161,7 +161,6 @@ const Connexion = (props) => {
     //    console.log("COOK " + cookies["user"]);
     //     alert(`User cookie is ${JSON.stringify(cookies["user"])}`);
 
-    message.success("Connexion réussie");
     checkLocalStorageValidity();
   };
   const authLogin = (email, password) => {

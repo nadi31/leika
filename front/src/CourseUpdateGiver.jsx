@@ -4,7 +4,7 @@ import axios from "axios";
 import { useState, useLayoutEffect, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import MenuBrowser from "./MenuBrowser";
-
+import { upload } from "./ImageUploader";
 import Footer from "./Footer";
 import { BrowserView, MobileView } from "react-device-detect";
 
@@ -782,7 +782,23 @@ const CourseUpdateGiver = (props) => {
     form_data.append("hourFin", time2);
     form_data.append("date_fin", date3(date2, date_selected));
     form_data.append("seats", parseFloat(fieldsValue.input_seats));
-    form_data.append(
+    const compressedFile1 = upload(
+      fieldsValue.upload.fileList[0].originFileObj,
+      fieldsValue.upload.fileList[0].originFileObj.name
+    );
+    form_data.append("img1", compressedFile1, compressedFile1.name);
+    const compressedFile2 = upload(
+      fieldsValue.upload.fileList[1].originFileObj,
+      fieldsValue.upload.fileList[1].originFileObj.name
+    );
+    form_data.append("img2", compressedFile2, compressedFile2.name);
+    const compressedFile3 = upload(
+      fieldsValue.upload.fileList[2].originFileObj,
+      fieldsValue.upload.fileList[2].originFileObj.name
+    );
+    form_data.append("img3", compressedFile3, compressedFile3.name);
+
+    /*     form_data.append(
       "img1",
       fieldsValue.upload.fileList[0].originFileObj,
       fieldsValue.upload.fileList[0].originFileObj.name
@@ -796,7 +812,7 @@ const CourseUpdateGiver = (props) => {
       "img3",
       fieldsValue.upload.fileList[2].originFileObj,
       fieldsValue.upload.fileList[2].originFileObj.name
-    );
+    ); */
     form_data.append("title", fieldsValue.title_input);
     form_data.append("content", fieldsValue.content_input);
     form_data.append("discount", parseFloat(discount));

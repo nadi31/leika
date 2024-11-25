@@ -25,6 +25,7 @@ from authentification.perm import GiverAdminOrReadOnlyCourses
 from authentification.serializers import GiverSerializer, AdressSerializer
 from django.forms.models import model_to_dict
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
 
 from django.utils import timezone
@@ -869,7 +870,7 @@ class ReviewListViewCub(ListAPIView):
 
     permission_classes = (permissions.AllowAny,)
     queryset = Review.objects.all()
-
+    parser_classes = [JSONParser]
     def get(self, request, *args, **kwargs):
         # user = Giver.objects.filter(id=self.kwargs['pk'])
         cub_id = Cub.objects.get(user=self.kwargs['pk'])
@@ -878,7 +879,21 @@ class ReviewListViewCub(ListAPIView):
 
         serializer = ReviewSerializer(reviewPerCourse, many=True)
         return Response(serializer.data)
+    def post(self, request, *args, **kwargs):
+        # Get the review object based on the provided review ID in request data
+        review_id = request.data.get("review_id")
+        review = get_object_or_404(Review, id=review_id, cub__user=self.kwargs['pk'])
 
+        review.titre = request.data.get("titre", review.titre)
+        review.note = request.data.get("note", review.note)
+        review.comment_cub = request.data.get("comment_cub", review.comment_cub)
+        
+        # Save the updated review
+        review.save()
+
+        # Return the updated review data
+        serializer = ReviewSerializer(review)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class WishlistView(APIView):
     permission_classes = (permissions.AllowAny,)

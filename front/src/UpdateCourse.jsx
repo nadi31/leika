@@ -724,21 +724,27 @@ const UpdateCourse = () => {
     form_data.append("seats", parseFloat(values.input_seats));
     console.log("***" + values.upload);
     if (typeof values.upload !== "undefined" || null) {
-      form_data.append(
-        "img1",
-        values.upload.fileList[0].originFileObj,
-        values.upload.fileList[0].originFileObj.name
-      );
-      form_data.append(
-        "img2",
-        values.upload.fileList[1].originFileObj,
-        values.upload.fileList[1].originFileObj.name
-      );
-      form_data.append(
-        "img3",
-        values.upload.fileList[2].originFileObj,
-        values.upload.fileList[2].originFileObj.name
-      );
+      if (values.upload.fileList[0] !== "undefined" || null) {
+        form_data.append(
+          "img1",
+          values.upload.fileList[0].originFileObj,
+          values.upload.fileList[0].originFileObj.name
+        );
+      }
+      if (values.upload.fileList[1] !== "undefined" || null) {
+        form_data.append(
+          "img2",
+          values.upload.fileList[1].originFileObj,
+          values.upload.fileList[1].originFileObj.name
+        );
+      }
+      if (values.upload.fileList[2] !== "undefined" || null) {
+        form_data.append(
+          "img3",
+          values.upload.fileList[2].originFileObj,
+          values.upload.fileList[2].originFileObj.name
+        );
+      }
     }
     //console.log("AGE EE" + values.cascader_age);
     form_data.append("title", values.title_input);

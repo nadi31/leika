@@ -269,11 +269,13 @@ const Menu2 = (props) => {
       <div
         className="header"
         style={{
+          marginTop: props.mobile ? "5%" : "",
+          marginBottom: props.mobile ? "5%" : "",
           width: "100%",
           overflow: "hidden",
           display: "flex",
           justifyContent: "center",
-          background: "#FFE5D9",
+          background: props.mobile ? "#fff" : "#FFE5D9",
         }}
       >
         <nav style={{ width: "100%" }}>
@@ -281,58 +283,49 @@ const Menu2 = (props) => {
           <ul
             ref={ref}
             style={{
-              display: "list-item",
-              overflowX: "scroll",
-              display: "inline-flex",
-              width: "90%",
+              display: props.mobile ? "list-item" : "inline-flex",
+              overflowX: window.innerWidth < 1200 ? "auto" : "scroll",
+              whiteSpace: props.mobile ? "nowrap" : "",
+              width: "100%",
               textAlign: "center",
               fontFamily: "Playwrite GB S",
               listStyle: "none",
-
-              //paddingLeft: "10%",
+              padding: props.mobile ? 0 : "",
+              margin: props.mobile ? 0 : "",
             }}
           >
-            {width < 800 ? (
-              <Button
-                onClick={() => scroll(-20)}
-                style={{
-                  width: "8%",
-                  background: "#FFE5D9",
-                  position: "absolute",
-                  marginTop: "5%",
-                  left: 0,
-                  justifyContent: "center",
-                  border: "none",
-                }}
-              >
-                <LeftOutlined />
-              </Button>
-            ) : null}
             <li
+              style={{
+                display: props.mobile ? "inline-block" : " inline-block",
+                alignItems: props.mobile ? "flex-start" : "",
+                textAlign: props.mobile ? "center" : "",
+                padding: window.innerWidth < 1200 ? "10px 20px" : "",
+              }}
               onClick={() => {
-                // setActivity("");
                 handleSubmit(1);
                 setMenuArt(true);
               }}
-              style={{ display: "inline-block" }}
             >
               <a
                 style={{
                   color: "#070C65",
                   textDecoration: "none",
+                  display: props.mobile ? "flex" : "",
+                  flexDirection: props.mobile ? "column" : "",
+                  alignItems: props.mobile ? "center" : "",
                 }}
                 href="#Accueil"
               >
                 <Icon
-                  style={{ paddingTop: "10px" }}
+                  style={{ paddingTop: props.mobile ? "5px" : "10px" }}
                   component={() => (
                     <img
                       src={sculpture}
                       height={30}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        float: "center",
+                        display: props.mobile ? "" : "flex",
+                        justifyContent: props.mobile ? "" : "center",
+                        float: props.mobile ? "" : "center",
                         marginBottom: 0,
                       }}
                     />
@@ -347,25 +340,33 @@ const Menu2 = (props) => {
                 //setActivity(9);
                 handleSubmit(9);
               }}
-              style={{ display: "inline-block" }}
+              style={{
+                display: props.mobile ? "inline-block" : " inline-block",
+                alignItems: props.mobile ? "flex-start" : "",
+                textAlign: props.mobile ? "center" : "",
+                padding: window.innerWidth < 1200 ? "10px 20px" : "",
+              }}
             >
               <a
                 style={{
                   color: "#070C65",
                   textDecoration: "none",
+                  display: props.mobile ? "flex" : "",
+                  flexDirection: props.mobile ? "column" : "",
+                  alignItems: props.mobile ? "center" : "",
                 }}
                 href="#Accueil"
               >
                 <Icon
-                  style={{ paddingTop: "10px" }}
+                  style={{ paddingTop: props.mobile ? "5px" : "10px" }}
                   component={() => (
                     <img
                       src={board}
                       height={30}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        float: "center",
+                        display: props.mobile ? "" : "flex",
+                        justifyContent: props.mobile ? "" : "center",
+                        float: props.mobile ? "" : "center",
                         marginBottom: 0,
                       }}
                     />
@@ -379,25 +380,33 @@ const Menu2 = (props) => {
               onClick={() => {
                 handleSubmit(4);
               }}
-              style={{ display: "inline-block" }}
+              style={{
+                display: props.mobile ? "inline-block" : " inline-block",
+                alignItems: props.mobile ? "flex-start" : "",
+                textAlign: props.mobile ? "center" : "",
+                padding: window.innerWidth < 1200 ? "10px 20px" : "",
+              }}
             >
               <a
                 style={{
                   color: "#070C65",
                   textDecoration: "none",
+                  display: props.mobile ? "flex" : "",
+                  flexDirection: props.mobile ? "column" : "",
+                  alignItems: props.mobile ? "center" : "",
                 }}
                 href="#Accueil"
               >
                 <Icon
-                  style={{ paddingTop: "10px" }}
+                  style={{ paddingTop: props.mobile ? "5px" : "10px" }}
                   component={() => (
                     <img
                       src={drill}
                       height={30}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        float: "center",
+                        display: props.mobile ? "" : "flex",
+                        justifyContent: props.mobile ? "" : "center",
+                        float: props.mobile ? "" : "center",
                         marginBottom: 0,
                       }}
                     />
@@ -412,25 +421,33 @@ const Menu2 = (props) => {
                 // setActivity(11);
                 handleSubmit(11);
               }}
-              style={{ display: "inline-block" }}
+              style={{
+                display: props.mobile ? "inline-block" : " inline-block",
+                alignItems: props.mobile ? "flex-start" : "",
+                textAlign: props.mobile ? "center" : "",
+                padding: window.innerWidth < 1200 ? "10px 20px" : "",
+              }}
             >
               <a
                 style={{
                   color: "#070C65",
                   textDecoration: "none",
+                  display: props.mobile ? "flex" : "",
+                  flexDirection: props.mobile ? "column" : "",
+                  alignItems: props.mobile ? "center" : "",
                 }}
                 href="#Accueil"
               >
                 <Icon
-                  style={{ paddingTop: "10px" }}
+                  style={{ paddingTop: props.mobile ? "5px" : "10px" }}
                   component={() => (
                     <img
                       src={eiffel}
                       height={30}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        float: "center",
+                        display: props.mobile ? "" : "flex",
+                        justifyContent: props.mobile ? "" : "center",
+                        float: props.mobile ? "" : "center",
                         marginBottom: 0,
                       }}
                     />
@@ -445,25 +462,33 @@ const Menu2 = (props) => {
                 //setActivity(6);
                 handleSubmit(6);
               }}
-              style={{ display: "inline-block" }}
+              style={{
+                display: props.mobile ? "inline-block" : " inline-block",
+                alignItems: props.mobile ? "flex-start" : "",
+                textAlign: props.mobile ? "center" : "",
+                padding: window.innerWidth < 1200 ? "10px 20px" : "",
+              }}
             >
               <a
                 style={{
                   color: "#070C65",
                   textDecoration: "none",
+                  display: props.mobile ? "flex" : "",
+                  flexDirection: props.mobile ? "column" : "",
+                  alignItems: props.mobile ? "center" : "",
                 }}
                 href="#Accueil"
               >
                 <Icon
-                  style={{ paddingTop: "10px" }}
+                  style={{ paddingTop: props.mobile ? "5px" : "10px" }}
                   component={() => (
                     <img
                       src={museum}
                       height={30}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        float: "center",
+                        display: props.mobile ? "" : "flex",
+                        justifyContent: props.mobile ? "" : "center",
+                        float: props.mobile ? "" : "center",
                         marginBottom: 0,
                       }}
                     />
@@ -478,25 +503,33 @@ const Menu2 = (props) => {
                 //setActivity(6);
                 handleSubmit(5);
               }}
-              style={{ display: "inline-block" }}
+              style={{
+                display: props.mobile ? "inline-block" : " inline-block",
+                alignItems: props.mobile ? "flex-start" : "",
+                textAlign: props.mobile ? "center" : "",
+                padding: window.innerWidth < 1200 ? "10px 20px" : "",
+              }}
             >
               <a
                 style={{
                   color: "#070C65",
                   textDecoration: "none",
+                  display: props.mobile ? "flex" : "",
+                  flexDirection: props.mobile ? "column" : "",
+                  alignItems: props.mobile ? "center" : "",
                 }}
                 href="#Accueil"
               >
                 <Icon
-                  style={{ paddingTop: "10px" }}
+                  style={{ paddingTop: props.mobile ? "5px" : "10px" }}
                   component={() => (
                     <img
                       src={noodles}
                       height={30}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        float: "center",
+                        display: props.mobile ? "" : "flex",
+                        justifyContent: props.mobile ? "" : "center",
+                        float: props.mobile ? "" : "center",
                         marginBottom: 0,
                       }}
                     />
@@ -511,25 +544,33 @@ const Menu2 = (props) => {
                 //setActivity(6);
                 handleSubmit(3);
               }}
-              style={{ display: "inline-block" }}
+              style={{
+                display: props.mobile ? "inline-block" : " inline-block",
+                alignItems: props.mobile ? "flex-start" : "",
+                textAlign: props.mobile ? "center" : "",
+                padding: window.innerWidth < 1200 ? "10px 20px" : "",
+              }}
             >
               <a
                 style={{
                   color: "#070C65",
                   textDecoration: "none",
+                  display: props.mobile ? "flex" : "",
+                  flexDirection: props.mobile ? "column" : "",
+                  alignItems: props.mobile ? "center" : "",
                 }}
                 href="#Accueil"
               >
                 <Icon
-                  style={{ paddingTop: "10px" }}
+                  style={{ paddingTop: props.mobile ? "5px" : "10px" }}
                   component={() => (
                     <img
                       src={sewing}
                       height={30}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        float: "center",
+                        display: props.mobile ? "" : "flex",
+                        justifyContent: props.mobile ? "" : "center",
+                        float: props.mobile ? "" : "center",
                         marginBottom: 0,
                       }}
                     />
@@ -544,25 +585,33 @@ const Menu2 = (props) => {
                 //setActivity(6);
                 handleSubmit(10);
               }}
-              style={{ display: "inline-block" }}
+              style={{
+                display: props.mobile ? "inline-block" : " inline-block",
+                alignItems: props.mobile ? "flex-start" : "",
+                textAlign: props.mobile ? "center" : "",
+                padding: window.innerWidth < 1200 ? "10px 20px" : "",
+              }}
             >
               <a
                 style={{
                   color: "#070C65",
                   textDecoration: "none",
+                  display: props.mobile ? "flex" : "",
+                  flexDirection: props.mobile ? "column" : "",
+                  alignItems: props.mobile ? "center" : "",
                 }}
                 href="#Accueil"
               >
                 <Icon
-                  style={{ paddingTop: "10px" }}
+                  style={{ paddingTop: props.mobile ? "5px" : "10px" }}
                   component={() => (
                     <img
                       src={spa}
                       height={30}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        float: "center",
+                        display: props.mobile ? "" : "flex",
+                        justifyContent: props.mobile ? "" : "center",
+                        float: props.mobile ? "" : "center",
                         marginBottom: 0,
                       }}
                     />
@@ -577,25 +626,33 @@ const Menu2 = (props) => {
                 //setActivity(6);
                 handleSubmit(8);
               }}
-              style={{ display: "inline-block" }}
+              style={{
+                display: props.mobile ? "inline-block" : " inline-block",
+                alignItems: props.mobile ? "flex-start" : "",
+                textAlign: props.mobile ? "center" : "",
+                padding: window.innerWidth < 1200 ? "10px 20px" : "",
+              }}
             >
               <a
                 style={{
                   color: "#070C65",
                   textDecoration: "none",
+                  display: props.mobile ? "flex" : "",
+                  flexDirection: props.mobile ? "column" : "",
+                  alignItems: props.mobile ? "center" : "",
                 }}
                 href="#Accueil"
               >
                 <Icon
-                  style={{ paddingTop: "10px" }}
+                  style={{ paddingTop: props.mobile ? "5px" : "10px" }}
                   component={() => (
                     <img
                       src={sport}
                       height={30}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        float: "center",
+                        display: props.mobile ? "" : "flex",
+                        justifyContent: props.mobile ? "" : "center",
+                        float: props.mobile ? "" : "center",
                         marginBottom: 0,
                       }}
                     />
@@ -610,25 +667,33 @@ const Menu2 = (props) => {
                 //setActivity(6);
                 handleSubmit(14);
               }}
-              style={{ display: "inline-block" }}
+              style={{
+                display: props.mobile ? "inline-block" : " inline-block",
+                alignItems: props.mobile ? "flex-start" : "",
+                textAlign: props.mobile ? "center" : "",
+                padding: window.innerWidth < 1200 ? "10px 20px" : "",
+              }}
             >
               <a
                 style={{
                   color: "#070C65",
                   textDecoration: "none",
+                  display: props.mobile ? "flex" : "",
+                  flexDirection: props.mobile ? "column" : "",
+                  alignItems: props.mobile ? "center" : "",
                 }}
                 href="#Accueil"
               >
                 <Icon
-                  style={{ paddingTop: "10px" }}
+                  style={{ paddingTop: props.mobile ? "5px" : "10px" }}
                   component={() => (
                     <img
                       src={france}
                       height={30}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        float: "center",
+                        display: props.mobile ? "" : "flex",
+                        justifyContent: props.mobile ? "" : "center",
+                        float: props.mobile ? "" : "center",
                         marginBottom: 0,
                       }}
                     />
@@ -643,25 +708,33 @@ const Menu2 = (props) => {
                 //setActivity(6);
                 handleSubmit(7);
               }}
-              style={{ display: "inline-block" }}
+              style={{
+                display: props.mobile ? "inline-block" : " inline-block",
+                alignItems: props.mobile ? "flex-start" : "",
+                textAlign: props.mobile ? "center" : "",
+                padding: window.innerWidth < 1200 ? "10px 20px" : "",
+              }}
             >
               <a
                 style={{
                   color: "#070C65",
                   textDecoration: "none",
+                  display: props.mobile ? "flex" : "",
+                  flexDirection: props.mobile ? "column" : "",
+                  alignItems: props.mobile ? "center" : "",
                 }}
                 href="#Accueil"
               >
                 <Icon
-                  style={{ paddingTop: "10px" }}
+                  style={{ paddingTop: props.mobile ? "5px" : "10px" }}
                   component={() => (
                     <img
                       src={translation}
                       height={30}
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        float: "center",
+                        display: props.mobile ? "" : "flex",
+                        justifyContent: props.mobile ? "" : "center",
+                        float: props.mobile ? "" : "center",
                         marginBottom: 0,
                       }}
                     />
@@ -671,22 +744,6 @@ const Menu2 = (props) => {
                 Linguistiques
               </a>
             </li>
-            {width < 800 ? (
-              <Button
-                onClick={() => scroll(20)}
-                style={{
-                  width: "8%",
-                  background: "#FFE5D9",
-                  position: "absolute",
-                  marginTop: "5%",
-                  right: 0,
-                  justifyContent: "center",
-                  border: "none",
-                }}
-              >
-                <RightOutlined />
-              </Button>
-            ) : null}
           </ul>
         </nav>
       </div>
