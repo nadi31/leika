@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 import Icon from "@ant-design/icons";
-import { Button } from "antd";
+
 import "./style/review.css";
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import { useNavigate, withRouter, useSearchParams } from "react-router-dom";
-import board from "./board.png";
-import france from "./france.png";
-import drill from "./drill.png";
-import eiffel from "./eiffel.png";
-import museum from "./museum.png";
-import noodles from "./noodles.png";
-import sculpture from "./sculpture.png";
-import sewing from "./sewing.png";
+
+import { useNavigate, useSearchParams } from "react-router-dom";
+import board from "./images/board.png";
+import france from "./images/france.png";
+import drill from "./images/drill.png";
+import eiffel from "./images/eiffel.png";
+import museum from "./images/museum.png";
+import noodles from "./images/noodles.png";
+import sculpture from "./images/sculpture.png";
+import sewing from "./images/sewing.png";
 import dayjs from "dayjs";
-import spa from "./spa.png";
-import sport from "./sport.png";
-import theatre from "./theatre.png";
-import translation from "./translation.png";
+import spa from "./images/spa.png";
+import sport from "./images/sport.png";
+
+import translation from "./images/translation.png";
 
 const Menu2 = (props) => {
   const [searchParams, setSearchParams] = useSearchParams({});

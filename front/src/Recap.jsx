@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
+import React from "react";
 import MenuBrowser from "./MenuBrowser";
 import Footer from "./Footer";
 import RecapBeforePayment from "./RecapBeforePayment";

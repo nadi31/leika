@@ -1,10 +1,9 @@
 import React, { useState, useLayoutEffect, useEffect } from "react";
-import { ConfigProvider } from "antd";
-import { BrowserView, MobileView } from "react-device-detect";
+
 import { Card } from "antd";
 import axios from "axios";
 import MobileLayout from "./MobileLayout";
-import { useAuth } from "./Connexion";
+
 import HomeMobile from "./HomeMobile";
 import Footer from "./Footer";
 

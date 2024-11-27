@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Affix, Menu } from "antd";
 import "./style/review.css";
-import { UserOutlined } from "@ant-design/icons";
-import bday from "./bdayy.png";
-import basket from "./basket.png";
-import camping from "./tent.png";
-import stage from "./chef.png";
-import music from "./instru.png";
-import parent from "./mom.png";
-import horse from "./triath.png";
-import languages from "./abc.png";
-import science from "./labo.png";
+
+import bday from "./images/bdayy.png";
+
+import camping from "./images/tent.png";
+import stage from "./images/chef.png";
+import music from "./images/instru.png";
+import parent from "./images/mom.png";
+import horse from "./images/triath.png";
+import languages from "./images/abc.png";
+import science from "./images/labo.png";
 import Icon from "@ant-design/icons";
-const MenuKids = (props) => {
+const MenuKids = () => {
   return (
     <>
       {" "}

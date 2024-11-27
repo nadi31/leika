@@ -1,13 +1,7 @@
 import React from "react";
 
 import { Card } from "antd";
-import {
-  SmileTwoTone,
-  CalendarTwoTone,
-  ToolTwoTone,
-  EuroCircleTwoTone,
-  PlusCircleTwoTone,
-} from "@ant-design/icons";
+import { SmileTwoTone, CalendarTwoTone, ToolTwoTone } from "@ant-design/icons";
 import dayjs from "dayjs";
 const ResCard = (props) => {
   const { Meta } = Card;

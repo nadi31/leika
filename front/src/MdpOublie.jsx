@@ -1,51 +1,15 @@
 import MenuBrowser from "./MenuBrowser";
-import Bloc from "./Bloc";
+
 import { useParams } from "react-router-dom";
 
 import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
-import {
-  Rate,
-  Card,
-  Steps,
-  Input,
-  Button,
-  InputNumber,
-  AutoComplete,
-  Carousel,
-  Tabs,
-  Timeline,
-  Image,
-  Avatar,
-  List,
-  Breadcrumb,
-  message,
-  Form,
-} from "antd";
-import kart from "./kart.jpg";
-import para from "./para.jpg";
-import couture from "./couture.jpg";
-import logo2 from "./logo2.png";
+import { Input, Button, Form } from "antd";
+
 import { BrowserView, MobileView } from "react-device-detect";
-import MenuMobile from "./MobileLayout";
-import Review from "./Review";
+
 import Footer from "./Footer";
 import axios from "axios";
 import "./style/ProductDetail.css";
-import {
-  HomeOutlined,
-  DownCircleOutlined,
-  ShoppingCartOutlined,
-  CaretDownOutlined,
-  HeartFilled,
-  HeartTwoTone,
-  RocketTwoTone,
-  ExperimentTwoTone,
-  EnvironmentTwoTone,
-  HeartOutlined,
-  ThunderboltTwoTone,
-  BulbOutlined,
-  InfoCircleOutlined,
-} from "@ant-design/icons";
 
 const MdpOublie = (props) => {
   const [course, setCourse] = useState(null);

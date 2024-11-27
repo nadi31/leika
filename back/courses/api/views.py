@@ -27,7 +27,9 @@ from django.forms.models import model_to_dict
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.html import strip_tags
-
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+from django.utils.decorators import method_decorator
 from django.utils import timezone
 # from django_filters import rest_framework as filters
 
@@ -37,10 +39,30 @@ class researchCourseList(ListCreateAPIView):
     model = Course
     model = Giver
     model = Adress
-    queryset = Course.objects.all()
-    queryset2 = Adress.objects.all()
-    queryset3 = Giver.objects.all()
+    # Cache keys for each queryset
+    course_cache_key = 'courses'
+    address_cache_key = 'addresses'
+    giver_cache_key = 'givers'
+
+        # Try to retrieve from cache
+    queryset = cache.get(course_cache_key)
+    queryset2 = cache.get(address_cache_key)
+    queryset3 = cache.get(giver_cache_key)
+
+        # If not cached, query and store in cache
+    if not queryset:
+        queryset = Course.objects.all()
+        cache.set(course_cache_key, queryset, timeout=60 * 60*4)  # Cache for 1 hour
+    if not queryset2:
+        queryset2 = Adress.objects.all()
+        cache.set(address_cache_key, queryset2, timeout=60 * 60*4)  # Cache for 1 hour
+    if not queryset3:
+        queryset3 = Giver.objects.all()
+        cache.set(giver_cache_key, queryset3, timeout=60 * 60*4)  # Cache for 1 hour
+
+   
     serializer_class = ResearchCourseSerializer
+    @method_decorator(cache_page(60 * 60 * 4), name='dispatch')
     def get(self, request, *args, **kwargs):
         # Fetch filtered queryset
         course_list = self.get_queryset()
@@ -52,7 +74,7 @@ class researchCourseList(ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
+    @method_decorator(cache_page(60 * 60 * 4), name='dispatch')
     def get_queryset(self):  
         # Start with all courses
         course_list = Course.objects.all()
@@ -196,8 +218,8 @@ class researchCourse(ListCreateAPIView):
     # print ()
 
 
+@method_decorator(cache_page(60 * 60 * 4), name='dispatch')
 class CourseListView(ListAPIView):
-
     permission_classes = (permissions.AllowAny,)
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
@@ -446,7 +468,7 @@ class CourseUpdateView(APIView):
     # giver= models.ForeignKey(Giver, on_delete=models.CASCADE)
     # category = models.CharField(max_length=200, null=True, blank=True)
 
-
+@method_decorator(cache_page(60 * 60 * 4), name='dispatch')
 class CourseDetailView(RetrieveAPIView):
     permission_classes = (IsAll,)
 

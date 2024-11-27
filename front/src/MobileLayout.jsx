@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "@ant-design/icons";
 import { Menu, Modal, Button } from "antd";
-import hambur from "./hamburger.png";
-import search from "./searchIcon.png";
+
+import search from "./images/searchIcon.png";
 import Cart from "./Cart";
-import kids from "./kids2.png";
-import logo2 from "./maory.png";
-import team from "./team2.png";
+import kids from "./images/kids2.png";
+import logo2 from "./images/maory.png";
+import team from "./images/team2.png";
 import { useAuth } from "./AuthContext";
 import Connexion from "./Connexion";
 import { ShoppingCartOutlined, MenuOutlined } from "@ant-design/icons";

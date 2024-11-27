@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Avatar, List, Card, Rate } from "antd";
+import React from "react";
+import { Avatar, Rate } from "antd";
 import "./style/review.css";
 import { UserOutlined } from "@ant-design/icons";
 
 const Review = (props) => {
-  const { Meta } = Card;
   return (
     <>
       <div

@@ -1,29 +1,12 @@
 import React, { useState, useLayoutEffect, useEffect } from "react";
-import { ConfigProvider } from "antd";
-//import frFR from "antd/lib/locale/fr_FR";
-//import MediaQuery from 'react-responsive';
-import { BrowserView, MobileView } from "react-device-detect";
-import { Card, Menu, Button, Input, AutoComplete, Carousel } from "antd";
+
+import { Card } from "antd";
 import axios from "axios";
 
 import Footer from "./Footer";
-import {
-  ShoppingCartOutlined,
-  MenuOutlined,
-  UserOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import Connexion from "./Connexion";
-import Cart from "./Cart";
-import logo2 from "./logo2.png";
-import para from "./para.jpg";
-import couture from "./couture.jpg";
-import kart from "./kart.jpg";
-import loop from "./loop.mp4";
-import kids from "./kids.png";
+
 import MenuBrowser from "./MenuBrowser";
 
-import Results from "./Results";
 import HomeMobile from "./HomeMobile";
 const TeamBuilding = () => {
   const [courseList, setCourseList] = useState([]);

@@ -1,47 +1,32 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-import { useSearchParams, useLocation } from "react-router-dom";
-import { useNavigate, withRouter } from "react-router-dom";
-import { BrowserView, MobileView } from "react-device-detect";
+import { useLocation } from "react-router-dom";
 
-import {
-  CheckCircleTwoTone,
-  HeartTwoTone,
-  SmileTwoTone,
-} from "@ant-design/icons";
-
-import Maps from "./Maps"; // import the map here
-import euros from "./euros.png";
-import ageImage from "./age.png";
-import levelImage from "./level.png";
-import friends from "./friends.png";
-import handi from "./handi.png";
-import free from "./fre.png";
-import locationImage from "./locationImage.png";
-import Icon, { RocketOutlined, ExperimentOutlined } from "@ant-design/icons";
+import euros from "./images/euros.png";
+import ageImage from "./images/age.png";
+import levelImage from "./images/level.png";
+import friends from "./images/friends.png";
+import handi from "./images/handi.png";
+import free from "./images/fre.png";
+import locationImage from "./images/locationImage.png";
+import Icon from "@ant-design/icons";
 import {
   Card,
   Slider,
   Form,
-  Menu,
-  Tag,
-  Breadcrumb,
   InputNumber,
   Cascader,
   Switch,
   Button,
   Modal,
 } from "antd";
-import dancee from "./star.png";
-import experience from "./experience.png";
-import dayjs from "dayjs";
 
 import MenuBrowser from "./MenuBrowser";
 
 import axios from "axios";
 import Footer from "./Footer";
-import MenuMobile from "./MobileLayout";
+
 import HomeMobile from "./HomeMobile";
 const Results = () => {
   function updateSize() {

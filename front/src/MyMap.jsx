@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "./map.css";
+import "./style/map.css";
 import L from "leaflet";
 import {} from "mapbox-gl-leaflet";
 

@@ -17,7 +17,7 @@ import {
   message,
 } from "antd";
 import MenuBrowser from "./MenuBrowser";
-import jwt_code from "jwt-decode";
+
 import { EditOutlined, ContainerOutlined } from "@ant-design/icons";
 
 import axios from "axios";

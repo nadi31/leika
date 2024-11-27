@@ -20,10 +20,7 @@ import {
   Breadcrumb,
   message,
 } from "antd";
-import kart from "./kart.jpg";
-import para from "./para.jpg";
-import couture from "./couture.jpg";
-import logo2 from "./logo2.png";
+
 import { BrowserView, MobileView } from "react-device-detect";
 
 import Review from "./Review";

@@ -7,7 +7,7 @@ import { BrowserView, MobileView } from "react-device-detect";
 
 import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
 
-import euros from "./euros.png";
+import euros from "./images/euros.png";
 
 import Icon, { RocketOutlined, ExperimentOutlined } from "@ant-design/icons";
 import {
@@ -23,8 +23,8 @@ import {
   Switch,
   Button,
 } from "antd";
-import dancee from "./star.png";
-import gift from "./giftCard.jpg";
+import dancee from "./images/star.png";
+import gift from "./images/giftCard.jpg";
 import dayjs from "dayjs";
 
 import MenuBrowser from "./MenuBrowser";

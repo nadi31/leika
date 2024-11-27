@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Affix, Menu } from "antd";
 import "./style/review.css";
-import { UserOutlined } from "@ant-design/icons";
-import escape from "./escape.png";
-import enigma from "./enigma.png";
-import mystery from "./mystery.png";
-import cook from "./cook.png";
-import discovery from "./discovery.png";
-import paint from "./paint.png";
-import quiz from "./quiz.png";
-import treasure from "./treasure.png";
-import soccer from "./soccer.png";
+
+import escape from "./images/escape.png";
+import enigma from "./images/enigma.png";
+import mystery from "./images/mystery.png";
+import cook from "./images/cook.png";
+import discovery from "./images/discovery.png";
+import paint from "./images/paint.png";
+
+import treasure from "./images/treasure.png";
+import soccer from "./images/soccer.png";
 import Icon from "@ant-design/icons";
-const MenuTeamBuilding = (props) => {
+const MenuTeamBuilding = () => {
   return (
     <>
       {" "}

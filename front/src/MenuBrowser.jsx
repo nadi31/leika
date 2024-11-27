@@ -17,28 +17,20 @@ import Menu2 from "./Menu2";
 import MenuKids2 from "./MenuKids2";
 import MenuTeamBuilding from "./MenuTeam2";
 
-import gift from "./gift.png";
 import {
   RocketOutlined,
   ExperimentOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
-import { useNavigate, withRouter, useSearchParams } from "react-router-dom";
-import { browserHistory } from "react-router";
-import Icon from "@ant-design/icons";
-import { BrowserView, MobileView } from "react-device-detect";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+import { BrowserView } from "react-device-detect";
 import {
-  Avatar,
   Badge,
-  Space,
   Menu,
   Breadcrumb,
   Tag,
-  Affix,
   Button,
-  Input,
-  AutoComplete,
-  Carousel,
   DatePicker,
   Image,
   Dropdown,
@@ -46,28 +38,19 @@ import {
 //import "antd/dist/antd.css";
 import {
   ShoppingCartOutlined,
-  MenuOutlined,
   UserOutlined,
-  MailOutlined,
-  AppstoreOutlined,
-  SettingOutlined,
   SearchOutlined,
-  SmileTwoTone,
 } from "@ant-design/icons";
 import Connexion from "./Connexion";
 import Cart from "./Cart";
-import logo2 from "./maory.png";
-import para from "./para.jpg";
-import couture from "./couture.jpg";
-import kart from "./kart.jpg";
-import loop from "./loop.mp4";
-import kidIcon from "./kids.png";
-import separator from "./separator.png";
+import logo2 from "./images/maory.png";
+
+import kidIcon from "./images/kids.png";
+import separator from "./images/separator.png";
 //import Form from "antd/lib/form/Form";
 import { Grid } from "antd";
 
 import dayjs from "dayjs";
-import MenuMobile from "./MobileLayout";
 
 //Panier shopping
 

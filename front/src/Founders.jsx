@@ -1,31 +1,14 @@
 import React, { useState, useLayoutEffect } from "react";
-import { Image, Button, Modal, InputNumber, message, Input } from "antd";
-//import "antd/dist/antd.css";
+import { Button, message, Input } from "antd";
+
 import "./style/footer.css";
 import axios from "axios";
-import { BrowserView, MobileView } from "react-device-detect";
+
 import MenuBrowser from "./MenuBrowser";
 import Footer from "./Footer";
 
-import {
-  HomeOutlined,
-  DownCircleOutlined,
-  ShoppingCartOutlined,
-  CaretDownOutlined,
-  HeartFilled,
-  HeartTwoTone,
-  RocketTwoTone,
-  ExperimentTwoTone,
-  EnvironmentTwoTone,
-  HeartOutlined,
-  ThunderboltTwoTone,
-  BulbOutlined,
-  InfoCircleOutlined,
-} from "@ant-design/icons";
+import { Form, Select } from "antd";
 
-import processus from "./processus.jpg";
-import { Form, Select, Space, Tooltip, Typography } from "antd";
-import { Table } from "antd";
 import HomeMobile from "./HomeMobile";
 
 //Panier shopping

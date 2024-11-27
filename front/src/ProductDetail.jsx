@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 
 import { Grid } from "antd";
 import MobileLayout from "./MobileLayout";
-import HomeMobile from "./HomeMobile";
+
 import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
 import {
   Rate,
@@ -13,21 +13,13 @@ import {
   Steps,
   Button,
   InputNumber,
-  AutoComplete,
   Carousel,
   Tabs,
   Timeline,
   Image,
-  Avatar,
   List,
-  Breadcrumb,
   message,
 } from "antd";
-import kart from "./kart.jpg";
-import para from "./para.jpg";
-import couture from "./couture.jpg";
-import logo2 from "./logo2.png";
-import { BrowserView, MobileView } from "react-device-detect";
 
 import Review from "./Review";
 import Footer from "./Footer";

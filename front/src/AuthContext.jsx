@@ -2,12 +2,33 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { message } from "antd";
+import { Suspense } from "react";
 
 // Create the context
 const AuthContext = createContext();
 
 // Define the provider component
 const AuthProvider = ({ children }) => {
+  const Giver = React.lazy(() => {
+    import("./GiverProfil");
+    import("./EmailVerifyGiver");
+    import("./CourseFormGiver");
+    import("./GiverForm");
+    import("./BookingGiver");
+    import("./UpdateCourse");
+    import("./CoursesToModify");
+    import("./CourseOnline");
+  });
+  const Cub = React.lazy(() => {
+    import("./ProfilCub");
+    import("./InfosCub");
+    import("./ReviewsCub");
+  });
+  const Admin = React.lazy(() => {
+    import("./EmailVerify");
+    //import("./CoursesToVerify");
+    import("./CoursesCheck");
+  });
   const [token, setToken] = useState(null);
   const [access_token, setAccessToken] = useState(null);
   const [userData, setUserData] = useState(null);
@@ -102,6 +123,24 @@ const AuthProvider = ({ children }) => {
       );
 
       handleSuccessfulLogin(response.data);
+      if (response.data.userData.user_type === "2") {
+        //console.log("cub")
+        <Suspense fallback={<div>Loading widget...</div>}>
+          <Cub />
+        </Suspense>;
+      }
+      if (response.data.userData.user_type === "3") {
+        // console.log("giv");
+        <Suspense fallback={<div>Loading widget...</div>}>
+          <Giver />
+        </Suspense>;
+      }
+      if (response.data.userData.user_type === 1) {
+        //  console.log("ad");
+        <Suspense fallback={<div>Loading widget...</div>}>
+          <Admin />
+        </Suspense>;
+      }
       message.success("Connexion réussie");
     } catch (error) {
       console.error("There was an error logging in:", error);

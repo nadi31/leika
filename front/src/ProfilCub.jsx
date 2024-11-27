@@ -17,7 +17,7 @@ import {
   message,
 } from "antd";
 import MenuBrowser from "./MenuBrowser";
-import jwt_code from "jwt-decode";
+
 import {
   MailOutlined,
   DownOutlined,
@@ -34,8 +34,8 @@ import {
 
 import axios from "axios";
 import Wishlist from "./Wishlist";
-import Footer from "./Footer";
-import imgCub from "./cub_menu3.gif";
+
+import imgCub from "./images/cub_menu3.gif";
 import HomeMobile from "./HomeMobile";
 //import MenuItem from "antd/lib/menu/MenuItem";
 

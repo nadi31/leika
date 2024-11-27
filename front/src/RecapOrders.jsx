@@ -13,8 +13,6 @@ import {
 import axios from "axios";
 import MenuBrowser from "./MenuBrowser";
 import Footer from "./Footer";
-import jwt_code from "jwt-decode";
-import { SmileOutlined } from "@ant-design/icons";
 
 const RecapOrders = (props) => {
   const userData = useAuth();

@@ -15,7 +15,7 @@ import {
   notification,
   Space,
 } from "antd";
-import logo from "./maory.png";
+import logo from "./images/maory.png";
 
 import {
   useNavigate,

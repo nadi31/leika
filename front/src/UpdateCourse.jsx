@@ -1,5 +1,5 @@
 import React from "react";
-import { fromUnixTime, format, parse } from "date-fns";
+import { format, parse } from "date-fns";
 
 import axios from "axios";
 import { useState, useEffect, useLayoutEffect } from "react";
@@ -9,18 +9,11 @@ import MenuBrowser from "./MenuBrowser";
 import * as dayjs from "dayjs";
 import { useAuth } from "./AuthContext";
 import Footer from "./Footer";
-import { BrowserView, MobileView } from "react-device-detect";
-import {
-  ScheduleOutlined,
-  MenuOutlined,
-  UserOutlined,
-  SearchOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
+import { BrowserView } from "react-device-detect";
+import { ScheduleOutlined, UploadOutlined } from "@ant-design/icons";
 import {
   Form,
   Modal,
-  Space,
   DatePicker,
   TimePicker,
   Button,
@@ -29,7 +22,6 @@ import {
   Upload,
   InputNumber,
   Cascader,
-  Spin,
   Radio,
   AutoComplete,
   message,

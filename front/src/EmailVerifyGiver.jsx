@@ -1,53 +1,15 @@
 import MenuBrowser from "./MenuBrowser";
-import Bloc from "./Bloc";
+
 import { useParams } from "react-router-dom";
 import HomeMobile from "./HomeMobile";
-import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
-import {
-  Rate,
-  Card,
-  Steps,
-  Button,
-  InputNumber,
-  AutoComplete,
-  Carousel,
-  Tabs,
-  Timeline,
-  Image,
-  Avatar,
-  List,
-  Breadcrumb,
-  message,
-} from "antd";
-import kart from "./kart.jpg";
-import para from "./para.jpg";
-import couture from "./couture.jpg";
-import logo2 from "./logo2.png";
-import { BrowserView, MobileView } from "react-device-detect";
+import React, { useState, useLayoutEffect, useEffect } from "react";
+import { Button, message } from "antd";
 
-import Review from "./Review";
 import Footer from "./Footer";
 import axios from "axios";
 import "./style/ProductDetail.css";
-import {
-  HomeOutlined,
-  DownCircleOutlined,
-  ShoppingCartOutlined,
-  CaretDownOutlined,
-  HeartFilled,
-  HeartTwoTone,
-  RocketTwoTone,
-  ExperimentTwoTone,
-  EnvironmentTwoTone,
-  HeartOutlined,
-  ThunderboltTwoTone,
-  BulbOutlined,
-  InfoCircleOutlined,
-} from "@ant-design/icons";
 
-const EmailVerifyGiver = (props) => {
-  const [course, setCourse] = useState(null);
-
+const EmailVerifyGiver = () => {
   const token = useParams();
   const key = token["token"];
   const [width, setWidth] = useState(window.innerWidth);

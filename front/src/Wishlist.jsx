@@ -1,14 +1,9 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
-import { BrowserView, MobileView } from "react-device-detect";
-import { Card } from "antd";
-import MenuBrowser from "./MenuBrowser";
+import React, { useState, useEffect } from "react";
 
-import axios from "axios";
-import Footer from "./Footer";
+import { Card } from "antd";
 
 const Wishlist = (props) => {
   const [results, setResults] = useState([]);
-  const [cubId, setCubId] = useState(null);
 
   const { Meta } = Card;
 

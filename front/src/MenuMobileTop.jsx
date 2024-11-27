@@ -1,40 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, withRouter, useSearchParams } from "react-router-dom";
-import { ConfigProvider, Modal } from "antd";
+import { useNavigate } from "react-router-dom";
+import { Modal } from "antd";
 
-//import frFR from "antd/lib/locale/fr_FR";
-//import MediaQuery from 'react-responsive';
-import { BrowserView, MobileView } from "react-device-detect";
-import { Card, Menu, Button, Input, AutoComplete, Affix } from "antd";
+import { Card, Menu, Button } from "antd";
 import Icon from "@ant-design/icons";
-import axios from "axios";
-import logo2 from "./leika_logo2.png";
+
+import logo2 from "./images/maory.png";
 import Cart from "./Cart";
-import {
-  ShoppingCartOutlined,
-  MenuOutlined,
-  UserOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import board from "./board.png";
-import france from "./france.png";
-import drill from "./drill.png";
-import eiffel from "./eiffel.png";
-import gift from "./gift.png";
-import team from "./team2.png";
-import museum from "./museum.png";
-import noodles from "./noodles.png";
-import sculpture from "./sculpture.png";
-import sewing from "./sewing.png";
-import dayjs from "dayjs";
-import spa from "./spa.png";
-import sport from "./sport.png";
-import theatre from "./theatre.png";
-import translation from "./translation.png";
+import { ShoppingCartOutlined, SearchOutlined } from "@ant-design/icons";
+
+import team from "./images/team2.png";
+
 import Connexion from "./Connexion";
-import search from "./searchIcon.png";
-import kids from "./kids2.png";
-import t from "./login.png";
+import search from "./images/searchIcon.png";
+
 import hambur from "./hamburger.png";
 import { SettingOutlined, AppstoreOutlined } from "@ant-design/icons";
 const { SubMenu } = Menu;
