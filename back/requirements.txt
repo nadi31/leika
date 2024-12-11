@@ -1,0 +1,5 @@
+certifi==2024.8.30
+packaging==24.1
+pywatchman==2.0.0
+wheel==0.44.0
+django==4.2
